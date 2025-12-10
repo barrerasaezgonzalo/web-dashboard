@@ -1,10 +1,10 @@
-# Personal Dashboard – Senior React Developer
+# Personal Dashboard 
 
 ## Description
 
-This project is a **personal dashboard** built with **React 18 and Next.js 13**. It is designed to be highly interactive, efficient, and modular, displaying **tasks, notes, news, financial indicators, motivational phrases, and AI-generated predictions**.
+This project is a **personal dashboard** built with **React 18 and Next.js 13**. It is designed to be highly interactive, efficient, and modular, displaying **google search, top sites, financial indicators, tasks, notes, news, motivational phrases, AI-generated predictions, AI prompts and more**.
 
-The main goal is to showcase **advanced React skills**, including performance optimization, complex state management, lazy loading, memoization, API integrations, and real-time database persistence.
+The main goal is to showcase **React skills**, including performance optimization, complex state management, lazy loading, memoization, API integrations, and real-time database persistence.
 
 ---
 
@@ -14,12 +14,12 @@ The main goal is to showcase **advanced React skills**, including performance op
 - **TypeScript** for strict and safe typing
 - **Supabase** for backend and real-time database
 - **Recharts** for data visualization
-- **react-masonry-css** for dynamic layouts
 - **next/dynamic** + **Skeleton components** for lazy loading and performance
 - **ErrorBoundary** for robust error handling
 - **Web Vitals & PerformanceObserver** for measuring LCP and TBT
 - **Tailwind CSS** for responsive design and styled components
 - **Context API + Custom Hooks** for centralized state management
+- **Jest + React Testing Library** for unit and integration testing
 
 ---
 
@@ -36,7 +36,7 @@ The main goal is to showcase **advanced React skills**, including performance op
 - Drag & drop tasks with persisted order in **Supabase**.
 - Automatic order update when adding or deleting tasks.
 - Optimized rendering using **React.memo**.
-- Chart of completed vs pending tasks using **Recharts**.
+- Chart of in progress vs pending tasks using **Recharts**.
 
 ### Notes
 
@@ -47,26 +47,27 @@ The main goal is to showcase **advanced React skills**, including performance op
 ### Financial Indicators
 
 - Real-time external data (USD, UTM, BTC, ETH).
-- Displays numeric values and total indicators.
+- Persists historical values in **Supabase** for trend analysis.
+- Displays numeric values with **up/down arrows** for changes.
+- Shows **sparkline charts** for each indicator’s recent trend.
 
-### News & Motivational Phrases
+### News
 
 - Dynamic news list with array validation.
-- Random motivational phrases based on the day.
+- LocalStorage Cache
 
 ### AI & Prompts
 
 - Integration with **GPT** for personalized prompts.
 - Real-time predictions and suggestions in the dashboard.
+- Generation of optimized prompts
 
 ### Performance
 
-- Measures **LCP** and approximate **TBT** using `web-vitals` and `PerformanceObserver`.
-- Shows total tasks, news, and financial indicators.
 - Tracks render times per component for performance analysis.
 - **ErrorBoundary** captures errors for each component individually.
 
-## Best Practices Demonstrated
+## Best Practices
 
 - Strict **TypeScript typing**.
 - **Lazy loading with Skeletons** for performance optimization.
@@ -74,5 +75,5 @@ The main goal is to showcase **advanced React skills**, including performance op
 - Centralized state management using **Context API + custom hooks**.
 - Real-time persistence with **Supabase**.
 - Robust **error handling** with `ErrorBoundary`.
-- Performance metrics tracking (LCP, TBT) and component render timing.
 - **Responsive design** and smooth user experience.
+- Comprehensive **unit and integration testing** with Jest and React Testing Library.

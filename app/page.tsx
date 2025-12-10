@@ -1,109 +1,97 @@
 "use client";
 
-import Image from "next/image";
 import dynamic from "next/dynamic";
-import Masonry from "react-masonry-css";
-import { Skeleton } from "@/components/Skeleton";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { Search } from "@/components/Search";
-import { Notes } from "@/components/Notes";
-import { TopSites } from "@/components/TopSites";
-import { Gpt } from "@/components/Gpt";
-import { Phrases } from "@/components/Phrases";
-import { Promts } from "@/components/Promts";
-import { useData } from "@/hooks/useData";
-import { breakpointColumnsObj, pharses, topSites } from "@/constants";
-import { PerformancePanel } from "@/components/PerformancePanel";
+import { Skeleton } from "@/components/ui/Skeleton";
+import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
+import { Search } from "@/components/Search/Search";
+import { Notes } from "@/components/Notes/Notes";
+import { Gpt } from "@/components/Gpt/Gpt";
+import { Prompt } from "@/components/Prompt/Prompt";
+import { User } from "@/components/User/User";
+import { BackGround } from "@/components/ui/BackGround";
+import { PerformanceProvider } from "@/context/PerformanceContext";
+import { WebVitals } from "@/components/WebVitals/WebVitals";
+import { Quiz } from "@/components/Quiz/Quiz";
+import { TaskProvider } from "@/context/TasksContext";
+import { PerformancePanel } from "@/components/PerformancePanel/PerformancePanel";
+import { Wheater } from "@/components/Wheater/Wheater";
+import { FinancialProvider } from "@/context/FinancialContext";
+import { NewsProvider } from "@/context/NewsContext";
+import { DataProvider } from "@/context/DataContext";
 
-const TasksPieChart = dynamic(() => import("@/components/TasksPieChart"), {
+const Task = dynamic(() => import("@/components/Task/Task"), {
   ssr: false,
   loading: () => <Skeleton rows={5} height={40} />,
 });
 
-const Todo = dynamic(() => import("@/components/Todo"), {
+const News = dynamic(() => import("@/components/News/News"), {
   ssr: false,
   loading: () => <Skeleton rows={5} height={40} />,
 });
 
-const NewsList = dynamic(() => import("@/components/NewsList"), {
-  ssr: false,
-  loading: () => <Skeleton rows={5} height={40} />,
-});
-
-const Time = dynamic(() => import("@/components/Time"), {
-  ssr: false,
-  loading: () => <Skeleton rows={5} height={40} />,
-});
-
-const Financial = dynamic(() => import("@/components/Financial"), {
+const Financial = dynamic(() => import("@/components/Financial/Financial"), {
   ssr: false,
   loading: () => <Skeleton rows={5} height={40} />,
 });
 
 export const App: React.FC = () => {
-  const {
-    financial,
-    news,
-    tasks,
-    addTask,
-    removeTask,
-    editTask,
-    toggleTaskCompletion,
-    updateTasksOrder,
-    clima,
-    getPrompt,
-    tasksLoading,
-    financialLoading,
-    note,
-    setNote,
-    getNote,
-    saveNote,
-  } = useData();
+
+  const columnStyle = "flex flex-col gap-4";
 
   return (
     <div className="relative w-full min-h-screen">
-      <div className="absolute top-0 left-0 w-full h-full -z-10">
-        <Image
-          src="/bg.jpg"
-          alt="Fondo"
-          fill
-          className="object-cover fixed top-0 left-0 z-0"
-          priority
-        />
-      </div>
+      <BackGround />
 
-      <div className="relative z-10 p-4">
-        <Masonry
-          breakpointCols={breakpointColumnsObj}
-          className="flex gap-4"
-          columnClassName="flex flex-col gap-4"
-        >
+      <div className="relative z-10 p-4 grid gap-4"
+        style={{
+          gridTemplateColumns: "repeat(4, 1fr)"
+        }}>
+
+        {/* Column 1 */}
+        <div className={columnStyle}>
+
+          <ErrorBoundary>
+            <TaskProvider>
+              <User />
+            </TaskProvider>
+          </ErrorBoundary>
+
+          <ErrorBoundary>
+            <NewsProvider>
+              <News />
+            </NewsProvider>
+          </ErrorBoundary>
+
+          <ErrorBoundary>
+            <Gpt />
+          </ErrorBoundary>
+
+        </div>
+
+        {/* Column 2 */}
+        <div className={columnStyle}>
+
           <ErrorBoundary>
             <Search />
           </ErrorBoundary>
 
           <ErrorBoundary>
-            <Time clima={clima} />
+            <FinancialProvider>
+              <Financial />
+            </FinancialProvider>
           </ErrorBoundary>
 
           <ErrorBoundary>
-            <NewsList news={news} />
+            <Prompt />
           </ErrorBoundary>
 
-          <ErrorBoundary>
-            <Todo
-              tasks={tasks || []}
-              addTask={addTask}
-              removeTask={removeTask}
-              editTask={editTask}
-              toggleTaskCompletion={toggleTaskCompletion}
-              tasksLoading={tasksLoading}
-              updateTasksOrder={updateTasksOrder}
-            />
-          </ErrorBoundary>
+        </div>
+
+        {/* Column 3 */}
+        <div className={columnStyle}>
 
           <ErrorBoundary>
-            <TasksPieChart tasks={tasks || []} />
+            <Wheater />
           </ErrorBoundary>
 
           <ErrorBoundary>
@@ -111,38 +99,33 @@ export const App: React.FC = () => {
           </ErrorBoundary>
 
           <ErrorBoundary>
-            <Financial
-              financial={financial}
-              financialLoading={financialLoading}
-            />
+            <DataProvider>
+              <Quiz />
+            </DataProvider>
           </ErrorBoundary>
 
-          <ErrorBoundary>
-            <TopSites topSites={topSites} />
-          </ErrorBoundary>
+        </div>
+
+        {/* Column 4 */}
+        <div className={columnStyle}>
 
           <ErrorBoundary>
-            <Gpt />
+            <TaskProvider>
+              <Task />
+            </TaskProvider>
           </ErrorBoundary>
 
-          <ErrorBoundary>
-            <Phrases pharses={pharses} />
-          </ErrorBoundary>
-
-          <ErrorBoundary>
-            <Promts getPrompt={getPrompt} />
-          </ErrorBoundary>
-
-          <ErrorBoundary>
-            <PerformancePanel
-              tasks={tasks || []}
-              news={Array.isArray(news) ? news : []}
-              financial={financial || {}}
-            />
-          </ErrorBoundary>
-        </Masonry>
+        </div>
       </div>
-    </div>
+      <ErrorBoundary>
+        <PerformanceProvider>
+          <div id="main-content">
+            <WebVitals />
+            <PerformancePanel />
+          </div>
+        </PerformanceProvider>
+      </ErrorBoundary>
+    </div >
   );
 };
 

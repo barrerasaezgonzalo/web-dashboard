@@ -11,7 +11,6 @@ export default async function handler(
   const tasks: { id: string; order: number }[] = req.body;
 
   try {
-    // Actualizamos cada tarea en Supabase
     await Promise.all(
       tasks.map((task) =>
         supabase.from("todos").update({ order: task.order }).eq("id", task.id),

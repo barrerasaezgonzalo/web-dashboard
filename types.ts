@@ -1,51 +1,40 @@
-export interface Task {
+export interface FinancialHistory {
   id: string;
-  title: string;
-  completed?: boolean;
-  order: number;
-}
-
-export interface TopSite {
-  id: number;
-  titulo: string;
-  url: string;
-}
-
-export type PhrasesType = {
-  titulo: string;
-};
-
-export interface PhrasesProps {
-  pharses: PhrasesType[];
-}
-
-export interface TopSitesProps {
-  topSites: TopSite[];
-}
-
-export interface ToastProps {
-  message: string;
-  onConfirm?: () => void;
-  onCancel?: () => void;
+  created_at: string;
+  dolar: number;
+  utm: number;
+  btc: number;
+  eth: number;
 }
 
 export interface Financial {
-  dolar: string;
-  utm: string;
-  btc: string;
-  eth: string;
+  current: {
+    dolar: number;
+    utm: number;
+    btc: number;
+    eth: number;
+  };
+  history: {
+    id: string;
+    created_at: string;
+    dolar: number;
+    utm: number;
+    btc: number;
+    eth: number;
+  }[];
+  _fallback?: boolean;
 }
 
-export interface FinancialProps {
-  financial: Financial;
-  financialLoading: boolean;
+export interface FinancialIndicatorProps {
+  label: string;
+  value: string;
+  trend: "up" | "down" | "same" | null;
 }
 
 export interface NewsSource {
   name: string;
   url: string;
 }
-
 export interface NewsArticle {
   title: string;
   description: string;
@@ -64,20 +53,31 @@ export interface News extends NewsResponse {
   _fallback?: boolean;
 }
 
-export interface NewsListProps {
-  news: News;
+export interface QuestionType {
+  question: string;
 }
 
-export interface PromptsData {
-  getPrompt: (input?: string) => Promise<string | null>;
+export interface Task {
+  id: string;
+  title: string;
+  in_dev?: boolean;
+  order: number;
 }
 
-export interface TaskProps {
-  tasks: Task[];
-  addTask: (title: string) => void;
-  removeTask: (id: string) => void;
-  editTask: (id: string, newTitle: string) => void;
-  toggleTaskCompletion: (id: string) => void;
-  tasksLoading: boolean;
-  updateTasksOrder: (tasks: Task[]) => Promise<void>;
+export interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
 }
+
+export interface SkeletonProps {
+  rows?: number;
+  height?: number;
+  className?: string;
+}
+
+export interface ToastProps {
+  message: string;
+  onConfirm?: () => void;
+  onCancel?: () => void;
+}
+

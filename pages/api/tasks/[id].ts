@@ -1,3 +1,4 @@
+// pages/api/tasks/[id].ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { supabase } from "@/lib/supabaseClient";
 import { Task } from "@/types";
@@ -6,31 +7,38 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Task[] | { error: string } | { success: boolean }>,
 ) {
+  const { id } = req.query; 
+
   if (req.method === "DELETE") {
-    const { id } = req.body;
+    if (!id || typeof id !== "string") {
+      return res.status(400).json({ error: "ID inválido" });
+    }
+    
+    const { error: deleteError } = await supabase
+      .from("todos")
+      .delete()
+      .eq("id", id);
 
-    // 1️⃣ Borrar el task
-    await supabase.from("todos").delete().eq("id", id);
+    if (deleteError) return res.status(500).json({ error: deleteError.message });
 
-    // 2️⃣ Obtener todos los tasks restantes ordenados por order
-    const { data: remainingTasks } = await supabase
+    const { data: remainingTasks, error: selectError } = await supabase
       .from("todos")
       .select("*")
       .order("order", { ascending: true });
 
-    // 3️⃣ Reasignar order secuencial
-    if (remainingTasks) {
-      const updates = remainingTasks.map((task, index) => ({
-        id: task.id,
-        order: index + 1, // 1, 2, 3...
-      }));
+    if (selectError) return res.status(500).json({ error: selectError.message });
 
-      // 4️⃣ Hacer update en batch
-      for (const t of updates) {
-        await supabase.from("todos").update({ order: t.order }).eq("id", t.id);
+    if (remainingTasks) {
+      for (let index = 0; index < remainingTasks.length; index++) {
+        await supabase
+          .from("todos")
+          .update({ order: index + 1 })
+          .eq("id", remainingTasks[index].id);
       }
     }
 
     return res.status(200).json({ success: true });
   }
+
+  res.status(405).json({ error: "Método no permitido" });
 }
