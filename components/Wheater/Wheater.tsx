@@ -1,10 +1,10 @@
 "use client";
 
-import { useWheater } from "@/hooks/useWheater";
+import { useData } from "@/hooks/useData";
 import { useEffect, useState } from "react";
 
 export const Wheater: React.FC = () => {
-  const { wheater } = useWheater();
+  const { wheater } = useData();
   const [fecha, setFecha] = useState("Cargando...");
   const [hora, setHora] = useState("Cargando...");
 
@@ -17,7 +17,7 @@ export const Wheater: React.FC = () => {
           day: "numeric",
           month: "long",
           year: "numeric",
-        })
+        }),
       );
 
       setHora(
@@ -26,7 +26,7 @@ export const Wheater: React.FC = () => {
           minute: "2-digit",
           second: "2-digit",
           hour12: false,
-        })
+        }),
       );
     }
 
@@ -39,9 +39,7 @@ export const Wheater: React.FC = () => {
 
   return (
     <div className="bg-[#4D677E] text-white p-4 rounded shadow ">
-      <p className="text-center text-6xl mb-4">
-        {wheater.temperatura}
-      </p>
+      <p className="text-center text-6xl mb-4">{wheater.temperatura}</p>
       <p className="text-center text-2xl">{fecha}</p>
       <p className="text-center text-xl">{hora}</p>
     </div>

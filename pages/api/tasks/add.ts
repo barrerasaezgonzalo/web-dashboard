@@ -5,12 +5,11 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-
-    if (req.method !== "POST")
+  if (req.method !== "POST")
     return res.status(405).json({ error: "Method not allowed" });
 
-    if (req.method === "POST") {
-    const { title } = req.body;
+  if (req.method === "POST") {
+    const { title, authData } = req.body;
 
     const { data: maxOrderData, error: maxOrderError } = await supabase
       .from("todos")
@@ -30,7 +29,7 @@ export default async function handler(
 
     const { data, error } = await supabase
       .from("todos")
-      .insert([{ title, in_dev: false, order: nextOrder }])
+      .insert([{ title, in_dev: false, order: nextOrder, auth_data: authData }])
       .select();
 
     if (error) {
@@ -40,5 +39,4 @@ export default async function handler(
 
     return res.status(201).json(data || []);
   }
-
 }

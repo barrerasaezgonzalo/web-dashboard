@@ -18,6 +18,8 @@ import { Wheater } from "@/components/Wheater/Wheater";
 import { FinancialProvider } from "@/context/FinancialContext";
 import { NewsProvider } from "@/context/NewsContext";
 import { DataProvider } from "@/context/DataContext";
+import { useEffect, useState } from "react";
+import { useData } from "@/hooks/useData";
 
 const Task = dynamic(() => import("@/components/Task/Task"), {
   ssr: false,
@@ -35,97 +37,104 @@ const Financial = dynamic(() => import("@/components/Financial/Financial"), {
 });
 
 export const App: React.FC = () => {
-
   const columnStyle = "flex flex-col gap-4";
+  const [cookieValue, setCookieValue] = useState<string | null>(null);
+  const { user } = useData();
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const valor = window.localStorage.getItem("authDashboard");
+      setCookieValue(valor);
+    }
+  }, []);
 
   return (
-    <div className="relative w-full min-h-screen">
-      <BackGround />
+    <div>
+      {cookieValue === user && (
+        <div className="relative w-full min-h-screen">
+          <BackGround />
 
-      <div className="relative z-10 p-4 grid gap-4"
-        style={{
-          gridTemplateColumns: "repeat(4, 1fr)"
-        }}>
+          <div
+            className="relative z-10 p-4 grid gap-4"
+            style={{
+              gridTemplateColumns: "repeat(4, 1fr)",
+            }}
+          >
+            {/* Column 1 */}
+            <div className={columnStyle}>
+              <ErrorBoundary>
+                <TaskProvider>
+                  <User />
+                </TaskProvider>
+              </ErrorBoundary>
 
-        {/* Column 1 */}
-        <div className={columnStyle}>
+              <ErrorBoundary>
+                <NewsProvider>
+                  <News />
+                </NewsProvider>
+              </ErrorBoundary>
 
-          <ErrorBoundary>
-            <TaskProvider>
-              <User />
-            </TaskProvider>
-          </ErrorBoundary>
+              <ErrorBoundary>
+                <Gpt />
+              </ErrorBoundary>
+            </div>
 
-          <ErrorBoundary>
-            <NewsProvider>
-              <News />
-            </NewsProvider>
-          </ErrorBoundary>
+            {/* Column 2 */}
+            <div className={columnStyle}>
+              <ErrorBoundary>
+                <Search />
+              </ErrorBoundary>
 
-          <ErrorBoundary>
-            <Gpt />
-          </ErrorBoundary>
+              <ErrorBoundary>
+                <FinancialProvider>
+                  <Financial />
+                </FinancialProvider>
+              </ErrorBoundary>
 
-        </div>
+              <ErrorBoundary>
+                <Prompt />
+              </ErrorBoundary>
+            </div>
 
-        {/* Column 2 */}
-        <div className={columnStyle}>
+            {/* Column 3 */}
+            <div className={columnStyle}>
+              <ErrorBoundary>
+                <Wheater />
+              </ErrorBoundary>
 
-          <ErrorBoundary>
-            <Search />
-          </ErrorBoundary>
+              <ErrorBoundary>
+                <Notes />
+              </ErrorBoundary>
 
-          <ErrorBoundary>
-            <FinancialProvider>
-              <Financial />
-            </FinancialProvider>
-          </ErrorBoundary>
+              <ErrorBoundary>
+                <DataProvider>
+                  <Quiz />
+                </DataProvider>
+              </ErrorBoundary>
+            </div>
 
-          <ErrorBoundary>
-            <Prompt />
-          </ErrorBoundary>
-
-        </div>
-
-        {/* Column 3 */}
-        <div className={columnStyle}>
-
-          <ErrorBoundary>
-            <Wheater />
-          </ErrorBoundary>
-
-          <ErrorBoundary>
-            <Notes />
-          </ErrorBoundary>
-
-          <ErrorBoundary>
-            <DataProvider>
-              <Quiz />
-            </DataProvider>
-          </ErrorBoundary>
-
-        </div>
-
-        {/* Column 4 */}
-        <div className={columnStyle}>
-
-          <ErrorBoundary>
-            <TaskProvider>
-              <Task />
-            </TaskProvider>
-          </ErrorBoundary>
-
-        </div>
-      </div>
-      <ErrorBoundary>
-        <PerformanceProvider>
-          <div id="main-content">
-            <WebVitals />
-            <PerformancePanel />
+            {/* Column 4 */}
+            <div className={columnStyle}>
+              <ErrorBoundary>
+                <TaskProvider>
+                  <Task />
+                </TaskProvider>
+              </ErrorBoundary>
+            </div>
           </div>
-        </PerformanceProvider>
-      </ErrorBoundary>
-    </div >
+
+          {/* Footer */}
+          <ErrorBoundary>
+            <PerformanceProvider>
+              <div id="main-content">
+                <WebVitals />
+                <PerformancePanel />
+              </div>
+            </PerformanceProvider>
+          </ErrorBoundary>
+        </div>
+      )}
+    </div>
   );
 };
 

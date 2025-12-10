@@ -7,26 +7,28 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<Task[] | { error: string } | { success: boolean }>,
 ) {
-  const { id } = req.query; 
+  const { id } = req.query;
 
   if (req.method === "DELETE") {
     if (!id || typeof id !== "string") {
       return res.status(400).json({ error: "ID inválido" });
     }
-    
+
     const { error: deleteError } = await supabase
       .from("todos")
       .delete()
       .eq("id", id);
 
-    if (deleteError) return res.status(500).json({ error: deleteError.message });
+    if (deleteError)
+      return res.status(500).json({ error: deleteError.message });
 
     const { data: remainingTasks, error: selectError } = await supabase
       .from("todos")
       .select("*")
       .order("order", { ascending: true });
 
-    if (selectError) return res.status(500).json({ error: selectError.message });
+    if (selectError)
+      return res.status(500).json({ error: selectError.message });
 
     if (remainingTasks) {
       for (let index = 0; index < remainingTasks.length; index++) {

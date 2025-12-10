@@ -10,9 +10,12 @@ export const Toast: React.FC<ToastProps> = ({
   };
 
   return (
-    <>      
-      <div className="fixed inset-0 bg-black/50 bg-opacity-50 z-40" data-testid="toast" />
-      
+    <>
+      <div
+        className="fixed inset-0 bg-black/50 bg-opacity-50 z-40"
+        data-testid="toast"
+      />
+
       <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-500 text-white p-6 rounded shadow-lg z-50">
         {message}
         <div className="flex justify-end gap-2 mt-4">

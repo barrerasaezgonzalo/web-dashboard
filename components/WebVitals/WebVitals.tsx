@@ -11,12 +11,12 @@ export const WebVitals: React.FC = () => {
     const mainContent = document.getElementById("main-content");
     if (!mainContent) return;
 
-    onLCP(metric => setLCP(Math.round(metric.value)), {
+    onLCP((metric) => setLCP(Math.round(metric.value)), {
       reportAllChanges: true,
     });
-    onTTFB(metric => setTTFB(Math.round(metric.value)));
-    onFCP(metric => setFCP(Math.round(metric.value)));
-    onCLS(metric => setCLS(Math.round(metric.value)), {
+    onTTFB((metric) => setTTFB(Math.round(metric.value)));
+    onFCP((metric) => setFCP(Math.round(metric.value)));
+    onCLS((metric) => setCLS(Math.round(metric.value)), {
       reportAllChanges: true,
     });
   }, [setLCP, setTTFB, setFCP, setCLS]);

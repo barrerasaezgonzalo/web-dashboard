@@ -1,19 +1,20 @@
 // pages/api/note.ts
 import type { NextApiRequest, NextApiResponse } from "next";
-import { supabase } from "@/lib/supabaseClient"; // ajusta la ruta según tu proyecto
+import { supabase } from "@/lib/supabaseClient";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
-  const noteId = "11111111-1111-1111-1111-111111111111"; // id fijo para tu nota personal
+  const noteId = "11111111-1111-1111-1111-111111111111";
 
   if (req.method === "GET") {
-    // Traer la nota
+    const { authData } = req.query;
     const { data, error } = await supabase
       .from("notes")
       .select("content")
       .eq("id", noteId)
+      .eq("auth_data", authData)
       .single();
 
     if (error) {
@@ -25,11 +26,12 @@ export default async function handler(
 
   if (req.method === "POST" || req.method === "PUT") {
     const { content } = req.body;
+    const { authData } = req.query;
 
-    // Crear o actualizar la nota
     const { data, error } = await supabase
       .from("notes")
       .upsert({ id: noteId, content })
+      .eq("auth_data", authData)
       .select();
 
     if (error) {

@@ -1,18 +1,14 @@
+"use client";
+
 import { formatCLP } from "@/utils";
-import { Skeleton } from "../ui/Skeleton";
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { LineChart, Line, ResponsiveContainer } from "recharts";
 import FinancialIndicator from "./FinancialIndicator";
 import { useFinancial } from "@/hooks/useFinancial";
 import { FinancialHistory } from "@/types";
 
 const Financial: React.FC = ({}) => {
-
-   const {financial,financialLoading } = useFinancial();
-
-  if (financialLoading) {
-    return <Skeleton rows={4} height={60} className="rounded-lg animate-pulse" />;
-  }
+  const { financial } = useFinancial();
 
   const indicators = [
     { label: "Dólar", value: `$${financial.current.dolar}`, key: "dolar" },
@@ -21,13 +17,15 @@ const Financial: React.FC = ({}) => {
     { label: "ETH", value: formatCLP(financial.current.eth), key: "eth" },
   ];
 
-  const sparklineData = financial.history.map((f:FinancialHistory) => ({
-    date: f.created_at,
-    dolar: f.dolar,
-    utm: f.utm,
-    btc: f.btc,
-    eth: f.eth,
-  }));
+  const sparklineData = useMemo(() => {
+    return financial.history.map((f: FinancialHistory) => ({
+      date: f.created_at,
+      dolar: f.dolar,
+      utm: f.utm,
+      btc: f.btc,
+      eth: f.eth,
+    }));
+  }, [financial.history]);
 
   const getTrend = (key: "dolar" | "utm" | "btc" | "eth") => {
     const lastHistory = financial.history[financial.history.length - 1];
@@ -40,8 +38,10 @@ const Financial: React.FC = ({}) => {
   };
 
   return (
-    <div className={`bg-blue-50 text-black p-4 rounded-lg shadow-md`}>
-      <h2 className="text-xl font-bold mb-4 border-b pb-2">Indicadores Financieros</h2>
+    <div className="bg-blue-50 text-black p-4 rounded-lg shadow-md">
+      <h2 className="text-xl font-bold mb-4 border-b pb-2">
+        Indicadores Financieros
+      </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
         {indicators.map((ind) => (
           <div

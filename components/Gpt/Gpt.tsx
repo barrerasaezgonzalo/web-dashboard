@@ -55,4 +55,4 @@ export const Gpt: React.FC = () => {
   );
 };
 
-export default Gpt
+export default Gpt;

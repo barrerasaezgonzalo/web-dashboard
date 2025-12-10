@@ -1,3 +1,5 @@
+import { ReactNode } from "react";
+
 export interface FinancialHistory {
   id: string;
   created_at: string;
@@ -81,3 +83,23 @@ export interface ToastProps {
   onCancel?: () => void;
 }
 
+export interface TaskItemProps {
+  todo: Task;
+  index: number;
+  onTaskToggle: (taskId: string) => void;
+  onTaskUpdate: (taskId: string, newTitle: string) => void;
+  onTaskRequestRemove: (taskId: string) => void;
+}
+
+export interface ErrorBoundaryProps {
+  children: ReactNode;
+}
+
+export interface WheaterResponse {
+  temperatura: string;
+}
+
+export interface ClimaData {
+  temperatura: string;
+  _fallback?: boolean;
+}

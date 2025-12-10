@@ -1,9 +1,5 @@
+import { ClimaData } from "@/types";
 import type { NextApiRequest, NextApiResponse } from "next";
-
-interface ClimaData {
-  temperatura: string;
-  _fallback?: boolean;
-}
 
 export default async function handler(
   req: NextApiRequest,

@@ -1,4 +1,4 @@
-# Personal Dashboard 
+# Personal Dashboard
 
 ## Description
 
@@ -27,7 +27,7 @@ The main goal is to showcase **React skills**, including performance optimizatio
 
 ### Dashboard
 
-- **Responsive masonry layout** with dynamic columns.
+- **Responsive layout** with dynamic columns.
 - Fixed background image using `next/image`.
 - Lazy loading of heavy components with placeholders (`Skeleton`).
 

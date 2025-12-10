@@ -11,7 +11,7 @@ export const Search: React.FC = () => {
     }
   };
 
-  useEffect(() => {  
+  useEffect(() => {
     inputRef.current?.focus();
   }, []);
 

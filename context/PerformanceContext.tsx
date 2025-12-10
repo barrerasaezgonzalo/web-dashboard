@@ -13,18 +13,23 @@ interface PerformanceContextProps {
   setCLS: (value: number) => void;
 }
 
-export const PerformanceContext = createContext<PerformanceContextProps | undefined>(undefined);
+export const PerformanceContext = createContext<
+  PerformanceContextProps | undefined
+>(undefined);
 
-export const PerformanceProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+export const PerformanceProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
   const [lcp, setLCP] = useState<number | null>(null);
   const [ttfb, setTTFB] = useState<number | null>(null);
   const [fcp, setFCP] = useState<number | null>(null);
   const [cls, setCLS] = useState<number | null>(null);
 
   return (
-    <PerformanceContext.Provider value={{ lcp, ttfb, fcp, cls, setLCP, setTTFB, setFCP, setCLS }}>
+    <PerformanceContext.Provider
+      value={{ lcp, ttfb, fcp, cls, setLCP, setTTFB, setFCP, setCLS }}
+    >
       {children}
     </PerformanceContext.Provider>
   );
 };
-

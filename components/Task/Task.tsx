@@ -3,21 +3,24 @@
 import { useState, memo } from "react";
 import { Toast } from "../ui/Toast";
 import { Task } from "@/types";
-import {
-  DragDropContext,
-  Droppable,
-  DropResult,
-} from "@hello-pangea/dnd";
+import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd";
 import { Skeleton } from "../ui/Skeleton";
 import { useTasks } from "@/hooks/useTasks";
 import { reorderTasks } from "@/utils";
 import { TaskItem } from "./TaskItem";
 
-const Tasks: React.FC = ({ }) => {
+const Tasks: React.FC = ({}) => {
   const [title, setTitle] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [removingTaskId, setRemovingTaskId] = useState("");
-  const { tasksLoading, toggleTaskInDev, tasks, addTask, editTask, updateTasksOrder, removeTask } = useTasks();
+  const {
+    toggleTaskInDev,
+    tasks,
+    addTask,
+    editTask,
+    updateTasksOrder,
+    removeTask,
+  } = useTasks();
 
   const handleAdd = () => {
     if (!title.trim()) return;
@@ -36,14 +39,10 @@ const Tasks: React.FC = ({ }) => {
     const reordered = reorderTasks(
       tasks,
       result.source.index,
-      result.destination.index
+      result.destination.index,
     );
     updateTasksOrder(reordered);
   };
-
-  if (tasksLoading) {
-    return <Skeleton rows={5} height={40} />;
-  }
 
   return (
     <div className="bg-blue-100 p-4 rounded shadow">
@@ -77,7 +76,10 @@ const Tasks: React.FC = ({ }) => {
         </button>
       </div>
 
-      <DragDropContext onDragEnd={handleDragEnd} data-testid="drag-drop-context">
+      <DragDropContext
+        onDragEnd={handleDragEnd}
+        data-testid="drag-drop-context"
+      >
         <Droppable droppableId="todos">
           {(provided) => (
             <ul
@@ -91,7 +93,9 @@ const Tasks: React.FC = ({ }) => {
                   todo={todo}
                   index={index}
                   onTaskToggle={(taskId) => toggleTaskInDev(taskId)}
-                  onTaskUpdate={(taskId, newTitle) => editTask(taskId, newTitle)}
+                  onTaskUpdate={(taskId, newTitle) =>
+                    editTask(taskId, newTitle)
+                  }
                   onTaskRequestRemove={(taskId) => {
                     setRemovingTaskId(taskId);
                     setShowToast(true);

@@ -1,11 +1,7 @@
 "use client";
 
-import { ErrorBoundaryState } from "@/types";
-import React, { Component, ReactNode } from "react";
-
-interface ErrorBoundaryProps {
-  children: ReactNode;
-}
+import { ErrorBoundaryProps, ErrorBoundaryState } from "@/types";
+import React, { Component } from "react";
 
 export class ErrorBoundary extends Component<
   ErrorBoundaryProps,

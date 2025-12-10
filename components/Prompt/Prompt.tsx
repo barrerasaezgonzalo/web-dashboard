@@ -5,7 +5,17 @@ import { abrirGpt } from "@/utils";
 import { usePrompts } from "@/hooks/usePrompts";
 
 export const Prompt: React.FC = () => {
-  const { input, setInput, handleAdd, loading, handleCopy, parsedData, getTextOutput, showToast, setShowToast } = usePrompts();
+  const {
+    input,
+    setInput,
+    handleAdd,
+    loading,
+    handleCopy,
+    parsedData,
+    getTextOutput,
+    showToast,
+    setShowToast,
+  } = usePrompts();
 
   return (
     <div className="bg-amber-600 p-4 rounded shadow min-h-[100px] relative">
@@ -37,31 +47,34 @@ export const Prompt: React.FC = () => {
       </div>
 
       {parsedData && (
-        <><div className="mt-4 bg-gray-50 p-3 rounded shadow whitespace-pre-line">
-          <p>
-            <strong>Título:</strong> {parsedData.title}
-          </p>
-          <p>
-            <strong>Objetivo:</strong> {parsedData.objective}
-          </p>
-          <p>
-            <strong>Instrucciones:</strong> {parsedData.instructions}
-          </p>
-          <p>
-            <strong>Contexto:</strong> {parsedData.context}
-          </p>
-          <p>
-            <strong>Ejemplos:</strong> {parsedData.examples.join(", ")}
-          </p>
-          <p>
-            <strong>Resultado esperado:</strong> {parsedData.expected_output}
-          </p>
-        </div><button
-          className="w-1/2 bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors mt-4"
-          onClick={() => abrirGpt(getTextOutput(), setInput)}
-        >
+        <>
+          <div className="mt-4 bg-gray-50 p-3 rounded shadow whitespace-pre-line">
+            <p>
+              <strong>Título:</strong> {parsedData.title}
+            </p>
+            <p>
+              <strong>Objetivo:</strong> {parsedData.objective}
+            </p>
+            <p>
+              <strong>Instrucciones:</strong> {parsedData.instructions}
+            </p>
+            <p>
+              <strong>Contexto:</strong> {parsedData.context}
+            </p>
+            <p>
+              <strong>Ejemplos:</strong> {parsedData.examples.join(", ")}
+            </p>
+            <p>
+              <strong>Resultado esperado:</strong> {parsedData.expected_output}
+            </p>
+          </div>
+          <button
+            className="w-1/2 bg-blue-500 text-white p-2 rounded hover:bg-blue-600 transition-colors mt-4"
+            onClick={() => abrirGpt(getTextOutput(), setInput)}
+          >
             Enviar a GPT
-          </button></>
+          </button>
+        </>
       )}
 
       {showToast && (
@@ -74,4 +87,4 @@ export const Prompt: React.FC = () => {
   );
 };
 
-export default Prompt
+export default Prompt;

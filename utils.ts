@@ -47,10 +47,7 @@ export function parsePromptResponse(raw: string): any {
     .trim();
 
   if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
-    cleaned = cleaned
-      .slice(1, -1)
-      .replace(/\\"/g, '"')
-      .replace(/\\n/g, "\n");
+    cleaned = cleaned.slice(1, -1).replace(/\\"/g, '"').replace(/\\n/g, "\n");
   }
 
   const startIndex = cleaned.indexOf("{");
@@ -66,7 +63,7 @@ export function parsePromptResponse(raw: string): any {
 export function reorderTasks(
   tasks: Task[],
   sourceIndex: number,
-  destinationIndex: number
+  destinationIndex: number,
 ): Task[] {
   const items = Array.from(tasks);
   const [movedItem] = items.splice(sourceIndex, 1);

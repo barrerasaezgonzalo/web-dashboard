@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { useData } from "@/hooks/useData";
 
 export const Notes: React.FC = () => {
-  const { note, setNote, getNote, saveNote } = useData();
+  const { note, setNote, saveNote } = useData();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
@@ -46,4 +46,4 @@ export const Notes: React.FC = () => {
   );
 };
 
-export default Notes
+export default Notes;

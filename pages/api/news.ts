@@ -1,11 +1,5 @@
-import { NewsArticle } from "@/types";
+import { News } from "@/types";
 import type { NextApiRequest, NextApiResponse } from "next";
-
-interface NewsData {
-  totalArticles: number;
-  articles: NewsArticle[];
-  _fallback?: boolean;
-}
 
 export default async function handler(
   req: NextApiRequest,
@@ -21,7 +15,7 @@ export default async function handler(
   res.status(200).json(noticias);
 }
 
-export async function getNews(apiKey: string): Promise<NewsData> {
+export async function getNews(apiKey: string): Promise<News> {
   try {
     const res = await fetch(
       `https://gnews.io/api/v4/top-headlines?category=technology&lang=es&country=cl&apikey=${apiKey}`,
