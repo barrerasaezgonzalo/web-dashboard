@@ -1,42 +1,28 @@
 "use client";
 
-import { formatCLP } from "@/utils";
-import { memo, useMemo } from "react";
+import { getIndicators, getTrend, mapSparklineData } from "@/utils";
+import { memo, useCallback, useMemo } from "react";
 import { LineChart, Line, ResponsiveContainer } from "recharts";
 import FinancialIndicator from "./FinancialIndicator";
 import { useFinancial } from "@/hooks/useFinancial";
-import { FinancialHistory } from "@/types";
 
-const Financial: React.FC = ({}) => {
+const Financial: React.FC = ({ }) => {
   const { financial } = useFinancial();
+  const indicators = useMemo(() => getIndicators(financial), [financial.history]);
+  const sparklineData = useMemo(() => mapSparklineData(financial.history), [financial.history]);
 
-  const indicators = [
-    { label: "Dólar", value: `$${financial.current.dolar}`, key: "dolar" },
-    { label: "UTM", value: formatCLP(financial.current.utm), key: "utm" },
-    { label: "BTC", value: formatCLP(financial.current.btc), key: "btc" },
-    { label: "ETH", value: formatCLP(financial.current.eth), key: "eth" },
-  ];
+  const getTrendMemo = useCallback(
+    (key: "dolar" | "utm" | "btc" | "eth") => getTrend(financial.history, key),
+    [financial.history]
+  );
 
-  const sparklineData = useMemo(() => {
-    return financial.history.map((f: FinancialHistory) => ({
-      date: f.created_at,
-      dolar: f.dolar,
-      utm: f.utm,
-      btc: f.btc,
-      eth: f.eth,
-    }));
-  }, [financial.history]);
-
-  const getTrend = (key: "dolar" | "utm" | "btc" | "eth") => {
-    const lastHistory = financial.history[financial.history.length - 1];
-    const prevHistory = financial.history[financial.history.length - 2];
-
-    if (!prevHistory) return null;
-    if (lastHistory[key] > prevHistory[key]) return "up";
-    if (lastHistory[key] < prevHistory[key]) return "down";
-    return "same";
-  };
-
+  const SparklineChart: React.FC<{ data: any[]; dataKey: string }> = memo(({ data, dataKey }) => (
+    <ResponsiveContainer width="100%" height="100%">
+      <LineChart data={data}>
+        <Line type="monotone" dataKey={dataKey} stroke="#3b82f6" strokeWidth={2} dot={false} />
+      </LineChart>
+    </ResponsiveContainer>
+  ));
   return (
     <div className="bg-blue-50 text-black p-4 rounded-lg shadow-md">
       <h2 className="text-xl font-bold mb-4 border-b pb-2">
@@ -51,21 +37,12 @@ const Financial: React.FC = ({}) => {
             <FinancialIndicator
               label={ind.label}
               value={ind.value}
-              trend={getTrend(ind.key as any)}
+              trend={getTrendMemo(ind.key as any)}
             />
 
             <div className="h-12">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={sparklineData}>
-                  <Line
-                    type="monotone"
-                    dataKey={ind.key}
-                    stroke="#3b82f6"
-                    strokeWidth={2}
-                    dot={false}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+              <SparklineChart data={sparklineData} dataKey={ind.key} />
+
             </div>
           </div>
         ))}

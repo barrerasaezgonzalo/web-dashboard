@@ -11,13 +11,11 @@ import { User } from "@/components/User/User";
 import { BackGround } from "@/components/ui/BackGround";
 import { PerformanceProvider } from "@/context/PerformanceContext";
 import { WebVitals } from "@/components/WebVitals/WebVitals";
-import { Quiz } from "@/components/Quiz/Quiz";
 import { TaskProvider } from "@/context/TasksContext";
 import { PerformancePanel } from "@/components/PerformancePanel/PerformancePanel";
 import { Wheater } from "@/components/Wheater/Wheater";
 import { FinancialProvider } from "@/context/FinancialContext";
 import { NewsProvider } from "@/context/NewsContext";
-import { DataProvider } from "@/context/DataContext";
 import { useEffect, useState } from "react";
 import { useData } from "@/hooks/useData";
 
@@ -74,9 +72,7 @@ export const App: React.FC = () => {
                 </NewsProvider>
               </ErrorBoundary>
 
-              <ErrorBoundary>
-                <Gpt />
-              </ErrorBoundary>
+              
             </div>
 
             {/* Column 2 */}
@@ -107,10 +103,9 @@ export const App: React.FC = () => {
               </ErrorBoundary>
 
               <ErrorBoundary>
-                <DataProvider>
-                  <Quiz />
-                </DataProvider>
+                <Gpt />
               </ErrorBoundary>
+          
             </div>
 
             {/* Column 4 */}

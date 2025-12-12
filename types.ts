@@ -1,8 +1,8 @@
 import { ReactNode } from "react";
 
 export interface FinancialHistory {
-  id: string;
-  created_at: string;
+  id?: string;
+  created_at?: string;
   dolar: number;
   utm: number;
   btc: number;
@@ -25,6 +25,12 @@ export interface Financial {
     eth: number;
   }[];
   _fallback?: boolean;
+}
+
+export interface Indicator {
+  label: string;
+  value: string;
+  key: keyof FinancialHistory;
 }
 
 export interface FinancialIndicatorProps {
@@ -55,9 +61,6 @@ export interface News extends NewsResponse {
   _fallback?: boolean;
 }
 
-export interface QuestionType {
-  question: string;
-}
 
 export interface Task {
   id: string;
@@ -84,7 +87,7 @@ export interface ToastProps {
 }
 
 export interface TaskItemProps {
-  todo: Task;
+  task: Task;
   index: number;
   onTaskToggle: (taskId: string) => void;
   onTaskUpdate: (taskId: string, newTitle: string) => void;
@@ -102,4 +105,47 @@ export interface WheaterResponse {
 export interface ClimaData {
   temperatura: string;
   _fallback?: boolean;
+}
+
+export interface AutoTextareaProps {
+  value: string;
+  onChange: (v: string) => void;
+  rows?: number;
+}
+
+export interface ActionButtonsProps {
+  loading: boolean;
+  onAdd: () => void;
+  onCopy: () => void;
+}
+
+export interface ParsedData {
+  title: string;
+  objective: string;
+  instructions: string;
+  context: string;
+  examples: string[];
+  expected_output: string;
+}
+
+
+export interface ParsedDataViewProps {
+  data: ParsedData;
+  onEnviar: () => void;
+}
+
+export interface PromptData {
+  title: string;
+  objective: string;
+  instructions: string;
+  context: string;
+  examples: string[];
+  expected_output: string;
+}
+
+export interface TaskInputProps {
+  title: string;
+  setTitle: (v: string) => void;
+  onAdd: () => void;
+  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }

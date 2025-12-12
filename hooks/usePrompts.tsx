@@ -1,10 +1,11 @@
-import { parsePromptResponse } from "@/utils";
+import { formatPromptOutput, parsePromptResponse } from "@/utils";
 import { useState } from "react";
 import { useData } from "./useData";
+import { PromptData } from "@/types";
 
 export const usePrompts = () => {
   const [input, setInput] = useState<string>("");
-  const [parsedData, setParsedData] = useState<any | null>(null);
+  const [parsedData, setParsedData] = useState<PromptData | null>(null);
   const [loading, setLoading] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const { getPrompt } = useData();
@@ -33,29 +34,8 @@ export const usePrompts = () => {
     }
   };
 
-  const getTextOutput = (): string => {
-    if (!parsedData) return "";
+  const getTextOutput = () => parsedData ? formatPromptOutput(parsedData) : "";
 
-    return (
-      "Título: " +
-      parsedData.title?.trim() +
-      "\n" +
-      "Objetivo: " +
-      parsedData.objective?.trim() +
-      "\n" +
-      "Instrucciones: " +
-      parsedData.instructions?.trim() +
-      "\n" +
-      "Contexto: " +
-      parsedData.context?.trim() +
-      "\n" +
-      "Ejemplos: " +
-      parsedData.examples?.map((e: string) => e.trim()).join(", ") +
-      "\n" +
-      "Resultado esperado: " +
-      parsedData.expected_output?.trim()
-    );
-  };
 
   const handleCopy = () => {
     if (!parsedData) return;

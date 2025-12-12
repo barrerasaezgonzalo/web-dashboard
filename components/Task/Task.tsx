@@ -2,14 +2,11 @@
 
 import { useState, memo } from "react";
 import { Toast } from "../ui/Toast";
-import { Task } from "@/types";
-import { DragDropContext, Droppable, DropResult } from "@hello-pangea/dnd";
-import { Skeleton } from "../ui/Skeleton";
 import { useTasks } from "@/hooks/useTasks";
-import { reorderTasks } from "@/utils";
-import { TaskItem } from "./TaskItem";
+import { TaskInput } from "./TaskInput";
+import { TaskList } from "./TaskList";
 
-const Tasks: React.FC = ({}) => {
+const Tasks: React.FC = () => {
   const [title, setTitle] = useState("");
   const [showToast, setShowToast] = useState(false);
   const [removingTaskId, setRemovingTaskId] = useState("");
@@ -28,20 +25,8 @@ const Tasks: React.FC = ({}) => {
     setTitle("");
   };
 
-  const handleAddTitle = (e: { key: string }) => {
-    if (e.key === "Enter" && title.trim()) {
-      handleAdd();
-    }
-  };
-
-  const handleDragEnd = (result: DropResult) => {
-    if (!result.destination) return;
-    const reordered = reorderTasks(
-      tasks,
-      result.source.index,
-      result.destination.index,
-    );
-    updateTasksOrder(reordered);
+  const handleAddTitle = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && title.trim()) handleAdd();
   };
 
   return (
@@ -59,54 +44,23 @@ const Tasks: React.FC = ({}) => {
 
       <h2 className="text-xl font-bold mb-4 border-b">Lista de pendientes</h2>
 
-      <div className="flex gap-2 mt-2">
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          onKeyDown={handleAddTitle}
-          type="text"
-          placeholder="Agregar nueva tarea"
-          className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
-        />
-        <button
-          onClick={handleAdd}
-          className="bg-blue-500 text-white px-4 rounded hover:bg-blue-600"
-        >
-          +
-        </button>
-      </div>
+      <TaskInput
+        title={title}
+        setTitle={setTitle}
+        onAdd={handleAdd}
+        onKeyDown={handleAddTitle}
+      />
 
-      <DragDropContext
-        onDragEnd={handleDragEnd}
-        data-testid="drag-drop-context"
-      >
-        <Droppable droppableId="todos">
-          {(provided) => (
-            <ul
-              className="mt-4"
-              {...provided.droppableProps}
-              ref={provided.innerRef}
-            >
-              {tasks?.map((todo: Task, index) => (
-                <TaskItem
-                  key={todo.id || index}
-                  todo={todo}
-                  index={index}
-                  onTaskToggle={(taskId) => toggleTaskInDev(taskId)}
-                  onTaskUpdate={(taskId, newTitle) =>
-                    editTask(taskId, newTitle)
-                  }
-                  onTaskRequestRemove={(taskId) => {
-                    setRemovingTaskId(taskId);
-                    setShowToast(true);
-                  }}
-                />
-              ))}
-              {provided.placeholder}
-            </ul>
-          )}
-        </Droppable>
-      </DragDropContext>
+      <TaskList
+        tasks={tasks}
+        toggleTaskInDev={toggleTaskInDev}
+        editTask={editTask}
+        onTaskRequestRemove={(id) => {
+          setRemovingTaskId(id);
+          setShowToast(true);
+        }}
+        updateTasksOrder={updateTasksOrder}
+      />
     </div>
   );
 };

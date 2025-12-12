@@ -1,7 +1,7 @@
 import { FinancialIndicatorProps } from "@/types";
 import { memo } from "react";
 
-const FinancialIndicator: React.FC<FinancialIndicatorProps> = ({
+  const FinancialIndicator: React.FC<FinancialIndicatorProps> = ({
   label,
   value,
   trend,

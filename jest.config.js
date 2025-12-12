@@ -3,7 +3,16 @@ module.exports = {
   testEnvironment: "jest-environment-jsdom",
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/$1",
-    "\\.(css|less|sass|scss)$": "<rootDir>/__mocks__/styleMock.js",
+    "^app/(.*)$": "<rootDir>/app/$1",
+    "^components/(.*)$": "<rootDir>/components/$1",
+    "^context/(.*)$": "<rootDir>/context/$1",
+    "^hooks/(.*)$": "<rootDir>/hooks/$1",
+    "^lib/(.*)$": "<rootDir>/lib/$1",
+    "^pages/(.*)$": "<rootDir>/pages/$1",
+    "\\.(css|less|sass|scss)$": "<rootDir>/__mocks__/styleMock.js"
+  },
+  transform: {
+    "^.+\\.(ts|tsx)$": "ts-jest",
   },
   setupFilesAfterEnv: ["<rootDir>/jest.setup.ts"],
   testMatch: ["**/?(*.)+(test).[jt]s?(x)"],

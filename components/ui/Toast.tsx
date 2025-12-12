@@ -1,6 +1,7 @@
 import type { ToastProps } from "@/types";
+import { memo } from "react";
 
-export const Toast: React.FC<ToastProps> = ({
+export const ToastConponet: React.FC<ToastProps> = ({
   message,
   onConfirm,
   onCancel,
@@ -47,3 +48,4 @@ export const Toast: React.FC<ToastProps> = ({
     </>
   );
 };
+export const Toast = memo(ToastConponet);

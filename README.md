@@ -2,7 +2,7 @@
 
 ## Description
 
-This project is a **personal dashboard** built with **React 18 and Next.js 13**. It is designed to be highly interactive, efficient, and modular, displaying **google search, top sites, financial indicators, tasks, notes, news, motivational phrases, AI-generated predictions, AI prompts and more**.
+This project is a **personal dashboard** built with **React 18 and Next.js 13**. It is designed to be highly interactive, efficient, and modular, displaying **google search, , financial indicators, tasks, notes, news, AI-generated predictions, AI prompts and more**.
 
 The main goal is to showcase **React skills**, including performance optimization, complex state management, lazy loading, memoization, API integrations, and real-time database persistence.
 

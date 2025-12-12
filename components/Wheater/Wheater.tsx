@@ -1,39 +1,26 @@
 "use client";
 
 import { useData } from "@/hooks/useData";
-import { useEffect, useState } from "react";
+import { formatFechaHora } from "@/utils";
+import { memo, useEffect, useState } from "react";
 
-export const Wheater: React.FC = () => {
+export const WheaterComponent: React.FC = () => {
   const { wheater } = useData();
   const [fecha, setFecha] = useState("Cargando...");
   const [hora, setHora] = useState("Cargando...");
 
   useEffect(() => {
-    function actualizarFechaHora() {
-      const ahora = new Date();
+  function actualizar() {
+    const ahora = new Date();
+    const { fecha, hora } = formatFechaHora(ahora);
+    setFecha(fecha);
+    setHora(hora);
+  }
 
-      setFecha(
-        ahora.toLocaleDateString("es-CL", {
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        }),
-      );
-
-      setHora(
-        ahora.toLocaleTimeString("es-CL", {
-          hour: "2-digit",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: false,
-        }),
-      );
-    }
-
-    actualizarFechaHora();
-    const intervalo = setInterval(actualizarFechaHora, 1000);
-    return () => clearInterval(intervalo);
-  }, []);
+  actualizar();
+  const intervalo = setInterval(actualizar, 1000);
+  return () => clearInterval(intervalo);
+}, []);
 
   if (!wheater) return null;
 
@@ -45,3 +32,5 @@ export const Wheater: React.FC = () => {
     </div>
   );
 };
+
+export const Wheater = memo(WheaterComponent);

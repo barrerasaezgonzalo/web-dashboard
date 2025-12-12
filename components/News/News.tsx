@@ -4,25 +4,15 @@ import { memo } from "react";
 
 const News: React.FC = ({}) => {
   const { news } = useNews();
-
-  if (!news.articles || news.articles.length === 0) {
-    return (
-      <div className="bg-white p-4 rounded shadow">
-        <h2 className="text-xl font-bold mb-4 border-b">Noticias</h2>
-        <p className="text-gray-500">
-          No hay noticias disponibles en este momento.
-        </p>
-      </div>
-    );
-  }
+ 
   return (
     <div
-      className={`bg-blue-50 text-black p-4 rounded shadow min-h-[500px] overflow-x-auto`}
+      className={`bg-blue-50 text-black p-4 rounded shadow min-h-[600px] overflow-x-auto`}
     >
       <h2 className="text-xl font-bold mb-4 border-b border-blue-300">
         Noticias
       </h2>
-      <ul className="h-[400px] overflow-y-auto">
+      <ul className="h-[500px] overflow-y-auto">
         {news.articles.map((article: NewsArticle, index: number) => (
           <li
             key={index}

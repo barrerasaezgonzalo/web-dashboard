@@ -1,22 +1,16 @@
 "use client";
 
+import { useAutoResize } from "@/hooks/useAutoResize";
 import { abrirGpt } from "@/utils";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 export const Gpt: React.FC = () => {
   const [pregunta, setPregunta] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-
-  useEffect(() => {
-    if (textareaRef.current) {
-      const textarea = textareaRef.current;
-      textarea.style.height = "auto";
-      textarea.style.height = `${textarea.scrollHeight}px`;
-    }
-  }, [pregunta]);
+  useAutoResize(textareaRef, pregunta);
 
   return (
-    <div className={`bg-amber-600 text-black p-4 rounded shadow min-h-[300px]`}>
+    <div className="bg-amber-600 text-black p-4 rounded shadow min-h-[300px]">
       <h2 className="text-xl font-bold mb-4 border-b">Consulta a AI</h2>
       <textarea
         ref={textareaRef}
