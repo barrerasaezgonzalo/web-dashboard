@@ -4,7 +4,7 @@ import { memo } from "react";
 
 const News: React.FC = ({}) => {
   const { news } = useNews();
- 
+
   return (
     <div
       className={`bg-blue-50 text-black p-4 rounded shadow min-h-[600px] overflow-x-auto`}

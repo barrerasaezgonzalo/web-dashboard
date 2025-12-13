@@ -10,17 +10,17 @@ export const WheaterComponent: React.FC = () => {
   const [hora, setHora] = useState("Cargando...");
 
   useEffect(() => {
-  function actualizar() {
-    const ahora = new Date();
-    const { fecha, hora } = formatFechaHora(ahora);
-    setFecha(fecha);
-    setHora(hora);
-  }
+    function actualizar() {
+      const ahora = new Date();
+      const { fecha, hora } = formatFechaHora(ahora);
+      setFecha(fecha);
+      setHora(hora);
+    }
 
-  actualizar();
-  const intervalo = setInterval(actualizar, 1000);
-  return () => clearInterval(intervalo);
-}, []);
+    actualizar();
+    const intervalo = setInterval(actualizar, 1000);
+    return () => clearInterval(intervalo);
+  }, []);
 
   if (!wheater) return null;
 

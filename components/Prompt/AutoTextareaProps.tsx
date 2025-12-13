@@ -2,7 +2,11 @@ import { useAutoResize } from "@/hooks/useAutoResize";
 import { AutoTextareaProps } from "@/types";
 import { useRef } from "react";
 
-export const AutoTextarea: React.FC<AutoTextareaProps> = ({ value, onChange, rows = 6 }) => {
+export const AutoTextarea: React.FC<AutoTextareaProps> = ({
+  value,
+  onChange,
+  rows = 6,
+}) => {
   const ref = useRef<HTMLTextAreaElement | null>(null);
   useAutoResize(ref, value);
 

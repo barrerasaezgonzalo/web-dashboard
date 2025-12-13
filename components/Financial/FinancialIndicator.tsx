@@ -1,27 +1,48 @@
-import { FinancialIndicatorProps } from "@/types";
-import { memo } from "react";
+import { FinancialIndicatorProps, Trend } from "@/types";
 
-  const FinancialIndicator: React.FC<FinancialIndicatorProps> = ({
+function getTrendUI(trend: Trend) {
+  switch (trend) {
+    case "up":
+      return {
+        color: "text-green-600",
+        label: "Tendencia en alta",
+      };
+    case "down":
+      return {
+        color: "text-red-600",
+        label: "Tendencia en baja",
+      };
+    case "flat":
+      return {
+        color: "text-gray-500",
+        label: "Lateral",
+      };
+    default:
+      return {
+        color: "text-gray-400",
+        label: "Sin datos",
+      };
+  }
+}
+
+const FinancialIndicator: React.FC<FinancialIndicatorProps> = ({
   label,
   value,
   trend,
 }) => {
-  const trendSymbol = trend === "up" ? "↑" : trend === "down" ? "↓" : null;
-  const trendColor =
-    trend === "up"
-      ? "text-green-600"
-      : trend === "down"
-        ? "text-red-600"
-        : "text-gray-600";
+  const { color, label: trendLabel } = getTrendUI(trend);
 
   return (
-    <div className="flex justify-between items-center mb-2 flex-col">
-      <span className="font-semibold text-gray-700">{label}</span>
-      <span className={`font-bold ${trendColor}`}>
-        {value} {trendSymbol}
+    <div className="flex flex-col gap-1">
+      <span className="text-sm text-gray-600">{label}</span>
+
+      <span className="text-lg font-semibold">
+        {value.toLocaleString("es-CL")}
       </span>
+
+      <span className={`text-xs font-medium ${color}`}>{trendLabel}</span>
     </div>
   );
 };
 
-export default memo(FinancialIndicator);
+export default FinancialIndicator;

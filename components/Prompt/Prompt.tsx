@@ -37,9 +37,16 @@ export const PromptComponent: React.FC = () => {
 
       <ActionButtons loading={loading} onAdd={handleAdd} onCopy={handleCopy} />
 
-      {parsedData && <ParsedDataView data={parsedData} onEnviar={handleEnviar} />}
-      
-      {showToast && (<Toast message="¡Texto copiado al portapapeles!" onConfirm={() => setShowToast(false)} />)}
+      {parsedData && (
+        <ParsedDataView data={parsedData} onEnviar={handleEnviar} />
+      )}
+
+      {showToast && (
+        <Toast
+          message="¡Texto copiado al portapapeles!"
+          onConfirm={() => setShowToast(false)}
+        />
+      )}
     </div>
   );
 };

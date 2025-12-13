@@ -71,8 +71,6 @@ export const App: React.FC = () => {
                   <News />
                 </NewsProvider>
               </ErrorBoundary>
-
-              
             </div>
 
             {/* Column 2 */}
@@ -105,7 +103,6 @@ export const App: React.FC = () => {
               <ErrorBoundary>
                 <Gpt />
               </ErrorBoundary>
-          
             </div>
 
             {/* Column 4 */}

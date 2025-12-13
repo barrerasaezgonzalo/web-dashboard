@@ -1,7 +1,10 @@
 import { ActionButtonsProps } from "@/types";
 
-
-export const ActionButtons: React.FC<ActionButtonsProps> = ({ loading, onAdd, onCopy }) => (
+export const ActionButtons: React.FC<ActionButtonsProps> = ({
+  loading,
+  onAdd,
+  onCopy,
+}) => (
   <div className="flex gap-2 mt-2">
     <button
       onClick={onAdd}

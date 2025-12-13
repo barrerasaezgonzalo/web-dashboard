@@ -29,15 +29,27 @@ export interface Financial {
 
 export interface Indicator {
   label: string;
-  value: string;
-  key: keyof FinancialHistory;
+  value: number;
+  key: "dolar" | "utm" | "btc" | "eth";
 }
+
+export type Trend = "up" | "down" | "flat" | null;
 
 export interface FinancialIndicatorProps {
   label: string;
-  value: string;
-  trend: "up" | "down" | "same" | null;
+  value: number;
+  trend: Trend;
 }
+
+export interface FinancialHistoryPoint {
+  created_at: string;
+  dolar: number;
+  utm: number;
+  btc: number;
+  eth: number;
+}
+
+export type OrderedFinancialHistory = FinancialHistoryPoint[];
 
 export interface NewsSource {
   name: string;
@@ -60,7 +72,6 @@ export interface NewsResponse {
 export interface News extends NewsResponse {
   _fallback?: boolean;
 }
-
 
 export interface Task {
   id: string;
@@ -127,7 +138,6 @@ export interface ParsedData {
   examples: string[];
   expected_output: string;
 }
-
 
 export interface ParsedDataViewProps {
   data: ParsedData;

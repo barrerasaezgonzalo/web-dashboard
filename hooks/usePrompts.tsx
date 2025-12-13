@@ -34,8 +34,8 @@ export const usePrompts = () => {
     }
   };
 
-  const getTextOutput = () => parsedData ? formatPromptOutput(parsedData) : "";
-
+  const getTextOutput = () =>
+    parsedData ? formatPromptOutput(parsedData) : "";
 
   const handleCopy = () => {
     if (!parsedData) return;

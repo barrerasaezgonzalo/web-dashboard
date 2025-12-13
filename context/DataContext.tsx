@@ -26,7 +26,7 @@ interface DataProviderProps {
 export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
   const [prompt, setPrompt] = useState("");
   const [user] = useState("Gonza");
-  const [note, setNote] = useState<string>("");  
+  const [note, setNote] = useState<string>("");
   const [wheater, setWheather] = useState<WheaterResponse | null>(null);
 
   const getPrompt = async (input?: string): Promise<string | null> => {

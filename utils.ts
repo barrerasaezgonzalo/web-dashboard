@@ -1,4 +1,12 @@
-import { Financial, FinancialHistory, Indicator, PromptData, Task } from "./types";
+import {
+  Financial,
+  FinancialHistory,
+  Indicator,
+  OrderedFinancialHistory,
+  PromptData,
+  Task,
+  Trend,
+} from "./types";
 
 export const formatCLP = (valor: number | string) => {
   return new Intl.NumberFormat("es-CL", {
@@ -71,18 +79,17 @@ export function reorderTasks(
   return items;
 }
 
-
 export function getIndicators(financial: Financial): Indicator[] {
   return [
-    { label: "Dólar", value: `$${financial.current.dolar}`, key: "dolar" },
-    { label: "UTM", value: formatCLP(financial.current.utm), key: "utm" },
-    { label: "BTC", value: formatCLP(financial.current.btc), key: "btc" },
-    { label: "ETH", value: formatCLP(financial.current.eth), key: "eth" },
+    { label: "Dólar", value: financial.current.dolar, key: "dolar" },
+    { label: "UTM", value: financial.current.utm, key: "utm" },
+    { label: "BTC", value: financial.current.btc, key: "btc" },
+    { label: "ETH", value: financial.current.eth, key: "eth" },
   ];
-};
+}
 
 export function mapSparklineData(history: FinancialHistory[]) {
-  return history.map(f => ({
+  return history.map((f) => ({
     date: f.created_at,
     dolar: f.dolar,
     utm: f.utm,
@@ -92,22 +99,37 @@ export function mapSparklineData(history: FinancialHistory[]) {
 }
 
 export type TrendKey = "dolar" | "utm" | "btc" | "eth";
+export type TrendResult = "up" | "down" | "flat";
 
-export function getTrend(history: FinancialHistory[], key: TrendKey): "up" | "down" | "same" | null {
-  if (history.length < 2) return null;
+export function getTrend(
+  history: OrderedFinancialHistory,
+  key: TrendKey,
+): Trend {
+  if (!history || history.length < 2) return null;
 
-  const lastHistory = history[history.length - 1];
-  const prevHistory = history[history.length - 2];
+  if (!history[0]?.created_at || !history[history.length - 1]?.created_at) {
+    console.warn("getTrend: history sin created_at válido");
+    return null;
+  }
 
-  if (lastHistory[key] > prevHistory[key]) return "up";
-  if (lastHistory[key] < prevHistory[key]) return "down";
-  return "same";
+  const first = history[0][key];
+  const last = history[history.length - 1][key];
+
+  if (first === 0) return null;
+
+  const variation = (last - first) / first;
+  const THRESHOLD = 0.01; // 1%
+
+  if (variation > THRESHOLD) return "up";
+  if (variation < -THRESHOLD) return "down";
+
+  return "flat";
 }
 
 export function handleTextChange(
   event: React.ChangeEvent<HTMLTextAreaElement>,
   setNote: (v: string) => void,
-  saveNote: (v: string) => void
+  saveNote: (v: string) => void,
 ) {
   const value = event.target.value;
   setNote(value);
@@ -136,6 +158,13 @@ export function formatPromptOutput(data: PromptData) {
   Objetivo: ${data.objective.trim()}
   Instrucciones: ${data.instructions.trim()}
   Contexto: ${data.context.trim()}
-  Ejemplos: ${data.examples.map(e => e.trim()).join(", ")}
+  Ejemplos: ${data.examples.map((e) => e.trim()).join(", ")}
   Resultado esperado: ${data.expected_output.trim()}`;
 }
+
+export const roundToThousands = (number: number) => {
+  if (typeof number !== "number" || !isFinite(number)) {
+    return 0;
+  }
+  return Math.round(number / 1000) * 1000;
+};

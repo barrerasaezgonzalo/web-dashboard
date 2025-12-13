@@ -21,18 +21,20 @@ const TaskListComponent: React.FC<TaskListProps> = ({
   onTaskRequestRemove,
   updateTasksOrder,
 }) => {
+  const handleDragEnd = useCallback(
+    (result: DropResult) => {
+      if (!result.destination) return;
 
-  const handleDragEnd = useCallback((result: DropResult) => {
-    if (!result.destination) return;
+      const reordered = reorderTasks(
+        tasks,
+        result.source.index,
+        result.destination.index,
+      );
 
-    const reordered = reorderTasks(
-      tasks,
-      result.source.index,
-      result.destination.index
-    );
-
-    updateTasksOrder(reordered);
-  }, [tasks, updateTasksOrder]);
+      updateTasksOrder(reordered);
+    },
+    [tasks, updateTasksOrder],
+  );
 
   return (
     <DragDropContext onDragEnd={handleDragEnd}>

@@ -1,7 +1,10 @@
 // hooks/useAutoResize.ts
 import { useEffect, RefObject } from "react";
 
-export function useAutoResize(ref: RefObject<HTMLTextAreaElement | null>, value: string) {
+export function useAutoResize(
+  ref: RefObject<HTMLTextAreaElement | null>,
+  value: string,
+) {
   useEffect(() => {
     if (ref.current) {
       const textarea = ref.current;

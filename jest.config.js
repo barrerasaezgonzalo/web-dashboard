@@ -9,7 +9,7 @@ module.exports = {
     "^hooks/(.*)$": "<rootDir>/hooks/$1",
     "^lib/(.*)$": "<rootDir>/lib/$1",
     "^pages/(.*)$": "<rootDir>/pages/$1",
-    "\\.(css|less|sass|scss)$": "<rootDir>/__mocks__/styleMock.js"
+    "\\.(css|less|sass|scss)$": "<rootDir>/__mocks__/styleMock.js",
   },
   transform: {
     "^.+\\.(ts|tsx)$": "ts-jest",
