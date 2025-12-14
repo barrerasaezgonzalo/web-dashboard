@@ -54,7 +54,7 @@ const Financial: React.FC = ({}) => {
               trend={getTrendMemo(ind.key)}
             />
 
-            <div className="h-12">
+            <div className="h-12" data-testid={`sparkline-${ind.key}`}>
               <SparklineChart data={sparklineData} dataKey={ind.key} />
             </div>
           </div>
