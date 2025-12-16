@@ -1,43 +1,44 @@
 import "@testing-library/jest-dom";
 import React, { useContext } from "react";
 import { render } from "@testing-library/react";
-import { useTasks } from "@/hooks/useTasks";
-import { TaskProvider } from "@/context/TasksContext";
+import { useData } from "@/hooks/useData";
+import { DataProvider } from "@/context/DataContext";
 
-describe("useTasks hook", () => {
-  test("lanza error cuando se usa fuera del TaskProvider", () => {
+describe("useData hook", () => {
+  test("lanza error cuando se usa fuera del DataProvider", () => {
     const TestComponent = () => {
       // Esto debería lanzar
-      useTasks();
+      useData();
       return null;
     };
 
     expect(() => render(<TestComponent />)).toThrow(
-      "useTasks debe ser usado dentro de un TasksProvider",
+      "useData debe ser usado dentro de un DataProvider",
     );
   });
 
-  test("devuelve el contexto correctamente dentro del TaskProvider", () => {
+  test("devuelve el contexto correctamente dentro del DataProvider", () => {
     let contextValue: any;
 
     const TestComponent = () => {
-      contextValue = useTasks();
+      contextValue = useData();
       return null;
     };
 
     render(
-      <TaskProvider>
+      <DataProvider>
         <TestComponent />
-      </TaskProvider>,
+      </DataProvider>,
     );
 
-    expect(contextValue).toHaveProperty("tasks");
-    expect(contextValue).toHaveProperty("tasksLoading");
-    expect(contextValue).toHaveProperty("getTasks");
-    expect(contextValue).toHaveProperty("addTask");
-    expect(contextValue).toHaveProperty("toggleTaskInDev");
-    expect(contextValue).toHaveProperty("removeTask");
-    expect(contextValue).toHaveProperty("editTask");
-    expect(contextValue).toHaveProperty("updateTasksOrder");
+    expect(contextValue).toHaveProperty("prompt");
+    expect(contextValue).toHaveProperty("getPrompt");
+    expect(contextValue).toHaveProperty("user");
+    expect(contextValue).toHaveProperty("note");
+    expect(contextValue).toHaveProperty("setNote");
+    expect(contextValue).toHaveProperty("saveNote");
+    expect(contextValue).toHaveProperty("getNote");
+    expect(contextValue).toHaveProperty("setWheather");
+    expect(contextValue).toHaveProperty("wheater");
   });
 });

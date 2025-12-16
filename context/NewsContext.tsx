@@ -18,16 +18,24 @@ interface NewsProviderProps {
   children: ReactNode;
 }
 
+export const canAccessBrowserStorage = (win: unknown): boolean => {
+  return typeof win !== "undefined";
+};
+
+export const getBrowserWindow = () => {
+  return typeof window !== "undefined" ? window : undefined;
+};
+
 export const NewsProvider: React.FC<NewsProviderProps> = ({ children }) => {
   const [news, setNews] = useState<News>({ totalArticles: 0, articles: [] });
   const [newsLoading, setNewsLoading] = useState(false);
   const [newsCache, setNewsCache] = useState<News | null>(null);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (!canAccessBrowserStorage(getBrowserWindow())) return;
 
-    const stored = localStorage.getItem("newsCache");
-    const storedTime = localStorage.getItem("newsCacheTime");
+    const stored = window.localStorage.getItem("newsCache");
+    const storedTime = window.localStorage.getItem("newsCacheTime");
 
     if (stored && storedTime) {
       const ahora = Date.now();
@@ -36,8 +44,8 @@ export const NewsProvider: React.FC<NewsProviderProps> = ({ children }) => {
         setNewsCache(data);
         setNews(data);
       } else {
-        localStorage.removeItem("newsCache");
-        localStorage.removeItem("newsCacheTime");
+        window.localStorage.removeItem("newsCache");
+        window.localStorage.removeItem("newsCacheTime");
       }
     }
   }, []);
@@ -46,8 +54,8 @@ export const NewsProvider: React.FC<NewsProviderProps> = ({ children }) => {
     setNewsLoading(true);
     try {
       if (typeof window !== "undefined") {
-        const cacheStr = localStorage.getItem("newsCache");
-        const cacheTimeStr = localStorage.getItem("newsCacheTime");
+        const cacheStr = window.localStorage.getItem("newsCache");
+        const cacheTimeStr = window.localStorage.getItem("newsCacheTime");
         const now = Date.now();
 
         if (cacheStr && cacheTimeStr && now < parseInt(cacheTimeStr)) {
@@ -63,8 +71,8 @@ export const NewsProvider: React.FC<NewsProviderProps> = ({ children }) => {
 
       setNews(data);
       if (typeof window !== "undefined") {
-        localStorage.setItem("newsCache", JSON.stringify(data));
-        localStorage.setItem(
+        window.localStorage.setItem("newsCache", JSON.stringify(data));
+        window.localStorage.setItem(
           "newsCacheTime",
           (Date.now() + 12 * 60 * 60 * 1000).toString(),
         ); // válida 12 horas
@@ -81,7 +89,7 @@ export const NewsProvider: React.FC<NewsProviderProps> = ({ children }) => {
 
   const bloquearNews12Horas = () => {
     if (typeof window !== "undefined") {
-      localStorage.setItem(
+      window.localStorage.setItem(
         "newsCacheTime",
         (Date.now() + 12 * 60 * 60 * 1000).toString(),
       ); // bloquea 12h

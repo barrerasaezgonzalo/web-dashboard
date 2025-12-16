@@ -47,7 +47,7 @@ const TaskListComponent: React.FC<TaskListProps> = ({
           >
             {tasks.map((task, index) => (
               <TaskItem
-                key={task.id || index}
+                key={task.id}
                 task={task}
                 index={index}
                 onTaskToggle={toggleTaskInDev}

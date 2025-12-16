@@ -4,6 +4,8 @@ import {
   NewsProvider,
   NewsContext,
   NewsContextType,
+  canAccessBrowserStorage,
+  getBrowserWindow,
 } from "@/context/NewsContext";
 
 global.fetch = jest.fn();
@@ -127,5 +129,15 @@ describe("NewsProvider", () => {
     });
 
     expect(localStorage.getItem).toHaveBeenCalledWith("newsCacheTime");
+  });
+
+  describe("canAccessBrowserStorage", () => {
+    test("retorna false cuando no hay window (SSR)", () => {
+      expect(canAccessBrowserStorage(undefined)).toBe(false);
+    });
+
+    test("retorna true cuando hay window", () => {
+      expect(canAccessBrowserStorage({})).toBe(true);
+    });
   });
 });

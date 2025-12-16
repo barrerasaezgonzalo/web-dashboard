@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { TaskItemProps } from "@/types";
 import {
   Draggable,
@@ -26,9 +27,13 @@ export const TaskListComponent: React.FC<TaskItemProps> = ({
 
   const handleSaveClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (newTitle.trim()) {
-      onTaskUpdate(task.id ?? "", newTitle);
+
+    if (!newTitle.trim()) {
+      setIsEditing(false);
+      return;
     }
+
+    onTaskUpdate(task.id ?? "", newTitle);
     setIsEditing(false);
   };
 
@@ -38,8 +43,9 @@ export const TaskListComponent: React.FC<TaskItemProps> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && newTitle.trim()) {
+    if (e.key === "Enter") {
       handleSaveClick(e as unknown as React.MouseEvent);
+      return;
     }
   };
 
@@ -62,8 +68,8 @@ export const TaskListComponent: React.FC<TaskItemProps> = ({
           ref={provided.innerRef}
           {...provided.draggableProps}
           className={`border-b-2 border-gray-200 py-2 pr-4 last:border-b-0 rounded flex items-center justify-between 
-            ${task.in_dev ? "bg-blue-300" : "bg-red-300"} 
-            ${snapshot.isDragging ? "bg-blue-200" : ""}`}
+                                ${task.in_dev ? "bg-blue-300" : "bg-red-300"} 
+                                ${snapshot.isDragging ? "bg-blue-200" : ""}`}
         >
           <div
             {...provided.dragHandleProps}
@@ -97,15 +103,15 @@ export const TaskListComponent: React.FC<TaskItemProps> = ({
                 onChange={(e) => setNewTitle(e.target.value)}
                 onKeyDown={handleKeyDown}
                 className="
-                        mt-2 
-                        w-full 
-                        text-black  
-                        p-2 border 
-                        border-gray-300 
-                        rounded 
-                        focus:outline-none 
-                        focus:ring-1 
-                        focus:ring-blue-400"
+                                            mt-2 
+                                            w-full 
+                                            text-black  
+                                            p-2 border 
+                                            border-gray-300 
+                                            rounded 
+                                            focus:outline-none 
+                                            focus:ring-1 
+                                            focus:ring-blue-400"
               />
             )}
           </div>

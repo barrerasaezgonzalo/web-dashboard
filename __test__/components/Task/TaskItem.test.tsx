@@ -1,5 +1,11 @@
 import "@testing-library/jest-dom";
-import { render, screen, fireEvent } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { TaskItem } from "@/components/Task/TaskItem";
 import { DragDropContext, Droppable } from "@hello-pangea/dnd";
 import { JSX } from "react";

@@ -99,4 +99,32 @@ describe("PromptComponent", () => {
       screen.getByText("¡Texto copiado al portapapeles!"),
     ).toBeInTheDocument();
   });
+
+  test("debe ejecutar setShowToast(false) al confirmar Toast", () => {
+    (usePrompts as jest.Mock).mockReturnValue({
+      input: "Valor inicial",
+      setInput: setInputMock,
+      handleAdd: handleAddMock,
+      loading: false,
+      handleCopy: handleCopyMock,
+      parsedData: null,
+      getTextOutput: getTextOutputMock,
+      showToast: true,
+      setShowToast: setShowToastMock,
+    });
+
+    render(<Prompt />);
+
+    // Buscar Toast con matcher flexible
+    const toast = screen.getByText((content) =>
+      content.includes("¡Texto copiado al portapapeles!"),
+    );
+    expect(toast).toBeInTheDocument();
+
+    // Encontrar botón dentro del Toast y click
+    const confirmButton = toast.querySelector("button");
+    fireEvent.click(confirmButton!);
+
+    expect(setShowToastMock).toHaveBeenCalledWith(false);
+  });
 });

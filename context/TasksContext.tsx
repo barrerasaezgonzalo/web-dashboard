@@ -9,7 +9,7 @@ import React, {
   useCallback,
 } from "react";
 
-interface TaskContextType {
+export interface TaskContextType {
   tasks: Task[];
   tasksLoading: boolean;
   getTasks: () => Promise<void>;
@@ -28,7 +28,7 @@ interface TaskProviderProps {
   children: ReactNode;
 }
 
-export const TaskProvider: React.FC<TaskProviderProps> = ({ children }) => {
+export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [tasksLoading, setTasksLoading] = useState(false);
   const [authData, setAuthData] = React.useState<string | null>(null);
@@ -95,6 +95,9 @@ export const TaskProvider: React.FC<TaskProviderProps> = ({ children }) => {
   };
 
   const toggleTaskInDev = async (id: string) => {
+    const taskBefore = tasks.find((t) => t.id === id);
+    if (!taskBefore) return;
+
     setTasks((prev) =>
       prev.map((task) =>
         task.id === id ? { ...task, in_dev: !task.in_dev } : task,
@@ -102,22 +105,18 @@ export const TaskProvider: React.FC<TaskProviderProps> = ({ children }) => {
     );
 
     try {
-      const task = tasks.find((t) => t.id === id);
-      if (!task) return;
-
       const res = await fetch("/api/tasks/edit", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, in_dev: !task.in_dev }),
+        body: JSON.stringify({ id, in_dev: !taskBefore.in_dev }),
       });
 
       if (!res.ok) throw new Error("Error actualizando task");
     } catch (error) {
       console.error("Error en toggleTaskInDev:", error);
-      // opcional: revertir el cambio local si falla
       setTasks((prev) =>
         prev.map((task) =>
-          task.id === id ? { ...task, in_dev: task.in_dev } : task,
+          task.id === id ? { ...task, in_dev: taskBefore.in_dev } : task,
         ),
       );
     }

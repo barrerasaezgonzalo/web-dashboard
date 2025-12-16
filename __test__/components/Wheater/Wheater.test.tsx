@@ -36,4 +36,14 @@ describe("Wheater Component", () => {
     expect(screen.getByText("13/12/2025")).toBeInTheDocument();
     expect(screen.getByText("20:30:00")).toBeInTheDocument();
   });
+
+  it("NO renderiza nada cuando wheater es null", () => {
+    (useData as jest.Mock).mockReturnValue({
+      wheater: null,
+    });
+
+    const { container } = render(<WheaterComponent />);
+
+    expect(container.firstChild).toBeNull();
+  });
 });

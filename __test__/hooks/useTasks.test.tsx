@@ -1,6 +1,6 @@
 import { renderHook } from "@testing-library/react";
 import { useTasks } from "@/hooks/useTasks";
-import { TaskProvider } from "@/context/TasksContext";
+import { TasksProvider } from "@/context/TasksContext";
 
 describe("useTasks hook", () => {
   it("lanza error si se usa fuera del TaskProvider", () => {
@@ -11,7 +11,7 @@ describe("useTasks hook", () => {
 
   it("puede ser usado dentro del TaskProvider", () => {
     const { result } = renderHook(() => useTasks(), {
-      wrapper: ({ children }) => <TaskProvider>{children}</TaskProvider>,
+      wrapper: ({ children }) => <TasksProvider>{children}</TasksProvider>,
     });
 
     // solo verificamos que devuelve un objeto con keys esperadas

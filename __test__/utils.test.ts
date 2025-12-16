@@ -11,6 +11,7 @@ import {
   handleTextChange,
   formatFechaHora,
   formatPromptOutput,
+  roundToThousands,
 } from "@/utils";
 import {
   Financial,
@@ -337,6 +338,15 @@ describe("Funciones de Utilidades", () => {
     ];
     const historyEmpty: OrderedFinancialHistory = [];
 
+    const historyInvalid: OrderedFinancialHistory = [
+      { created_at: "", dolar: 900, utm: 0, btc: 0, eth: 0 },
+      { created_at: undefined as any, dolar: 910, utm: 0, btc: 0, eth: 0 },
+    ];
+    const historyFirstZero: OrderedFinancialHistory = [
+      { created_at: "D1", dolar: 0, utm: 0, btc: 0, eth: 0 },
+      { created_at: "D2", dolar: 100, utm: 0, btc: 0, eth: 0 },
+    ];
+
     test("debe devolver 'up' si el valor más reciente es mayor que el anterior", () => {
       expect(getTrend(historyUp, "dolar")).toBe("up");
     });
@@ -349,9 +359,16 @@ describe("Funciones de Utilidades", () => {
       expect(getTrend(historySame, "dolar")).toBe("flat");
     });
 
+    test("debe devolver null si el historial tiene created_at inválido", () => {
+      expect(getTrend(historyInvalid, "dolar")).toBeNull();
+    });
+
     test("debe devolver null si el historial tiene menos de 2 elementos", () => {
       expect(getTrend(historySingle, "dolar")).toBeNull();
       expect(getTrend(historyEmpty, "dolar")).toBeNull();
+    });
+    test("debe devolver null si el primer valor de la key es 0", () => {
+      expect(getTrend(historyFirstZero, "dolar")).toBeNull();
     });
   });
 
@@ -420,5 +437,55 @@ describe("Funciones de Utilidades", () => {
       expect(result).toContain("Ejemplos: ");
       expect(result).not.toContain(", ");
     });
+  });
+});
+
+describe("roundToThousands", () => {
+  // Caso 1: Redondeo hacia arriba (ej. 1500 -> 2000)
+  test("debería redondear hacia el múltiplo de mil superior", () => {
+    // 1500 / 1000 = 1.5. Math.round(1.5) = 2. 2 * 1000 = 2000
+    expect(roundToThousands(1500)).toBe(2000);
+  });
+
+  // Caso 2: Redondeo hacia abajo (ej. 1499 -> 1000)
+  test("debería redondear hacia el múltiplo de mil inferior", () => {
+    // 1499 / 1000 = 1.499. Math.round(1.499) = 1. 1 * 1000 = 1000
+    expect(roundToThousands(1499)).toBe(1000);
+  });
+
+  // Caso 3: Número exacto (ej. 3000 -> 3000)
+  test("debería devolver el mismo número si ya es un múltiplo de mil", () => {
+    // 3000 / 1000 = 3. Math.round(3) = 3. 3 * 1000 = 3000
+    expect(roundToThousands(3000)).toBe(3000);
+  });
+
+  // Caso 4: Número grande
+  test("debería manejar números grandes correctamente", () => {
+    // 1234567 / 1000 = 1234.567. Math.round = 1235. 1235 * 1000 = 1235000
+    expect(roundToThousands(1234567)).toBe(1235000);
+  });
+
+  // Caso 5: Número pequeño / cero
+  test("debería devolver 0 para números muy pequeños o cero", () => {
+    expect(roundToThousands(0)).toBe(0);
+    expect(roundToThousands(499)).toBe(0); // Redondeo hacia abajo a 0
+    expect(roundToThousands(500)).toBe(1000); // Redondeo hacia arriba a 1000
+  });
+
+  // Caso 6: Manejo de no-números (debe devolver 0)
+  test("debería devolver 0 si el valor no es un número", () => {
+    // @ts-ignore: Intencionalmente pasando un tipo incorrecto para testear la validación
+    expect(roundToThousands("cien")).toBe(0);
+    // @ts-ignore: Intencionalmente pasando un tipo incorrecto
+    expect(roundToThousands(null)).toBe(0);
+    // @ts-ignore: Intencionalmente pasando un tipo incorrecto
+    expect(roundToThousands(undefined)).toBe(0);
+  });
+
+  // Caso 7: Manejo de valores no finitos (debe devolver 0)
+  test("debería devolver 0 si el valor no es finito (NaN, Infinity)", () => {
+    expect(roundToThousands(NaN)).toBe(0);
+    expect(roundToThousands(Infinity)).toBe(0);
+    expect(roundToThousands(-Infinity)).toBe(0);
   });
 });

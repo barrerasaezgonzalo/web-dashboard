@@ -11,7 +11,7 @@ import { User } from "@/components/User/User";
 import { BackGround } from "@/components/ui/BackGround";
 import { PerformanceProvider } from "@/context/PerformanceContext";
 import { WebVitals } from "@/components/WebVitals/WebVitals";
-import { TaskProvider } from "@/context/TasksContext";
+import { TasksProvider } from "@/context/TasksContext";
 import { PerformancePanel } from "@/components/PerformancePanel/PerformancePanel";
 import { Wheater } from "@/components/Wheater/Wheater";
 import { FinancialProvider } from "@/context/FinancialContext";
@@ -61,9 +61,9 @@ export const App: React.FC = () => {
             {/* Column 1 */}
             <div className={columnStyle}>
               <ErrorBoundary>
-                <TaskProvider>
+                <TasksProvider>
                   <User />
-                </TaskProvider>
+                </TasksProvider>
               </ErrorBoundary>
 
               <ErrorBoundary>
@@ -108,9 +108,9 @@ export const App: React.FC = () => {
             {/* Column 4 */}
             <div className={columnStyle}>
               <ErrorBoundary>
-                <TaskProvider>
+                <TasksProvider>
                   <Task />
-                </TaskProvider>
+                </TasksProvider>
               </ErrorBoundary>
             </div>
           </div>
