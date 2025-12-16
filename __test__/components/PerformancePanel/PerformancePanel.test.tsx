@@ -20,16 +20,16 @@ describe("PerformancePanel Component", () => {
     render(<PerformancePanel />);
 
     expect(
-      screen.getByText("LCP (Largest Contentful Paint): 1200 ms"),
+      screen.getByLabelText("Largest Contentful Paint: 1200 milisegundos"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("TTFB (Time to First Byte): 200 ms"),
+      screen.getByLabelText("Time to First Byte: 200 milisegundos"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("FCP (First Contentful Paint): 500 ms"),
+      screen.getByLabelText("First Contentful Paint: 500 milisegundos"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("CLS (Cumulative Layout Shift): 0.02 ms"),
+      screen.getByLabelText("Cumulative Layout Shift: 0.02"),
     ).toBeInTheDocument();
   });
 
@@ -44,16 +44,16 @@ describe("PerformancePanel Component", () => {
     render(<PerformancePanel />);
 
     expect(
-      screen.getByText("LCP (Largest Contentful Paint): Cargando..."),
+      screen.getByLabelText("Largest Contentful Paint: Cargando milisegundos"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("TTFB (Time to First Byte): Cargando..."),
+      screen.getByLabelText("Time to First Byte: Cargando milisegundos"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("FCP (First Contentful Paint): Cargando..."),
+      screen.getByLabelText("First Contentful Paint: Cargando milisegundos"),
     ).toBeInTheDocument();
     expect(
-      screen.getByText("CLS (Cumulative Layout Shift): Cargando..."),
+      screen.getByLabelText("Cumulative Layout Shift: Cargando"),
     ).toBeInTheDocument();
   });
 });

@@ -39,6 +39,7 @@ export interface FinancialIndicatorProps {
   label: string;
   value: number;
   trend: Trend;
+  id: string;
 }
 
 export interface FinancialHistoryPoint {

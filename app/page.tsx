@@ -53,10 +53,11 @@ export const App: React.FC = () => {
           <BackGround />
 
           <div
-            className="relative z-10 p-4 grid gap-4"
-            style={{
-              gridTemplateColumns: "repeat(4, 1fr)",
-            }}
+            className="relative z-10 p-4 grid gap-4 
+                grid-cols-1 
+                sm:grid-cols-2 
+                md:grid-cols-2 
+                lg:grid-cols-4"
           >
             {/* Column 1 */}
             <div className={columnStyle}>

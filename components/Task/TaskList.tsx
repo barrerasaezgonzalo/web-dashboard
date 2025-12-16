@@ -41,6 +41,8 @@ const TaskListComponent: React.FC<TaskListProps> = ({
       <Droppable droppableId="todos">
         {(provided) => (
           <ul
+            role="list"
+            aria-labelledby="task-heading"
             className="mt-4"
             {...provided.droppableProps}
             ref={provided.innerRef}

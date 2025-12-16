@@ -11,9 +11,19 @@ export const NotesComponent: React.FC = () => {
   useAutoResize(textareaRef, note);
 
   return (
-    <div className="bg-amber-300 p-4 rounded shadow min-h-72">
-      <h2 className="text-xl font-bold mb-4 border-b">Nota Rápida</h2>
+    <div
+      role="region"
+      aria-labelledby="note-heading"
+      className="bg-amber-300 p-4 rounded shadow min-h-72"
+    >
+      <h2 id="note-heading" className="text-xl font-bold mb-4 border-b">
+        Nota Rápida
+      </h2>
+      <label htmlFor="note-input" className="sr-only">
+        Ingresa el contenido de la Nota
+      </label>
       <textarea
+        id="note-input"
         ref={textareaRef}
         value={note}
         onChange={(e) => handleTextChange(e, setNote, saveNote)}

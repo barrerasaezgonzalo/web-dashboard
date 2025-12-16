@@ -8,8 +8,13 @@ const News: React.FC = ({}) => {
   return (
     <div
       className={`bg-blue-50 text-black p-4 rounded shadow min-h-[600px] overflow-x-auto`}
+      role="region"
+      aria-labelledby="news-heading"
     >
-      <h2 className="text-xl font-bold mb-4 border-b border-blue-300">
+      <h2
+        id="news-heading"
+        className="text-xl font-bold mb-4 border-b border-blue-300"
+      >
         Noticias
       </h2>
       <ul className="h-[500px] overflow-y-auto">
@@ -18,8 +23,16 @@ const News: React.FC = ({}) => {
             key={index}
             className="border-b border-blue-300 pb-2 last:border-b-0"
           >
-            <a href={article.url} target="_blank" className="text-black">
-              <h3 className="font-bold text-blue-500 text-md mt-2">
+            <a
+              href={article.url}
+              target="_blank"
+              className="text-black"
+              aria-labelledby={`article-title-${index}`}
+            >
+              <h3
+                id={`article-title-${index}`}
+                className="font-bold text-blue-500 text-md mt-2"
+              >
                 {article.title}
               </h3>
 

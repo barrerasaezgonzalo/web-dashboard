@@ -30,8 +30,14 @@ export const PromptComponent: React.FC = () => {
   }, [getTextOutput, setInput]);
 
   return (
-    <div className="bg-amber-600 text-black p-4 rounded shadow min-h-[300px]">
-      <h2 className="text-xl font-bold mb-4 border-b">Mejora tu Prompt</h2>
+    <div
+      role="region"
+      aria-labelledby="prompt-heading"
+      className="bg-amber-600 text-black p-4 rounded shadow min-h-[300px]"
+    >
+      <h2 id="prompt-heading" className="text-xl font-bold mb-4 border-b">
+        Mejora tu Prompt
+      </h2>
 
       <AutoTextarea value={input} onChange={setInput} />
 

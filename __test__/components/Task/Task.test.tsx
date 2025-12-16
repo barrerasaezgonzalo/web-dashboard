@@ -77,7 +77,7 @@ describe("Tasks", () => {
   test("NO añade tarea si el título está vacío o solo tiene espacios", () => {
     render(<Tasks />);
 
-    const addButton = screen.getByRole("button", { name: "+" });
+    const addButton = screen.getByRole("button", { name: "Agregar tarea" });
 
     // Caso 1: input vacío
     fireEvent.click(addButton);

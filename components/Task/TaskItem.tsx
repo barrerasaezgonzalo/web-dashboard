@@ -74,6 +74,8 @@ export const TaskListComponent: React.FC<TaskItemProps> = ({
           <div
             {...provided.dragHandleProps}
             className="cursor-grab pl-2 select-none"
+            aria-label="Arrastrar para reordenar"
+            role="button"
           >
             <GripHorizontal size={25} />
           </div>

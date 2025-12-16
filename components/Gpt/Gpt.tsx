@@ -10,9 +10,19 @@ export const Gpt: React.FC = () => {
   useAutoResize(textareaRef, pregunta);
 
   return (
-    <div className="bg-amber-600 text-black p-4 rounded shadow min-h-[300px]">
-      <h2 className="text-xl font-bold mb-4 border-b">Consulta a AI</h2>
+    <div
+      role="region"
+      aria-labelledby="gpt-heading"
+      className="bg-amber-600 text-black p-4 rounded shadow min-h-[300px]"
+    >
+      <h2 id="gpt-heading" className="text-xl font-bold mb-4 border-b">
+        Consulta a AI
+      </h2>
+      <label htmlFor="gpt-prompt" className="sr-only">
+        Escribe tu pregunta para la AI
+      </label>
       <textarea
+        id="gpt-prompt"
         ref={textareaRef}
         rows={6}
         className="

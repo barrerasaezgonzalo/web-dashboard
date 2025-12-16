@@ -23,7 +23,7 @@ describe("Search", () => {
     expect(input.value).toBe("React");
   });
 
-  test("llama a abrirGoogle al presionar Enter con texto", () => {
+  test("llama a abrir Google al presionar Enter con texto", () => {
     const abrirGoogleMock = jest
       .spyOn(utils, "abrirGoogle")
       .mockImplementation(() => {});

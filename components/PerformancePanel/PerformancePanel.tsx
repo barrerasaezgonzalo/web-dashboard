@@ -9,22 +9,35 @@ export const PerformancePanel: React.FC = ({}) => {
     <div
       className="bg-slate-600 text-white text-center items-center p-1 rounded shadow flex flex-row"
       data-testid="PerformancePanel"
+      role="region"
+      aria-labelledby="performance-heading"
     >
-      <p className="w-full">
-        LCP (Largest Contentful Paint):{" "}
-        {lcp !== null ? `${lcp} ms` : "Cargando..."}{" "}
+      <h2 id="performance-heading" className="sr-only">
+        Métricas de rendimiento
+      </h2>
+      <p
+        className="w-full"
+        aria-label={`Largest Contentful Paint: ${lcp ?? "Cargando"} milisegundos`}
+      >
+        LCP: {lcp !== null ? `${lcp} ms` : "Cargando..."}
       </p>
-      <p className="w-full">
-        TTFB (Time to First Byte):{" "}
-        {ttfb !== null ? `${ttfb} ms` : "Cargando..."}{" "}
+      <p
+        className="w-full"
+        aria-label={`Time to First Byte: ${ttfb ?? "Cargando"} milisegundos`}
+      >
+        TTFB: {ttfb !== null ? `${ttfb} ms` : "Cargando..."}
       </p>
-      <p className="w-full">
-        FCP (First Contentful Paint):{" "}
-        {fcp !== null ? `${fcp} ms` : "Cargando..."}{" "}
+      <p
+        className="w-full"
+        aria-label={`First Contentful Paint: ${fcp ?? "Cargando"} milisegundos`}
+      >
+        FCP: {fcp !== null ? `${fcp} ms` : "Cargando..."}
       </p>
-      <p className="w-full">
-        CLS (Cumulative Layout Shift):{" "}
-        {cls !== null ? `${cls} ms` : "Cargando..."}{" "}
+      <p
+        className="w-full"
+        aria-label={`Cumulative Layout Shift: ${cls ?? "Cargando"}`}
+      >
+        CLS: {cls !== null ? `${cls} ms` : "Cargando..."}
       </p>
     </div>
   );

@@ -13,6 +13,8 @@ export const User: React.FC = ({}) => {
 
   return (
     <div
+      role="region"
+      aria-labelledby="user-heading"
       className={`
         bg-slate-600
         text-white
@@ -22,7 +24,10 @@ export const User: React.FC = ({}) => {
       `}
       data-testid="User"
     >
-      <p className="text-center text-4xl mb-2 mx-4 flex items-left gap-2">
+      <p
+        id="user-heading"
+        className="text-center text-4xl mb-2 mx-4 flex items-left gap-2"
+      >
         {getGreeting()}, {user}! <Smile className="text-yellow-300" />
       </p>
 

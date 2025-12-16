@@ -30,7 +30,11 @@ const Tasks: React.FC = () => {
   };
 
   return (
-    <div className="bg-blue-100 p-4 rounded shadow">
+    <div
+      className="bg-blue-100 p-4 rounded shadow"
+      role="region"
+      aria-labelledby="tasks-heading"
+    >
       {showToast && (
         <Toast
           message="¿Estás seguro que deseas eliminar la tarea?"
@@ -42,7 +46,9 @@ const Tasks: React.FC = () => {
         />
       )}
 
-      <h2 className="text-xl font-bold mb-4 border-b">Lista de pendientes</h2>
+      <h2 id="tasks-heading" className="text-xl font-bold mb-4 border-b">
+        Lista de pendientes
+      </h2>
 
       <TaskInput
         title={title}

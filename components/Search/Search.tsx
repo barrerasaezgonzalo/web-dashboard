@@ -16,9 +16,19 @@ export const Search: React.FC = () => {
   }, []);
 
   return (
-    <div className="bg-amber-600 p-4 rounded shadow ">
-      <h2 className="text-xl font-bold mb-4 border-b">Búsqueda</h2>
+    <div
+      role="region"
+      aria-labelledby="search-heading"
+      className="bg-amber-600 p-4 rounded shadow "
+    >
+      <h2 id="search-heading" className="text-xl font-bold mb-4 border-b">
+        Búsqueda
+      </h2>
+      <label htmlFor="search-input" className="sr-only">
+        Escribe tu pregunta para buscar en google
+      </label>
       <input
+        id="search-input"
         ref={inputRef}
         value={search}
         onChange={(e) => setSearch(e.target.value)}

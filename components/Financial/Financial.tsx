@@ -1,6 +1,6 @@
 "use client";
 
-import { getIndicators, getTrend, mapSparklineData } from "@/utils";
+import { getIndicators, getTrend, getTrendUI, mapSparklineData } from "@/utils";
 import { memo, useCallback, useMemo } from "react";
 import { LineChart, Line, ResponsiveContainer } from "recharts";
 import FinancialIndicator from "./FinancialIndicator";
@@ -42,13 +42,20 @@ const Financial: React.FC = ({}) => {
       <h2 className="text-xl font-bold mb-4 border-b pb-2">
         Indicadores Financieros
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+      <div
+        className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4"
+        role="region"
+        aria-labelledby="financial-heading"
+      >
         {indicators.map((ind) => (
           <div
             key={ind.label}
             className="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition flex flex-col justify-between"
+            role="group"
+            aria-labelledby={`indicator-${ind.key}-label`}
           >
             <FinancialIndicator
+              id={`indicator-${ind.key}`}
               label={ind.label}
               value={ind.value}
               trend={getTrendMemo(ind.key)}
@@ -56,6 +63,9 @@ const Financial: React.FC = ({}) => {
 
             <div className="h-12" data-testid={`sparkline-${ind.key}`}>
               <SparklineChart data={sparklineData} dataKey={ind.key} />
+              <span className="sr-only">
+                {`${ind.label} actual: ${ind.value.toLocaleString("es-CL")}, tendencia: ${getTrendUI(getTrendMemo(ind.key)).label}`}
+              </span>
             </div>
           </div>
         ))}

@@ -126,6 +126,31 @@ export function getTrend(
   return "flat";
 }
 
+export function getTrendUI(trend: Trend) {
+  switch (trend) {
+    case "up":
+      return {
+        color: "text-green-600",
+        label: "Tendencia en alta",
+      };
+    case "down":
+      return {
+        color: "text-red-600",
+        label: "Tendencia en baja",
+      };
+    case "flat":
+      return {
+        color: "text-gray-500",
+        label: "Lateral",
+      };
+    default:
+      return {
+        color: "text-gray-400",
+        label: "Sin datos",
+      };
+  }
+}
+
 export function handleTextChange(
   event: React.ChangeEvent<HTMLTextAreaElement>,
   setNote: (v: string) => void,

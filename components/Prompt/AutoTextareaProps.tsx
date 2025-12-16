@@ -11,13 +11,21 @@ export const AutoTextarea: React.FC<AutoTextareaProps> = ({
   useAutoResize(ref, value);
 
   return (
-    <textarea
-      ref={ref}
-      rows={rows}
-      className="w-full p-2 border border-gray-300 bg-white rounded focus:outline-none focus:ring-0 overflow-hidden resize-none"
-      placeholder="Escribe tu prompt..."
-      value={value}
-      onChange={(e) => onChange(e.target.value)}
-    />
+    <>
+      <h2 id="props-input-label" className="sr-only">
+        Escribe tu prompt
+      </h2>
+      <textarea
+        id="props-input"
+        aria-labelledby="props-input-label"
+        ref={ref}
+        rows={rows}
+        className="w-full p-2 border border-gray-300 bg-white rounded focus:outline-none focus:ring-0 overflow-hidden resize-none"
+        placeholder="Escribe tu prompt..."
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        aria-label="Caja de texto para ingresar el prompt"
+      />
+    </>
   );
 };
