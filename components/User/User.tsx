@@ -28,7 +28,8 @@ export const User: React.FC = ({}) => {
         id="user-heading"
         className="text-center text-4xl mb-2 mx-4 flex items-left gap-2"
       >
-        {getGreeting()}, {userName}! <Smile className="text-yellow-300" />
+        {getGreeting()}, {userName?.split(" ")[0]}!{" "}
+        <Smile className="text-yellow-300" />
       </p>
 
       <p className="text-center text-lg">

@@ -16,7 +16,6 @@ import { PerformancePanel } from "@/components/PerformancePanel/PerformancePanel
 import { Wheater } from "@/components/Wheater/Wheater";
 import { FinancialProvider } from "@/context/FinancialContext";
 import { NewsProvider } from "@/context/NewsContext";
-import { useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useUser } from "@/context/UserContext";
 
@@ -73,7 +72,6 @@ export const App: React.FC = () => {
       {userId && (
         <div className="relative w-full min-h-screen">
           <BackGround />
-
           <div
             className="relative z-10 p-4 grid gap-4 
                 grid-cols-1 

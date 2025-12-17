@@ -17,7 +17,7 @@ export const TaskActionButton: React.FC<TaskActionButtonProps> = ({
     <button
       onClick={onClick}
       {...dragHandleProps}
-      className="relative inline-block group"
+      className="relative inline-block group cursor-pointer"
     >
       {icon}
       <div className={getTooltipClass({ type: tooltipType, inDev, dragging })}>

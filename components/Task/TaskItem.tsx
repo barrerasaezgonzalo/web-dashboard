@@ -24,12 +24,20 @@ export const TaskItem: React.FC<TaskItemProps> = ({
   handleRemove,
   handleTaskToggle,
 }) => {
+  const daysRemaining = task.date
+    ? getDaysRemainingUntil(task.date)
+    : undefined;
+
   return (
     <li
       ref={provided.innerRef}
       {...provided.draggableProps}
       className={`flex items-center gap-2 p-2 rounded mb-2 ${
-        task.in_dev ? "bg-blue-500 text-white" : "bg-red-400 text-black"
+        task.in_dev
+          ? "bg-blue-500 text-white"
+          : task.date && getDaysRemainingUntil(task.date) < 3
+            ? "bg-red-500 text-white"
+            : "bg-red-300 text-black"
       }`}
     >
       {/* Drag handle */}
