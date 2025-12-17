@@ -16,8 +16,9 @@ import { PerformancePanel } from "@/components/PerformancePanel/PerformancePanel
 import { Wheater } from "@/components/Wheater/Wheater";
 import { FinancialProvider } from "@/context/FinancialContext";
 import { NewsProvider } from "@/context/NewsContext";
-import { useEffect, useState } from "react";
-import { useData } from "@/hooks/useData";
+import { useEffect } from "react";
+import { supabase } from "@/lib/supabaseClient";
+import { useUser } from "@/context/UserContext";
 
 const Task = dynamic(() => import("@/components/Task/Task"), {
   ssr: false,
@@ -36,19 +37,40 @@ const Financial = dynamic(() => import("@/components/Financial/Financial"), {
 
 export const App: React.FC = () => {
   const columnStyle = "flex flex-col gap-4";
-  const [cookieValue, setCookieValue] = useState<string | null>(null);
-  const { user } = useData();
+  const { userId, loading } = useUser();
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const valor = window.localStorage.getItem("authDashboard");
-      setCookieValue(valor);
-    }
-  }, []);
+  const loginWithGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+    });
+    if (error) console.error("Login error:", error.message);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen bg-blue-500 text-white">
+        <p>Cargando...</p>
+      </div>
+    );
+  }
+
+  if (!userId) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen">
+        <p>Por favor, inicia sesión</p>
+        <button
+          className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
+          onClick={loginWithGoogle}
+        >
+          Login con Google
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div>
-      {cookieValue === user && (
+      {userId && (
         <div className="relative w-full min-h-screen">
           <BackGround />
 

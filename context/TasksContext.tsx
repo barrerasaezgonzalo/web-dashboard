@@ -8,11 +8,12 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
+import { useUser } from "@/context/UserContext";
 
 export interface TaskContextType {
   tasks: Task[];
   tasksLoading: boolean;
-  getTasks: () => Promise<void>;
+  getTasks: (id: string) => Promise<void>;
   addTask: (title: string, date?: string) => void;
   toggleTaskInDev: (id: string) => void;
   removeTask: (id: string) => void;
@@ -31,47 +32,41 @@ interface TaskProviderProps {
 export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [tasksLoading, setTasksLoading] = useState(false);
-  const [authData, setAuthData] = React.useState<string | null>(null);
+  const { userId } = useUser();
+
+  const getTasks = useCallback(
+    async (userId: string) => {
+      if (userId === null) {
+        console.warn("getTasks llamado sin userId");
+        return;
+      }
+      setTasksLoading(true);
+      try {
+        const response = await fetch(`/api/tasks/get?authData=${userId}`);
+        const data = await response.json();
+        setTasks(data);
+      } catch (error) {
+        console.error("Error al obtener tareas:", error);
+        setTasks([]);
+      } finally {
+        setTasksLoading(false);
+      }
+    },
+    [userId],
+  );
 
   useEffect(() => {
-    const storedValue = localStorage.getItem("authDashboard");
-    if (storedValue) {
-      setAuthData(storedValue);
-    } else {
-      setAuthData("");
+    if (userId !== null) {
+      getTasks(userId);
     }
-  }, []);
-
-  const getTasks = useCallback(async () => {
-    if (authData === null) {
-      console.warn("getTasks llamado antes de que authData se cargue.");
-      return;
-    }
-    setTasksLoading(true);
-    try {
-      const response = await fetch(`/api/tasks/get?authData=${authData}`);
-      const data = await response.json();
-      setTasks(data);
-    } catch (error) {
-      console.error("Error al obtener tareas:", error);
-      setTasks([]);
-    } finally {
-      setTasksLoading(false);
-    }
-  }, [authData]);
-
-  useEffect(() => {
-    if (authData !== null) {
-      getTasks();
-    }
-  }, [authData, getTasks]);
+  }, [userId, getTasks]);
 
   const addTask = async (title: string, date?: string) => {
     try {
       const response = await fetch("/api/tasks/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, authData, date: date ?? null }),
+        body: JSON.stringify({ title, userId, date: date ?? null }),
       });
       const data = await response.json();
       setTasks((prev) => [...prev, data[0]]);
@@ -85,7 +80,12 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
       const response = await fetch("/api/tasks/edit", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, title: newTitle, date: newDate ?? null }),
+        body: JSON.stringify({
+          id,
+          title: newTitle,
+          date: newDate ?? null,
+          userId,
+        }),
       });
       const updatedTask = await response.json();
       setTasks((prev) => prev.map((t) => (t.id === id ? updatedTask : t)));
@@ -108,7 +108,7 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
       const res = await fetch("/api/tasks/edit", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, in_dev: !taskBefore.in_dev }),
+        body: JSON.stringify({ id, in_dev: !taskBefore.in_dev, userId }),
       });
 
       if (!res.ok) throw new Error("Error actualizando task");
@@ -139,6 +139,7 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
       const payload = newTasks.map((task, index) => ({
         id: task.id,
         order: index,
+        userId: userId,
       }));
 
       const res = await fetch("/api/tasks/reorder", {
@@ -153,10 +154,6 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
       setTasks(oldTasks); // revertimos si falla
     }
   };
-
-  useEffect(() => {
-    getTasks();
-  }, []);
 
   return (
     <TasksContext.Provider

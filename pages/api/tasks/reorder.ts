@@ -8,12 +8,16 @@ export default async function handler(
   if (req.method !== "PATCH")
     return res.status(405).json({ error: "Method not allowed" });
 
-  const tasks: { id: string; order: number }[] = req.body;
+  const tasks: { id: string; order: number; userId: number }[] = req.body;
 
   try {
     await Promise.all(
       tasks.map((task) =>
-        supabase.from("todos").update({ order: task.order }).eq("id", task.id),
+        supabase
+          .from("todos")
+          .update({ order: task.order })
+          .eq("id", task.id)
+          .eq("auth_data", task.userId),
       ),
     );
 

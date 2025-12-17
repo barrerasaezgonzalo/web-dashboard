@@ -7,6 +7,10 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   const noteId = "11111111-1111-1111-1111-111111111111";
+  // const { data: { session } } = await supabase.auth.getSession();
+  // console.log( session)
+  // const reqUserId = session?.user.id;
+  // if (!reqUserId) return res.status(401).json({ error: "No autorizado" });
 
   if (req.method === "GET") {
     const { authData } = req.query;
@@ -25,14 +29,13 @@ export default async function handler(
   }
 
   if (req.method === "POST" || req.method === "PUT") {
-    const { content } = req.body;
-    const { authData } = req.query;
+    const { content, userId } = req.body;
 
     const { data, error } = await supabase
       .from("notes")
-      .upsert({ id: noteId, content })
-      .eq("auth_data", authData)
-      .select();
+      .update({ content })
+      .eq("id", noteId)
+      .eq("auth_data", userId);
 
     if (error) {
       return res.status(500).json({ error: error.message });

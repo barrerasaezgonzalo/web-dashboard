@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { DataProvider } from "@/context/DataContext";
+import { UserProvider } from "@/context/UserContext";
 
 export const metadata: Metadata = {
   title: "Dashboard App",
@@ -15,7 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <DataProvider>{children}</DataProvider>
+        <UserProvider>
+          <DataProvider>{children}</DataProvider>
+        </UserProvider>
       </body>
     </html>
   );

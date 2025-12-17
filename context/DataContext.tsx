@@ -2,12 +2,11 @@
 
 import { WheaterResponse } from "@/types";
 import React, { createContext, useEffect, useState, ReactNode } from "react";
+import { useUser } from "@/context/UserContext";
 
 export interface DataContextType {
-  user: string;
   prompt: string;
   getPrompt: (input?: string) => Promise<string | null>;
-  getNote: () => Promise<void>;
   saveNote: (note: string) => void;
   note: string;
   setNote: (note: string) => void;
@@ -25,9 +24,9 @@ interface DataProviderProps {
 
 export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
   const [prompt, setPrompt] = useState("");
-  const [user] = useState("Gonza");
   const [note, setNote] = useState<string>("");
   const [wheater, setWheather] = useState<WheaterResponse | null>(null);
+  const { userId } = useUser();
 
   const getPrompt = async (input?: string): Promise<string | null> => {
     if (!input) return null;
@@ -51,15 +50,21 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
     }
   };
 
-  const getNote = async () => {
-    try {
-      const res = await fetch(`/api/note?authData=${user}`);
-      const data = await res.json();
-      setNote(data.content || "");
-    } catch (err) {
-      console.error("Error fetching note:", err);
-    }
-  };
+  useEffect(() => {
+    if (!userId) return;
+
+    const getNote = async () => {
+      try {
+        const res = await fetch(`/api/note?authData=${userId}`);
+        const data = await res.json();
+        setNote(data.content || "");
+      } catch (err) {
+        console.error("Error fetching note:", err);
+      }
+    };
+
+    getNote();
+  }, [userId]);
 
   let saveTimeout: NodeJS.Timeout;
 
@@ -70,7 +75,7 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
         await fetch("/api/note", {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ content }),
+          body: JSON.stringify({ content, userId }),
         });
       } catch (err) {
         console.error("Error saving note:", err);
@@ -89,7 +94,6 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    getNote();
     fetchWheater();
   }, []);
 
@@ -98,11 +102,9 @@ export const DataProvider: React.FC<DataProviderProps> = ({ children }) => {
       value={{
         prompt,
         getPrompt,
-        user,
         note,
         setNote,
         saveNote,
-        getNote,
         wheater,
         setWheather,
       }}
