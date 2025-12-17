@@ -3,13 +3,13 @@
 import { Smile } from "lucide-react";
 import { getGreeting } from "@/utils";
 import { useTasks } from "@/hooks/useTasks";
-import { useData } from "@/hooks/useData";
+import { useUser } from "@/context/UserContext";
 
 export const User: React.FC = ({}) => {
   const { tasks } = useTasks();
   const inDevTask = tasks.filter((task) => task.in_dev).length;
   const pending = tasks.length - inDevTask;
-  const { user } = useData();
+  const { userName } = useUser();
 
   return (
     <div
@@ -28,7 +28,7 @@ export const User: React.FC = ({}) => {
         id="user-heading"
         className="text-center text-4xl mb-2 mx-4 flex items-left gap-2"
       >
-        {getGreeting()}, {user}! <Smile className="text-yellow-300" />
+        {getGreeting()}, {userName}! <Smile className="text-yellow-300" />
       </p>
 
       <p className="text-center text-lg">
