@@ -18,6 +18,8 @@ import { FinancialProvider } from "@/context/FinancialContext";
 import { NewsProvider } from "@/context/NewsContext";
 import { supabase } from "@/lib/supabaseClient";
 import { useUser } from "@/context/UserContext";
+import CopyHistory from "@/components/CopyHistory/CopyHistory";
+import Player from "@/components/Player/Player";
 
 const Task = dynamic(() => import("@/components/Task/Task"), {
   ssr: false,
@@ -80,60 +82,68 @@ export const App: React.FC = () => {
                 lg:grid-cols-4"
           >
             {/* Column 1 */}
-            <div className={columnStyle}>
-              <ErrorBoundary>
-                <TasksProvider>
-                  <User />
-                </TasksProvider>
-              </ErrorBoundary>
+            <ErrorBoundary>
+              <TasksProvider>
+                <div className={columnStyle}>
+                  <ErrorBoundary>
+                    <User />
+                  </ErrorBoundary>
 
-              <ErrorBoundary>
-                <NewsProvider>
-                  <News />
-                </NewsProvider>
-              </ErrorBoundary>
-            </div>
+                  <ErrorBoundary>
+                    <Player />
+                  </ErrorBoundary>
 
-            {/* Column 2 */}
-            <div className={columnStyle}>
-              <ErrorBoundary>
-                <Search />
-              </ErrorBoundary>
+                  <ErrorBoundary>
+                    <NewsProvider>
+                      <News />
+                    </NewsProvider>
+                  </ErrorBoundary>
+                </div>
 
-              <ErrorBoundary>
-                <FinancialProvider>
-                  <Financial />
-                </FinancialProvider>
-              </ErrorBoundary>
+                {/* Column 2 */}
+                <div className={columnStyle}>
+                  <ErrorBoundary>
+                    <Search />
+                  </ErrorBoundary>
 
-              <ErrorBoundary>
-                <Prompt />
-              </ErrorBoundary>
-            </div>
+                  <ErrorBoundary>
+                    <FinancialProvider>
+                      <Financial />
+                    </FinancialProvider>
+                  </ErrorBoundary>
 
-            {/* Column 3 */}
-            <div className={columnStyle}>
-              <ErrorBoundary>
-                <Wheater />
-              </ErrorBoundary>
+                  <ErrorBoundary>
+                    <Prompt />
+                  </ErrorBoundary>
+                </div>
 
-              <ErrorBoundary>
-                <Notes />
-              </ErrorBoundary>
+                {/* Column 3 */}
+                <div className={columnStyle}>
+                  <ErrorBoundary>
+                    <Wheater />
+                  </ErrorBoundary>
 
-              <ErrorBoundary>
-                <Gpt />
-              </ErrorBoundary>
-            </div>
+                  <ErrorBoundary>
+                    <Notes />
+                  </ErrorBoundary>
 
-            {/* Column 4 */}
-            <div className={columnStyle}>
-              <ErrorBoundary>
-                <TasksProvider>
-                  <Task />
-                </TasksProvider>
-              </ErrorBoundary>
-            </div>
+                  <ErrorBoundary>
+                    <Gpt />
+                  </ErrorBoundary>
+
+                  <ErrorBoundary>
+                    <CopyHistory />
+                  </ErrorBoundary>
+                </div>
+
+                {/* Column 4 */}
+                <div className={columnStyle}>
+                  <ErrorBoundary>
+                    <Task />
+                  </ErrorBoundary>
+                </div>
+              </TasksProvider>
+            </ErrorBoundary>
           </div>
 
           {/* Footer */}

@@ -1,1 +1,9 @@
 @import "tailwindcss";
+
+.recharts-surface:focus {
+  outline: none;
+}
+
+.recharts-surface *:focus {
+  outline: none;
+}
