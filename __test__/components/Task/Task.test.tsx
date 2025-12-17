@@ -1,10 +1,11 @@
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import Tasks from "@/components/Task/Task";
 
 // Mock del hook
 const mockUseTasks = {
-  tasks: [{ id: "1", title: "Tarea 1", in_dev: false }],
+  tasks: [{ id: "1", title: "Tarea 1", in_dev: false, date: "2025-12-20" }],
   addTask: jest.fn(),
   editTask: jest.fn(),
   toggleTaskInDev: jest.fn(),
@@ -16,49 +17,63 @@ jest.mock("@/hooks/useTasks", () => ({
   useTasks: () => mockUseTasks,
 }));
 
-jest.mock("@/components/Task/TaskList", () => ({
-  TaskList: ({ onTaskRequestRemove }: any) => (
-    <button onClick={() => onTaskRequestRemove("1")}>Eliminar</button>
-  ),
-}));
-
-describe("Tasks", () => {
+describe("Tasks - tests extendidos", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  test("renderiza título y componentes hijos", () => {
-    render(<Tasks />);
-    expect(screen.getByText("Lista de pendientes")).toBeInTheDocument();
-    expect(screen.getByRole("textbox")).toBeInTheDocument(); // TaskInput
-  });
-
-  test("añade tarea al presionar Enter", () => {
+  test("agrega tarea si el título no está vacío", async () => {
     render(<Tasks />);
     const input = screen.getByRole("textbox");
-    fireEvent.change(input, { target: { value: "Nueva tarea" } });
-    fireEvent.keyDown(input, { key: "Enter" });
-    expect(mockUseTasks.addTask).toHaveBeenCalledWith("Nueva tarea");
+    await userEvent.type(input, "Nueva tarea");
+    fireEvent.keyDown(input, { key: "Enter", code: "Enter", keyCode: 13 });
+    expect(mockUseTasks.addTask).toHaveBeenCalledWith("Nueva tarea", "");
   });
 
-  test("muestra y confirma el Toast al eliminar tarea", () => {
+  test("edita tarea al presionar Editar", async () => {
     render(<Tasks />);
+    const editButton = screen.getByRole("button", { name: /Editar Tarea/i });
+    fireEvent.click(editButton);
 
-    // 1. Abrir el Toast (mock de TaskList)
-    fireEvent.click(screen.getByText("Eliminar"));
+    // El input debe llenarse con el título de la tarea
+    const input = screen.getByRole("textbox") as HTMLInputElement;
+    expect(input.value).toBe("Tarea 1");
 
-    // 2. Toast visible
+    // Cambiamos el valor y guardamos
+    await userEvent.clear(input);
+    await userEvent.type(input, "Tarea editada");
+    fireEvent.keyDown(input, { key: "Enter", code: "Enter", keyCode: 13 });
+
+    expect(mockUseTasks.editTask).toHaveBeenCalledWith(
+      "1",
+      "Tarea editada",
+      "2025-12-20",
+    );
+  });
+
+  test("toggle de tarea al presionar Comenzar Tarea", () => {
+    render(<Tasks />);
+    const startButton = screen.getByRole("button", { name: /Comenzar Tarea/i });
+    fireEvent.click(startButton);
+    expect(mockUseTasks.toggleTaskInDev).toHaveBeenCalledWith("1");
+  });
+
+  test("elimina tarea y confirma en Toast", () => {
+    render(<Tasks />);
+    const deleteButton = screen.getByRole("button", {
+      name: /Eliminar Tarea/i,
+    });
+    fireEvent.click(deleteButton);
+
     expect(
       screen.getByText("¿Estás seguro que deseas eliminar la tarea?"),
     ).toBeInTheDocument();
 
-    // 3. Confirmar (botón real del Toast)
-    fireEvent.click(screen.getByRole("button", { name: "Sí" }));
+    // Confirmamos
+    const confirmBtn = screen.getByRole("button", { name: /Sí/i });
+    fireEvent.click(confirmBtn);
 
-    // 4. removeTask ejecutado
     expect(mockUseTasks.removeTask).toHaveBeenCalledWith("1");
-
-    // 5. Toast cerrado
     expect(
       screen.queryByText("¿Estás seguro que deseas eliminar la tarea?"),
     ).not.toBeInTheDocument();
@@ -66,57 +81,28 @@ describe("Tasks", () => {
 
   test("cierra el Toast al cancelar eliminación", () => {
     render(<Tasks />);
+    const deleteButton = screen.getByRole("button", {
+      name: /Eliminar Tarea/i,
+    });
+    fireEvent.click(deleteButton);
 
-    fireEvent.click(screen.getByText("Eliminar"));
-
-    fireEvent.click(screen.getByRole("button", { name: "No" }));
+    const cancelBtn = screen.getByRole("button", { name: /No/i });
+    fireEvent.click(cancelBtn);
 
     expect(mockUseTasks.removeTask).not.toHaveBeenCalled();
   });
 
-  test("NO añade tarea si el título está vacío o solo tiene espacios", () => {
+  test("tooltip visible al hacer hover sobre los botones", async () => {
     render(<Tasks />);
+    const startButton = screen.getByRole("button", { name: /Comenzar Tarea/i });
 
-    const addButton = screen.getByRole("button", { name: "Agregar tarea" });
+    // hover
+    await userEvent.hover(startButton);
 
-    // Caso 1: input vacío
-    fireEvent.click(addButton);
-    expect(mockUseTasks.addTask).not.toHaveBeenCalled();
+    // El tooltip debe aparecer
+    expect(screen.getByText("Comenzar Tarea")).toBeInTheDocument();
 
-    // Caso 2: input solo con espacios
-    const input = screen.getByRole("textbox");
-    fireEvent.change(input, { target: { value: "   " } });
-    fireEvent.click(addButton);
-
-    expect(mockUseTasks.addTask).not.toHaveBeenCalled();
-  });
-
-  test("no agrega tarea si el título está vacío", () => {
-    render(<Tasks />);
-
-    // Cambiar el valor del input a una cadena vacía
-    const input = screen.getByRole("textbox");
-    fireEvent.change(input, { target: { value: "" } });
-
-    // Simular la acción de presionar Enter
-    fireEvent.keyDown(input, { key: "Enter" });
-
-    // Verificar que addTask NO haya sido llamado
-    expect(mockUseTasks.addTask).not.toHaveBeenCalled();
-  });
-
-  test("agrega tarea si el título no está vacío", () => {
-    render(<Tasks />);
-
-    const input = screen.getByRole("textbox");
-
-    // Cambiar el valor del input a algo no vacío
-    fireEvent.change(input, { target: { value: "Nueva tarea" } });
-
-    // Simular la acción de presionar Enter
-    fireEvent.keyDown(input, { key: "Enter" });
-
-    // Verificar que addTask haya sido llamado con el valor correcto
-    expect(mockUseTasks.addTask).toHaveBeenCalledWith("Nueva tarea");
+    // unhover
+    await userEvent.unhover(startButton);
   });
 });

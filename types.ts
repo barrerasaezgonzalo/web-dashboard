@@ -1,3 +1,4 @@
+import { DraggableProvidedDragHandleProps } from "@hello-pangea/dnd";
 import { ReactNode } from "react";
 
 export interface FinancialHistory {
@@ -171,4 +172,14 @@ export interface TaskInputProps {
   editingTaskId: string;
   handleAdd: () => void;
   handleSave: () => void;
+}
+
+export interface TaskActionButtonProps {
+  icon: React.ReactNode;
+  tooltipType?: "default" | "success" | "danger";
+  tooltipText: string;
+  onClick?: () => void;
+  inDev?: boolean;
+  dragging?: boolean;
+  dragHandleProps?: DraggableProvidedDragHandleProps;
 }
