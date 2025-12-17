@@ -79,6 +79,7 @@ export interface Task {
   title: string;
   in_dev?: boolean;
   order: number;
+  date?: string;
 }
 
 export interface ErrorBoundaryState {
@@ -94,9 +95,15 @@ export interface SkeletonProps {
 
 export interface ToastProps {
   message: string;
-  onConfirm?: () => void;
+  onConfirm: () => void;
   onCancel?: () => void;
 }
+
+export type ToastConfig = {
+  message: string;
+  onConfirm: () => void;
+  onCancel?: () => void;
+};
 
 export interface TaskItemProps {
   task: Task;
@@ -157,6 +164,11 @@ export interface PromptData {
 export interface TaskInputProps {
   title: string;
   setTitle: (v: string) => void;
-  onAdd: () => void;
-  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  date?: string;
+  setDate: (date: string) => void;
+  handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  inputRef: React.Ref<HTMLInputElement>;
+  editingTaskId: string;
+  handleAdd: () => void;
+  handleSave: () => void;
 }

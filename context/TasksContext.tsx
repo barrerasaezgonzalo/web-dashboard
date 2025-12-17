@@ -13,10 +13,10 @@ export interface TaskContextType {
   tasks: Task[];
   tasksLoading: boolean;
   getTasks: () => Promise<void>;
-  addTask: (title: string) => void;
+  addTask: (title: string, date?: string) => void;
   toggleTaskInDev: (id: string) => void;
   removeTask: (id: string) => void;
-  editTask: (id: string, newTitle: string) => void;
+  editTask: (id: string, newTitle: string, newDate?: string) => void;
   updateTasksOrder: (tasks: Task[]) => Promise<void>;
 }
 
@@ -66,12 +66,12 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
     }
   }, [authData, getTasks]);
 
-  const addTask = async (title: string) => {
+  const addTask = async (title: string, date?: string) => {
     try {
       const response = await fetch("/api/tasks/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, authData }),
+        body: JSON.stringify({ title, authData, date: date ?? null }),
       });
       const data = await response.json();
       setTasks((prev) => [...prev, data[0]]);
@@ -80,12 +80,12 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
     }
   };
 
-  const editTask = async (id: string, newTitle: string) => {
+  const editTask = async (id: string, newTitle: string, newDate?: string) => {
     try {
       const response = await fetch("/api/tasks/edit", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, title: newTitle }),
+        body: JSON.stringify({ id, title: newTitle, date: newDate ?? null }),
       });
       const updatedTask = await response.json();
       setTasks((prev) => prev.map((t) => (t.id === id ? updatedTask : t)));

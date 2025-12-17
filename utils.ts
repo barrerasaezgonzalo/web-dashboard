@@ -193,3 +193,32 @@ export const roundToThousands = (number: number) => {
   }
   return Math.round(number / 1000) * 1000;
 };
+
+export function formatDateToDMY(date: string): string {
+  const [year, month, day] = date.split("-");
+
+  if (!year || !month || !day) {
+    throw new Error("Formato de fecha inválido. Se espera YYYY-MM-DD");
+  }
+
+  return `${day}/${month}/${year}`;
+}
+
+export function getDaysRemainingUntil(date: string): number {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+    throw new Error("Formato inválido. Se espera YYYY-MM-DD");
+  }
+
+  const [year, month, day] = date.split("-").map(Number);
+
+  const targetDate = new Date(year, month - 1, day);
+  const today = new Date();
+
+  targetDate.setHours(0, 0, 0, 0);
+  today.setHours(0, 0, 0, 0);
+
+  const diffInMs = targetDate.getTime() - today.getTime();
+  const diffInDays = Math.ceil(diffInMs / 86400000);
+
+  return Math.max(diffInDays, 0);
+}

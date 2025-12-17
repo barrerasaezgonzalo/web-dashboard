@@ -9,11 +9,12 @@ export default async function handler(
   if (req.method !== "PATCH")
     return res.status(405).json({ error: "Method not allowed" });
   if (req.method === "PATCH") {
-    const { id, title, in_dev } = req.body;
+    const { id, title, in_dev, date } = req.body;
 
     const updates: Partial<Task> = {};
     if (title !== undefined) updates.title = title;
     if (in_dev !== undefined) updates.in_dev = in_dev;
+    if (date !== undefined) updates.date = date || null;
 
     const { data, error } = await supabase
       .from("todos")

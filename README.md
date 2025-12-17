@@ -98,4 +98,3 @@ The main goal is to showcase **React skills**, including performance optimizatio
 - Performance and accessibility audited with **Lighthouse**.
 
 <img width="1920" height="1080" alt="screenshot" src="https://github.com/user-attachments/assets/ae70e4fe-3d1a-46c9-96a5-327b34ad5007" />
-

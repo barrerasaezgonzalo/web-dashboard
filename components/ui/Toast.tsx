@@ -21,7 +21,7 @@ export const ToastConponet: React.FC<ToastProps> = ({
       {/* Modal */}
       <div
         ref={modalRef}
-        role={onConfirm && onCancel ? "alertdialog" : "alert"}
+        role={onCancel ? "alertdialog" : "alert"}
         aria-modal="true"
         tabIndex={-1} // para poder focusear
         className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-500 text-white p-6 rounded shadow-lg z-50"
@@ -37,7 +37,7 @@ export const ToastConponet: React.FC<ToastProps> = ({
 
         {/* Botones */}
         <div className="flex justify-end gap-2 mt-4">
-          {onConfirm && onCancel ? (
+          {onCancel ? (
             <>
               <button
                 className="bg-white text-black px-3 py-1 rounded hover:bg-gray-200"
