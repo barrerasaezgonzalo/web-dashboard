@@ -38,7 +38,50 @@ export const NewsProvider: React.FC<NewsProviderProps> = ({ children }) => {
   const cacheTimeKey = `newsCacheTime_${selectedFeed}`;
 
   useEffect(() => {
-    getNews();
+    const fetchNews = async () => {
+      setNewsLoading(true);
+      try {
+        let cached: News | null = null;
+        if (typeof window !== "undefined") {
+          const cacheStr = window.localStorage.getItem(cacheKey);
+          const cacheTimeStr = window.localStorage.getItem(cacheTimeKey);
+          if (cacheStr && cacheTimeStr && Date.now() < parseInt(cacheTimeStr)) {
+            cached = JSON.parse(cacheStr);
+          }
+        }
+
+        if (cached) {
+          setNews(cached);
+          console.log("Noticias desde cache");
+          return;
+        }
+
+        const feedUrls: Record<Feed, string> = {
+          gnews: "/api/news",
+          biobio: "...",
+          latercera: "...",
+        };
+        const res = await fetch(feedUrls[selectedFeed]);
+        const data: News = await res.json();
+
+        setNews(data);
+        if (typeof window !== "undefined") {
+          window.localStorage.setItem(cacheKey, JSON.stringify(data));
+          window.localStorage.setItem(
+            cacheTimeKey,
+            (Date.now() + 12 * 60 * 60 * 1000).toString(),
+          );
+        }
+        console.log("Noticias desde API");
+      } catch (error) {
+        console.error("Error al obtener noticias:", error);
+        setNews({ totalArticles: 0, articles: [], _fallback: true });
+      } finally {
+        setNewsLoading(false);
+      }
+    };
+
+    fetchNews();
   }, [selectedFeed]);
 
   useEffect(() => {
@@ -60,30 +103,23 @@ export const NewsProvider: React.FC<NewsProviderProps> = ({ children }) => {
   }, []);
 
   const getNews = async () => {
+    console.log("getNews ejecutado para feed", selectedFeed);
     setNewsLoading(true);
     try {
-      if (typeof window !== "undefined") {
-        const cacheStr = window.localStorage.getItem(cacheKey);
-        const cacheTimeStr = window.localStorage.getItem(cacheTimeKey);
-        const now = Date.now();
-
-        if (cacheStr && cacheTimeStr && now < parseInt(cacheTimeStr)) {
-          console.log("Noticias cargadas desde cache ", cacheKey);
-          const cached = JSON.parse(cacheStr);
-          setNews(cached);
-          return;
-        }
-      }
-
       const feedUrls: Record<Feed, string> = {
         gnews: "/api/news",
         biobio: "/api/rss?url=https://feeds.feedburner.com/radiobiobio/NNeJ",
         latercera:
           "/api/rss?url=https://www.latercera.com/arc/outboundfeeds/rss/?outputType=xml",
       };
+      const url = feedUrls[selectedFeed];
+      console.log("Fetch a URL:", url);
 
-      const response = await fetch(feedUrls[selectedFeed]);
+      const response = await fetch(url);
+      console.log("response.ok", response.ok);
+
       const data = await response.json();
+      console.log("Noticias recibidas:", data);
 
       setNews(data);
       if (typeof window !== "undefined") {
@@ -91,10 +127,8 @@ export const NewsProvider: React.FC<NewsProviderProps> = ({ children }) => {
         window.localStorage.setItem(
           cacheTimeKey,
           (Date.now() + 12 * 60 * 60 * 1000).toString(),
-        ); // válida 12 horas
+        );
       }
-
-      console.log("Noticias cargadas desde API");
     } catch (error) {
       console.error("Error al obtener noticias:", error);
       setNews({ totalArticles: 0, articles: [], _fallback: true });
