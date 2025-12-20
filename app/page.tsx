@@ -18,7 +18,6 @@ import { FinancialProvider } from "@/context/FinancialContext";
 import { NewsProvider } from "@/context/NewsContext";
 import { supabase } from "@/lib/supabaseClient";
 import { useUser } from "@/context/UserContext";
-import CopyHistory from "@/components/CopyHistory/CopyHistory";
 import Player from "@/components/Player/Player";
 
 const Task = dynamic(() => import("@/components/Task/Task"), {
@@ -129,10 +128,6 @@ export const App: React.FC = () => {
 
                   <ErrorBoundary>
                     <Gpt />
-                  </ErrorBoundary>
-
-                  <ErrorBoundary>
-                    <CopyHistory />
                   </ErrorBoundary>
                 </div>
 

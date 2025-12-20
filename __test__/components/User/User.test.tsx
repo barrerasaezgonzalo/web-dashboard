@@ -3,13 +3,23 @@ import "@testing-library/jest-dom";
 import { render, screen } from "@testing-library/react";
 import { User } from "@/components/User/User";
 
+jest.mock("@/lib/supabaseClient", () => ({
+  supabase: {
+    auth: {
+      getUser: jest.fn(),
+      onAuthStateChange: jest.fn(),
+    },
+    from: jest.fn(),
+  },
+}));
+
 // Mocks de los hooks
 jest.mock("@/hooks/useTasks", () => ({
   useTasks: jest.fn(),
 }));
 
-jest.mock("@/hooks/useData", () => ({
-  useData: jest.fn(),
+jest.mock("@/context/UserContext", () => ({
+  useUser: jest.fn(),
 }));
 
 jest.mock("@/utils", () => ({
@@ -17,8 +27,8 @@ jest.mock("@/utils", () => ({
 }));
 
 import { useTasks } from "@/hooks/useTasks";
-import { useData } from "@/hooks/useData";
 import { getGreeting } from "@/utils";
+import { useUser } from "@/context/UserContext";
 
 describe("User Component", () => {
   it("renderiza saludo y conteo de tareas correctamente", () => {
@@ -29,8 +39,8 @@ describe("User Component", () => {
       ],
     });
 
-    (useData as jest.Mock).mockReturnValue({
-      user: "Gonza",
+    (useUser as jest.Mock).mockReturnValue({
+      userName: "Gonzalo",
     });
 
     (getGreeting as jest.Mock).mockReturnValue("Hola");
@@ -38,11 +48,11 @@ describe("User Component", () => {
     render(<User />);
 
     // Saludo
-    expect(screen.getByText(/Hola, Gonza!/)).toBeInTheDocument();
+    expect(screen.getByText(/Gonzalo!/)).toBeInTheDocument();
 
     // Conteo tareas
     expect(screen.getByText(/Tienes/)).toHaveTextContent(
-      "Tienes 1 tareas en curso y 1 pendientes.",
+      "Tienes 1 tareas en curso, 0 pendientes (aún a tiempo)",
     );
   });
 });

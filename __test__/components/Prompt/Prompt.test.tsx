@@ -4,6 +4,16 @@ import { Prompt } from "@/components/Prompt/Prompt";
 import { usePrompts } from "@/hooks/usePrompts";
 import { abrirGpt } from "@/utils";
 
+jest.mock("@/lib/supabaseClient", () => ({
+  supabase: {
+    auth: {
+      getUser: jest.fn(),
+      onAuthStateChange: jest.fn(),
+    },
+    from: jest.fn(),
+  },
+}));
+
 jest.mock("@/hooks/usePrompts");
 jest.mock("@/utils", () => ({
   abrirGpt: jest.fn(),

@@ -2,6 +2,16 @@ import { renderHook } from "@testing-library/react";
 import { useTasks } from "@/hooks/useTasks";
 import { TasksProvider } from "@/context/TasksContext";
 
+jest.mock("@/lib/supabaseClient", () => ({
+  supabase: {
+    auth: {
+      getUser: jest.fn(),
+      onAuthStateChange: jest.fn(),
+    },
+    from: jest.fn(),
+  },
+}));
+
 describe("useTasks hook", () => {
   it("lanza error si se usa fuera del TaskProvider", () => {
     expect(() => renderHook(() => useTasks())).toThrow(

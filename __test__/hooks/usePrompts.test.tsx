@@ -2,6 +2,16 @@ import { renderHook, act } from "@testing-library/react";
 import { usePrompts } from "@/hooks/usePrompts";
 import { useData } from "@/hooks/useData";
 
+jest.mock("@/lib/supabaseClient", () => ({
+  supabase: {
+    auth: {
+      getUser: jest.fn(),
+      onAuthStateChange: jest.fn(),
+    },
+    from: jest.fn(),
+  },
+}));
+
 // 1. Mock de dependencias
 jest.mock("@/hooks/useData");
 

@@ -4,6 +4,15 @@ import { WheaterComponent } from "@/components/Wheater/Wheater";
 import { useData } from "@/hooks/useData";
 import { formatFechaHora } from "@/utils";
 
+jest.mock("@/lib/supabaseClient", () => ({
+  supabase: {
+    auth: {
+      getUser: jest.fn(),
+      onAuthStateChange: jest.fn(),
+    },
+    from: jest.fn(),
+  },
+}));
 jest.mock("@/hooks/useData");
 jest.mock("@/utils");
 

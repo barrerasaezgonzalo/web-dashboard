@@ -1,7 +1,24 @@
 import "@testing-library/jest-dom";
-import React, { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { render, waitFor } from "@testing-library/react";
 import { DataProvider, DataContext } from "@/context/DataContext";
+
+jest.mock("@/lib/supabaseClient", () => ({
+  supabase: {
+    auth: {
+      getUser: jest.fn(),
+      onAuthStateChange: jest.fn(),
+    },
+    from: jest.fn(),
+  },
+}));
+
+jest.mock("@/context/UserContext", () => ({
+  useUser: () => ({
+    userId: "123",
+    userName: "Test User",
+  }),
+}));
 
 describe("DataContext", () => {
   let fetchMock: jest.Mock;
@@ -88,8 +105,6 @@ describe("DataContext", () => {
       </DataProvider>,
     );
 
-    await contextValue.getNote();
-
     await waitFor(() => {
       expect(contextValue.note).toBe("Nota inicial");
     });
@@ -117,7 +132,7 @@ describe("DataContext", () => {
       expect(fetchMock).toHaveBeenCalledWith("/api/note", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: "Nueva nota" }),
+        body: JSON.stringify({ content: "Nueva nota", userId: "123" }),
       });
     });
     jest.useRealTimers();
@@ -287,15 +302,18 @@ describe("DataContext", () => {
   });
 
   test("getNote establece la nota como cadena vacía si la API no devuelve contenido (Cubre || '')", async () => {
-    fetchMock.mockResolvedValueOnce({
-      json: () => Promise.resolve({ user_id: 123 }),
-    });
-
-    fetchMock.mockResolvedValueOnce({
-      json: () => Promise.resolve({ temperatura: 20 }),
-    });
+    fetchMock
+      // 1️⃣ getNote
+      .mockResolvedValueOnce({
+        json: () => Promise.resolve({}),
+      })
+      // 2️⃣ fetchWheater
+      .mockResolvedValueOnce({
+        json: () => Promise.resolve({ temperatura: 20 }),
+      });
 
     let contextValue: any;
+
     const TestComponent = () => {
       contextValue = useContext(DataContext);
       return null;
@@ -309,10 +327,7 @@ describe("DataContext", () => {
 
     await waitFor(() => {
       expect(contextValue.note).toBe("");
-    });
-
-    await waitFor(() => {
-      expect(contextValue.wheater).toEqual({ temperatura: 20 });
+      expect(contextValue.wheater?.temperatura).toBe(20);
     });
   });
 });

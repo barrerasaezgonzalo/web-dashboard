@@ -1,7 +1,7 @@
 "use client";
 
 import { Smile } from "lucide-react";
-import { getGreeting } from "@/utils";
+import { getDaysRemainingUntil, getGreeting } from "@/utils";
 import { useTasks } from "@/hooks/useTasks";
 import { useUser } from "@/context/UserContext";
 import {
@@ -9,22 +9,21 @@ import {
   Line,
   XAxis,
   YAxis,
-  Tooltip,
   CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
-import { Task } from "@/types";
-
-interface TaskStatusChartProps {
-  tasks: Task[];
-}
 
 export const User: React.FC = ({}) => {
   const { tasks } = useTasks();
   const inDevTask = tasks.filter((task) => task.in_dev).length;
-  const pending = tasks.length - inDevTask;
+  const pending = tasks.filter(
+    (task) =>
+      !task.in_dev && task.date && getDaysRemainingUntil(task.date) >= 0,
+  ).length;
   const { userName } = useUser();
-
+  const overdueTasks = tasks.filter(
+    (task) => !task.in_dev && task.date && getDaysRemainingUntil(task.date) < 0,
+  ).length;
   const chartData = [
     {
       status: "Pendientes",
@@ -33,6 +32,10 @@ export const User: React.FC = ({}) => {
     {
       status: "En curso",
       count: tasks.filter((task) => task.in_dev).length,
+    },
+    {
+      status: "Vencidas",
+      count: overdueTasks,
     },
   ];
 
@@ -58,8 +61,18 @@ export const User: React.FC = ({}) => {
       </p>
 
       <p className="text-center text-lg">
-        Tienes <span className="font-bold">{inDevTask}</span> tareas en curso y{" "}
-        <span className="font-bold text-red-300">{pending}</span> pendientes.
+        Tienes <span className="font-bold">{inDevTask}</span> tareas en curso,{" "}
+        <span className="font-bold text-red-300">{pending}</span> pendientes
+        (aún a tiempo)
+        {overdueTasks > 0 && (
+          <>
+            {" "}
+            y{" "}
+            <span className="font-bold text-orange-300">
+              {overdueTasks} vencidas
+            </span>
+          </>
+        )}
       </p>
 
       <div className="flex p-4 bg-gray-800 mt-4">

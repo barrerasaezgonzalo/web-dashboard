@@ -220,5 +220,5 @@ export function getDaysRemainingUntil(date: string): number {
   const diffInMs = targetDate.getTime() - today.getTime();
   const diffInDays = Math.ceil(diffInMs / 86400000);
 
-  return Math.max(diffInDays, 0);
+  return diffInDays;
 }
