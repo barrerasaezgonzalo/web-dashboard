@@ -62,7 +62,7 @@ export const User: React.FC = ({}) => {
 
       <p className="text-center text-lg">
         Tienes <span className="font-bold">{inDevTask}</span> tareas en curso,{" "}
-        <span className="font-bold text-red-300">{pending}</span> pendientes
+        <span className="font-bold text-red-300">{pending} pendientes </span>
         (aún a tiempo)
         {overdueTasks > 0 && (
           <>
