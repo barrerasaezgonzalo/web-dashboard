@@ -31,19 +31,24 @@ const Tasks: React.FC = () => {
   } = useTasks();
   const { toast, openToast, closeToast } = useToast();
 
-  const showSuccess = (message: string) => {
+  const showToast = (message: string) => {
     openToast({
       message,
       onConfirm: closeToast,
     });
   };
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     if (!title.trim()) return;
-    addTask(title, date);
-    setTitle("");
-    setDate("");
-    showSuccess("La tarea fue agregada correctamente");
+    try {
+      const task = await addTask(title, date);
+      setTitle("");
+      setDate("");
+      showToast(`Tarea "${task.title}" agregada correctamente`);
+    } catch (error: unknown) {
+      console.error(error);
+      showToast("La tarea no se pudo agregar. Intenta nuevamente");
+    }
   };
 
   const handleEdit = (task: Task) => {
@@ -58,7 +63,7 @@ const Tasks: React.FC = () => {
     setEditingTaskId("");
     setTitle("");
     setDate("");
-    showSuccess("La tarea fue guardada correctamente");
+    showToast("La tarea fue guardada correctamente");
   };
 
   const handleRemove = (taskId: string) => removeTask(taskId);

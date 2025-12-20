@@ -3,6 +3,7 @@ import {
   FinancialHistory,
   Indicator,
   OrderedFinancialHistory,
+  ParsedData,
   PromptData,
   Task,
   Trend,
@@ -48,7 +49,7 @@ export const getGreeting = () => {
   return "Buenas noches";
 };
 
-export function parsePromptResponse(raw: string): any {
+export function parsePromptResponse(raw: string): ParsedData {
   let cleaned = raw
     .replace(/^\s*```+\s*/, "")
     .replace(/\s*```+\s*$/, "")

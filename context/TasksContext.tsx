@@ -14,7 +14,7 @@ export interface TaskContextType {
   tasks: Task[];
   tasksLoading: boolean;
   getTasks: (id: string) => Promise<void>;
-  addTask: (title: string, date?: string) => void;
+  addTask: (title: string, date?: string) => Promise<Task>;
   toggleTaskInDev: (id: string) => void;
   removeTask: (id: string) => void;
   editTask: (id: string, newTitle: string, newDate?: string) => void;
@@ -61,17 +61,24 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
     }
   }, [userId, getTasks]);
 
-  const addTask = async (title: string, date?: string) => {
+  const addTask = async (title: string, date?: string): Promise<Task> => {
     try {
       const response = await fetch("/api/tasks/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title, userId, date: date ?? null }),
       });
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.message || "Error al agregar tarea");
+      }
       const data = await response.json();
-      setTasks((prev) => [...prev, data[0]]);
+      const task: Task = data[0];
+      setTasks((prev) => [...prev, task]);
+      return task;
     } catch (error) {
       console.error("Error al agregar tarea:", error);
+      throw error;
     }
   };
 

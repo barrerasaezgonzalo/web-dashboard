@@ -9,7 +9,7 @@ export default async function handler(
     return res.status(405).json({ error: "Method not allowed" });
 
   if (req.method === "POST") {
-    const { title, authData, date } = req.body;
+    const { title, userId, date } = req.body;
 
     const { data: maxOrderData, error: maxOrderError } = await supabase
       .from("todos")
@@ -34,7 +34,7 @@ export default async function handler(
           title,
           in_dev: false,
           order: nextOrder,
-          auth_data: authData,
+          auth_data: userId,
           date: date || null,
         },
       ])
