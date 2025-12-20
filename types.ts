@@ -183,3 +183,5 @@ export interface TaskActionButtonProps {
   dragging?: boolean;
   dragHandleProps?: DraggableProvidedDragHandleProps;
 }
+
+export type Feed = "gnews" | "biobio" | "latercera";

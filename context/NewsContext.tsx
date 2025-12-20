@@ -1,11 +1,13 @@
 "use client";
 
-import { News } from "@/types";
+import { Feed, News } from "@/types";
 import React, { createContext, useEffect, useState, ReactNode } from "react";
 
 export interface NewsContextType {
   news: News;
   newsLoading: boolean;
+  selectedFeed: Feed;
+  setSelectedFeed: (feed: Feed) => void;
   getNews: () => Promise<void>;
   bloquearNews12Horas: () => void;
 }
@@ -30,12 +32,19 @@ export const NewsProvider: React.FC<NewsProviderProps> = ({ children }) => {
   const [news, setNews] = useState<News>({ totalArticles: 0, articles: [] });
   const [newsLoading, setNewsLoading] = useState(false);
   const [newsCache, setNewsCache] = useState<News | null>(null);
+  const [selectedFeed, setSelectedFeed] = useState<Feed>("gnews");
+
+  const cacheKey = `newsCache_${selectedFeed}`;
+  const cacheTimeKey = `newsCacheTime_${selectedFeed}`;
+
+  useEffect(() => {
+    getNews();
+  }, [selectedFeed]);
 
   useEffect(() => {
     if (!canAccessBrowserStorage(getBrowserWindow())) return;
-
-    const stored = window.localStorage.getItem("newsCache");
-    const storedTime = window.localStorage.getItem("newsCacheTime");
+    const stored = window.localStorage.getItem(cacheKey);
+    const storedTime = window.localStorage.getItem(cacheTimeKey);
 
     if (stored && storedTime) {
       const ahora = Date.now();
@@ -44,8 +53,8 @@ export const NewsProvider: React.FC<NewsProviderProps> = ({ children }) => {
         setNewsCache(data);
         setNews(data);
       } else {
-        window.localStorage.removeItem("newsCache");
-        window.localStorage.removeItem("newsCacheTime");
+        window.localStorage.removeItem(cacheKey);
+        window.localStorage.removeItem(cacheTimeKey);
       }
     }
   }, []);
@@ -54,26 +63,33 @@ export const NewsProvider: React.FC<NewsProviderProps> = ({ children }) => {
     setNewsLoading(true);
     try {
       if (typeof window !== "undefined") {
-        const cacheStr = window.localStorage.getItem("newsCache");
-        const cacheTimeStr = window.localStorage.getItem("newsCacheTime");
+        const cacheStr = window.localStorage.getItem(cacheKey);
+        const cacheTimeStr = window.localStorage.getItem(cacheTimeKey);
         const now = Date.now();
 
         if (cacheStr && cacheTimeStr && now < parseInt(cacheTimeStr)) {
-          console.log("Noticias cargadas desde cache");
+          console.log("Noticias cargadas desde cache ", cacheKey);
           const cached = JSON.parse(cacheStr);
           setNews(cached);
           return;
         }
       }
 
-      const response = await fetch("/api/news");
+      const feedUrls: Record<Feed, string> = {
+        gnews: "/api/news",
+        biobio: "/api/rss?url=https://feeds.feedburner.com/radiobiobio/NNeJ",
+        latercera:
+          "/api/rss?url=https://www.latercera.com/arc/outboundfeeds/rss/?outputType=xml",
+      };
+
+      const response = await fetch(feedUrls[selectedFeed]);
       const data = await response.json();
 
       setNews(data);
       if (typeof window !== "undefined") {
-        window.localStorage.setItem("newsCache", JSON.stringify(data));
+        window.localStorage.setItem(cacheKey, JSON.stringify(data));
         window.localStorage.setItem(
-          "newsCacheTime",
+          cacheTimeKey,
           (Date.now() + 12 * 60 * 60 * 1000).toString(),
         ); // válida 12 horas
       }
@@ -90,7 +106,7 @@ export const NewsProvider: React.FC<NewsProviderProps> = ({ children }) => {
   const bloquearNews12Horas = () => {
     if (typeof window !== "undefined") {
       window.localStorage.setItem(
-        "newsCacheTime",
+        cacheTimeKey,
         (Date.now() + 12 * 60 * 60 * 1000).toString(),
       ); // bloquea 12h
       setNewsCache(null);
@@ -107,6 +123,8 @@ export const NewsProvider: React.FC<NewsProviderProps> = ({ children }) => {
       value={{
         news,
         newsLoading,
+        selectedFeed,
+        setSelectedFeed,
         getNews,
         bloquearNews12Horas,
       }}
