@@ -3,9 +3,9 @@ import { Feed, NewsArticle } from "@/types";
 import { memo } from "react";
 
 const feeds: { label: string; value: Feed }[] = [
-  { label: "GNews", value: "gnews" },
   { label: "BioBio", value: "biobio" },
   { label: "La Tercera", value: "latercera" },
+  { label: "GNews", value: "gnews" },
 ];
 
 const News: React.FC = ({}) => {
@@ -34,18 +34,45 @@ const News: React.FC = ({}) => {
         <label htmlFor="feed-select" className="font-medium">
           Seleccionar fuente:
         </label>
-        <select
-          id="feed-select"
-          value={selectedFeed}
-          onChange={handleFeedChange}
-          className="border border-gray-300 rounded px-2 py-1"
-        >
-          {feeds.map((f) => (
-            <option key={f.value} value={f.value}>
-              {f.label}
-            </option>
-          ))}
-        </select>
+        <div className="relative inline-block w-30">
+          <select
+            className="
+            appearance-none
+            w-full
+            border 
+            border-gray-300 
+            rounded-lg 
+            p-2 
+            bg-white 
+            text-gray-800 
+            focus:outline-none"
+            id="feed-select"
+            value={selectedFeed}
+            onChange={handleFeedChange}
+          >
+            {feeds.map((f) => (
+              <option key={f.value} value={f.value}>
+                {f.label}
+              </option>
+            ))}
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+            <svg
+              className="w-4 h-4 text-gray-500"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </div>
+        </div>
       </div>
       {newsLoading ? (
         <p>Cargando noticias...</p>

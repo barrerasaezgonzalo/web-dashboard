@@ -19,6 +19,10 @@ import { NewsProvider } from "@/context/NewsContext";
 import { supabase } from "@/lib/supabaseClient";
 import { useUser } from "@/context/UserContext";
 import Player from "@/components/Player/Player";
+import PersonalFinance from "@/components/PersonalFinance/PersonalFinance";
+import { Movements } from "@/components/PersonalFinance/Movements";
+import { Pending } from "@/components/PersonalFinance/Pending";
+import { PersonalFinanceProvider } from "@/context/PersonalFinanceContext";
 
 const Task = dynamic(() => import("@/components/Task/Task"), {
   ssr: false,
@@ -114,6 +118,12 @@ export const App: React.FC = () => {
                   <ErrorBoundary>
                     <Prompt />
                   </ErrorBoundary>
+
+                  <ErrorBoundary>
+                    <PersonalFinanceProvider>
+                      <PersonalFinance />
+                    </PersonalFinanceProvider>
+                  </ErrorBoundary>
                 </div>
 
                 {/* Column 3 */}
@@ -128,6 +138,16 @@ export const App: React.FC = () => {
 
                   <ErrorBoundary>
                     <Gpt />
+                  </ErrorBoundary>
+
+                  <ErrorBoundary>
+                    <PersonalFinanceProvider>
+                      <Movements />
+                    </PersonalFinanceProvider>
+                  </ErrorBoundary>
+
+                  <ErrorBoundary>
+                    <Pending />
                   </ErrorBoundary>
                 </div>
 

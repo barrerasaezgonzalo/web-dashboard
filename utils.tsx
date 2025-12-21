@@ -1,12 +1,26 @@
 import {
+  financeHistorySchema,
+  financeResumeSchema,
+} from "./components/PersonalFinance/movementSchema";
+import {
+  AhorrosCategoryLabels,
+  GastosCategoryLabels,
+  IngresosCategoryLabels,
+} from "./constants";
+import {
+  FinanceHistoryItem,
   Financial,
   FinancialHistory,
   Indicator,
+  MonthlyAccumulator,
+  Movement,
   OrderedFinancialHistory,
   ParsedData,
+  PersonalFinanceMovement,
   PromptData,
   Task,
   Trend,
+  TrendKey,
 } from "./types";
 
 export const formatCLP = (valor: number | string) => {
@@ -99,9 +113,6 @@ export function mapSparklineData(history: FinancialHistory[]) {
   }));
 }
 
-export type TrendKey = "dolar" | "utm" | "btc" | "eth";
-export type TrendResult = "up" | "down" | "flat";
-
 export function getTrend(
   history: OrderedFinancialHistory,
   key: TrendKey,
@@ -175,7 +186,6 @@ export function formatFechaHora(date: Date) {
     second: "2-digit",
     hour12: false,
   });
-
   return { fecha, hora };
 }
 
@@ -222,4 +232,173 @@ export function getDaysRemainingUntil(date: string): number {
   const diffInDays = Math.ceil(diffInMs / 86400000);
 
   return diffInDays;
+}
+
+export function formatMonthYear(dateStr: string): string {
+  const date = new Date(dateStr);
+  const formatter = new Intl.DateTimeFormat("es-CL", {
+    month: "short",
+    year: "numeric",
+  });
+  let formatted = formatter.format(date); // ej: "nov. 2025"
+  formatted = formatted.replace(".", ""); // "nov 2025"
+  formatted = formatted.charAt(0).toUpperCase() + formatted.slice(1); // "Nov 2025"
+
+  return formatted;
+}
+
+export function formatMonthYearFromYMD(year: number, month: number): string {
+  const monthNames = [
+    "Ene",
+    "Feb",
+    "Mar",
+    "Abr",
+    "May",
+    "Jun",
+    "Jul",
+    "Ago",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dic",
+  ];
+  return `${monthNames[month - 1]} ${year}`;
+}
+
+export const generateMonthOptions = () => {
+  const options = [];
+  const start = new Date(2025, 10);
+  const today = new Date();
+  let current = start;
+
+  while (current <= today) {
+    const month = current.getMonth() + 1;
+    const year = current.getFullYear();
+    const value = `${String(month).padStart(2, "0")}-${year}`;
+
+    options.push(
+      <option key={value} value={value}>
+        {formatMonthYearFromYMD(year, month)}
+      </option>,
+    );
+
+    current.setMonth(current.getMonth() + 1);
+  }
+
+  return options;
+};
+
+export const getCategoryLabels = (type: "ingresos" | "gastos" | "ahorros") => {
+  switch (type) {
+    case "ingresos":
+      return IngresosCategoryLabels;
+    case "gastos":
+      return GastosCategoryLabels;
+    case "ahorros":
+      return AhorrosCategoryLabels;
+  }
+};
+
+export const getCategoryLabel = (
+  type: "ingresos" | "gastos" | "ahorros",
+  category: string,
+) => {
+  switch (type) {
+    case "ingresos":
+      return IngresosCategoryLabels[category as string] || category;
+    case "gastos":
+      return GastosCategoryLabels[category as string] || category;
+    case "ahorros":
+      return AhorrosCategoryLabels[category as string] || category;
+    default:
+      return category;
+  }
+};
+
+export function calculateMonthlyResume(
+  movements: PersonalFinanceMovement[],
+  month: string, // "MM-YYYY"
+) {
+  const filtered = movements.filter((m) => {
+    const [year, monthValue] = m.date.split("-");
+    return `${monthValue}-${year}` === month;
+  });
+
+  const resume = {
+    ingresos: 0,
+    gastos: 0,
+    ahorros: 0,
+    saldo: 0,
+  };
+
+  for (const m of filtered) {
+    switch (m.type) {
+      case "ingresos":
+        resume.ingresos += m.value;
+        break;
+      case "gastos":
+        resume.gastos += m.value;
+        break;
+      case "ahorros":
+        resume.ahorros += m.value;
+        break;
+    }
+  }
+
+  resume.saldo = resume.ingresos - resume.gastos;
+
+  return financeResumeSchema.parse(resume);
+}
+
+export function calculateFinanceHistory(movements: PersonalFinanceMovement[]) {
+  const byMonth: Record<string, MonthlyAccumulator> = {};
+
+  for (const m of movements) {
+    const [year, month] = m.date.split("-");
+    const key = `${month}-${year}`; // MM-YYYY
+
+    if (!byMonth[key]) {
+      byMonth[key] = {
+        ingresos: 0,
+        gastos: 0,
+        ahorros: 0,
+      };
+    }
+
+    byMonth[key][m.type] += m.value;
+  }
+
+  const history = Object.entries(byMonth)
+    .sort(([a], [b]) => {
+      const [ma, ya] = a.split("-").map(Number);
+      const [mb, yb] = b.split("-").map(Number);
+      return ya !== yb ? ya - yb : ma - mb;
+    })
+    .map(([date, values]) => {
+      const saldo = values.ingresos - values.gastos;
+
+      return {
+        date,
+        ingresos: values.ingresos,
+        gastos: values.gastos,
+        ahorros: values.ahorros,
+        saldo,
+      };
+    });
+
+  return financeHistorySchema.parse(history);
+}
+
+export function buildFinanceHistory(
+  movements: PersonalFinanceMovement[],
+  months: string[], // ["02-2025", "03-2025", ...]
+): FinanceHistoryItem[] {
+  return months.map((month) => {
+    const resume = calculateMonthlyResume(movements, month);
+
+    return {
+      date: month,
+      ...resume,
+    };
+  });
 }

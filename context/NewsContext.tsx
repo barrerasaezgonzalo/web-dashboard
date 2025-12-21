@@ -8,7 +8,7 @@ export interface NewsContextType {
   newsLoading: boolean;
   selectedFeed: Feed;
   setSelectedFeed: (feed: Feed) => void;
-  getNews: () => Promise<void>;
+  getNews: (feed?: Feed) => Promise<void>;
   bloquearNews12Horas: () => void;
 }
 
@@ -31,104 +31,61 @@ export const getBrowserWindow = () => {
 export const NewsProvider: React.FC<NewsProviderProps> = ({ children }) => {
   const [news, setNews] = useState<News>({ totalArticles: 0, articles: [] });
   const [newsLoading, setNewsLoading] = useState(false);
-  const [newsCache, setNewsCache] = useState<News | null>(null);
-  const [selectedFeed, setSelectedFeed] = useState<Feed>("gnews");
+  const [selectedFeed, setSelectedFeed] = useState<Feed>("biobio");
 
-  const cacheKey = `newsCache_${selectedFeed}`;
-  const cacheTimeKey = `newsCacheTime_${selectedFeed}`;
+  // --- Función unificada de lectura de cache ---
+  const readCache = (feed: Feed): News | null => {
+    if (!canAccessBrowserStorage(getBrowserWindow())) return null;
 
-  useEffect(() => {
-    const fetchNews = async () => {
-      setNewsLoading(true);
-      try {
-        let cached: News | null = null;
-        if (typeof window !== "undefined") {
-          const cacheStr = window.localStorage.getItem(cacheKey);
-          const cacheTimeStr = window.localStorage.getItem(cacheTimeKey);
-          if (cacheStr && cacheTimeStr && Date.now() < parseInt(cacheTimeStr)) {
-            cached = JSON.parse(cacheStr);
-          }
-        }
+    const cacheKey = `newsCache_${feed}`;
+    const cacheTimeKey = `newsCacheTime_${feed}`;
+    const cacheStr = window.localStorage.getItem(cacheKey);
+    const cacheTimeStr = window.localStorage.getItem(cacheTimeKey);
 
-        if (cached) {
-          setNews(cached);
-          console.log("Noticias desde cache");
-          return;
-        }
-
-        const feedUrls: Record<Feed, string> = {
-          gnews: "/api/news",
-          biobio: "...",
-          latercera: "...",
-        };
-        const res = await fetch(feedUrls[selectedFeed]);
-        const data: News = await res.json();
-
-        setNews(data);
-        if (typeof window !== "undefined") {
-          window.localStorage.setItem(cacheKey, JSON.stringify(data));
-          window.localStorage.setItem(
-            cacheTimeKey,
-            (Date.now() + 12 * 60 * 60 * 1000).toString(),
-          );
-        }
-        console.log("Noticias desde API");
-      } catch (error) {
-        console.error("Error al obtener noticias:", error);
-        setNews({ totalArticles: 0, articles: [], _fallback: true });
-      } finally {
-        setNewsLoading(false);
-      }
-    };
-
-    fetchNews();
-  }, [selectedFeed]);
-
-  useEffect(() => {
-    if (!canAccessBrowserStorage(getBrowserWindow())) return;
-    const stored = window.localStorage.getItem(cacheKey);
-    const storedTime = window.localStorage.getItem(cacheTimeKey);
-
-    if (stored && storedTime) {
-      const ahora = Date.now();
-      if (ahora - parseInt(storedTime) < 12 * 60 * 60 * 1000) {
-        const data = JSON.parse(stored);
-        setNewsCache(data);
-        setNews(data);
+    if (cacheStr && cacheTimeStr) {
+      const expiresAt = parseInt(cacheTimeStr);
+      if (Date.now() < expiresAt) {
+        return JSON.parse(cacheStr);
       } else {
         window.localStorage.removeItem(cacheKey);
         window.localStorage.removeItem(cacheTimeKey);
       }
     }
-  }, []);
+    return null;
+  };
 
-  const getNews = async () => {
-    console.log("getNews ejecutado para feed", selectedFeed);
+  // --- Función unificada de fetch de noticias ---
+  const getNews = async (feed: Feed = selectedFeed) => {
     setNewsLoading(true);
     try {
+      const cached = readCache(feed);
+      if (cached) {
+        setNews(cached);
+        console.log("Noticias desde cache:", feed);
+        return;
+      }
+
       const feedUrls: Record<Feed, string> = {
         gnews: "/api/news",
         biobio: "/api/rss?url=https://feeds.feedburner.com/radiobiobio/NNeJ",
         latercera:
           "/api/rss?url=https://www.latercera.com/arc/outboundfeeds/rss/?outputType=xml",
       };
-      const url = feedUrls[selectedFeed];
-      console.log("Fetch a URL:", url);
+      const url = feedUrls[feed];
 
       const response = await fetch(url);
-      console.log("response.ok", response.ok);
-
-      const data = await response.json();
-      console.log("Noticias recibidas:", data);
+      const data: News = await response.json();
 
       setNews(data);
-      if (typeof window !== "undefined") {
-        window.localStorage.setItem(cacheKey, JSON.stringify(data));
+      if (canAccessBrowserStorage(getBrowserWindow())) {
+        window.localStorage.setItem(`newsCache_${feed}`, JSON.stringify(data));
         window.localStorage.setItem(
-          cacheTimeKey,
+          `newsCacheTime_${feed}`,
           (Date.now() + 12 * 60 * 60 * 1000).toString(),
         );
       }
+
+      console.log("Noticias desde API:", feed);
     } catch (error) {
       console.error("Error al obtener noticias:", error);
       setNews({ totalArticles: 0, articles: [], _fallback: true });
@@ -137,20 +94,25 @@ export const NewsProvider: React.FC<NewsProviderProps> = ({ children }) => {
     }
   };
 
+  // --- Función para bloquear noticias 12h ---
   const bloquearNews12Horas = () => {
-    if (typeof window !== "undefined") {
-      window.localStorage.setItem(
-        cacheTimeKey,
-        (Date.now() + 12 * 60 * 60 * 1000).toString(),
-      ); // bloquea 12h
-      setNewsCache(null);
-      getNews();
-    }
+    if (!canAccessBrowserStorage(getBrowserWindow())) return;
+
+    const cacheTimeKey = `newsCacheTime_${selectedFeed}`;
+    window.localStorage.setItem(
+      cacheTimeKey,
+      (Date.now() + 12 * 60 * 60 * 1000).toString(),
+    );
+    // Actualizar el estado para reflejar bloqueo
+    setNews({ totalArticles: 0, articles: [], _fallback: true });
+    // Refrescar noticias desde API si se desea
+    getNews();
   };
 
+  // --- Efecto principal: actualizar noticias al cambiar feed ---
   useEffect(() => {
-    getNews();
-  }, []);
+    getNews(selectedFeed);
+  }, [selectedFeed]);
 
   return (
     <NewsContext.Provider

@@ -1,5 +1,13 @@
 import { DraggableProvidedDragHandleProps } from "@hello-pangea/dnd";
 import { ReactNode } from "react";
+import { z } from "zod";
+import {
+  financeHistoryItemSchema,
+  financeHistorySchema,
+  financeResumeSchema,
+  movementDomainSchema,
+  personalFinanceMovementSchema,
+} from "./components/PersonalFinance/movementSchema";
 
 export interface FinancialHistory {
   id?: string;
@@ -174,6 +182,9 @@ export interface TaskInputProps {
   handleSave: () => void;
 }
 
+export type TrendKey = "dolar" | "utm" | "btc" | "eth";
+export type TrendResult = "up" | "down" | "flat";
+
 export interface TaskActionButtonProps {
   icon: React.ReactNode;
   tooltipType?: "default" | "success" | "danger";
@@ -185,3 +196,76 @@ export interface TaskActionButtonProps {
 }
 
 export type Feed = "gnews" | "biobio" | "latercera";
+
+export type MovementTypes = "gastos" | "ahorros" | "ingresos";
+
+export type IngresosCategory = "sueldo" | "otros";
+export type GastosCategory =
+  | "arriendo"
+  | "gastos_comunes"
+  | "luz"
+  | "agua"
+  | "fa"
+  | "celular"
+  | "internet"
+  | "apv"
+  | "fintual"
+  | "comisiones"
+  | "fondo_mutuo"
+  | "bip"
+  | "mercado_pago";
+export type AhorrosCategory =
+  | "fintual"
+  | "fintual_dolares"
+  | "fondo_mutuo"
+  | "us_home"
+  | "dorada_be"
+  | "cripto_bitcoin"
+  | "cripto_eth"
+  | "nvidia";
+
+export type PersonalFinance =
+  | {
+      id: string;
+      type: "ingresos";
+      date: string;
+      value: number;
+      category: IngresosCategory;
+    }
+  | {
+      id: string;
+      type: "gastos";
+      date: string;
+      value: number;
+      category: GastosCategory;
+    }
+  | {
+      id: string;
+      type: "ahorros";
+      date: string;
+      value: number;
+      category: AhorrosCategory;
+    };
+
+export type FinanceHistoryItem = z.infer<typeof financeHistoryItemSchema>;
+
+export type FinanceHistory = z.infer<typeof financeHistorySchema>;
+
+export type FinanceResume = z.infer<typeof financeResumeSchema>;
+export interface FinanceHistoryProps {
+  data: FinanceHistoryItem[];
+}
+
+export type PersonalFinanceMovement = z.infer<
+  typeof personalFinanceMovementSchema
+>;
+
+export type MonthlyAccumulator = {
+  ingresos: number;
+  gastos: number;
+  ahorros: number;
+};
+
+export type Movement = z.infer<typeof movementDomainSchema>;
+
+export type ResumeType = "ingresos" | "gastos" | "ahorros";

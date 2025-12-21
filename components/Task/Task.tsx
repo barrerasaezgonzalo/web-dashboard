@@ -12,14 +12,15 @@ import {
 import { reorderTasks } from "@/utils";
 import { Task } from "@/types";
 import { useToast } from "@/hooks/useToast";
-import { TaskInputComponent } from "./TaskInput";
 import { TaskItem } from "./TaskItem";
+import { TaskInput } from "./TaskInput";
 
 const Tasks: React.FC = () => {
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [editingTaskId, setEditingTaskId] = useState("");
   const inputRef = useRef<HTMLInputElement | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     tasks,
@@ -40,7 +41,9 @@ const Tasks: React.FC = () => {
 
   const handleAdd = async () => {
     if (!title.trim()) return;
+
     try {
+      setIsLoading(true);
       const task = await addTask(title, date);
       setTitle("");
       setDate("");
@@ -48,6 +51,8 @@ const Tasks: React.FC = () => {
     } catch (error: unknown) {
       console.error(error);
       showToast("La tarea no se pudo agregar. Intenta nuevamente");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -58,18 +63,23 @@ const Tasks: React.FC = () => {
     setDate(task.date!);
   };
 
-  const handleSave = () => {
-    editTask(editingTaskId, title, date);
-    setEditingTaskId("");
-    setTitle("");
-    setDate("");
-    showToast("La tarea fue guardada correctamente");
+  const handleSave = async () => {
+    try {
+      setIsLoading(true);
+      editTask(editingTaskId, title, date);
+      setEditingTaskId("");
+      setTitle("");
+      setDate("");
+      showToast("La tarea fue guardada correctamente");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleRemove = (taskId: string) => removeTask(taskId);
   const handleTaskToggle = (taskId: string) => toggleTaskInDev(taskId);
 
-  const confirmDelete = (taskId: string) => {
+  const handleDelete = (taskId: string) => {
     openToast({
       message: "¿Estás seguro que deseas eliminar la tarea?",
       onConfirm: () => handleRemove(taskId),
@@ -130,7 +140,7 @@ const Tasks: React.FC = () => {
         Lista de pendientes
       </h2>
 
-      <TaskInputComponent
+      <TaskInput
         title={title}
         setTitle={setTitle}
         date={date}
@@ -140,6 +150,7 @@ const Tasks: React.FC = () => {
         editingTaskId={editingTaskId}
         handleAdd={handleAdd}
         handleSave={handleSave}
+        isLoading={isLoading}
       />
 
       <DragDropContext onDragEnd={handleDragEnd}>
@@ -164,7 +175,7 @@ const Tasks: React.FC = () => {
                       provided={provided}
                       snapshot={snapshot}
                       handleEdit={handleEdit}
-                      handleRemove={confirmDelete}
+                      handleRemove={handleDelete}
                       handleTaskToggle={handleTaskToggle}
                     />
                   )}

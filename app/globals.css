@@ -7,3 +7,17 @@
 .recharts-surface *:focus {
   outline: none;
 }
+
+.privacy-blur {
+  filter: blur(8px);
+  transition: filter 0.3s ease;
+  user-select: none;
+  pointer-events: none;
+}
+
+.privacy-blur-chart {
+  filter: blur(2px);
+  transition: all 0.3s ease-in-out;
+  pointer-events: none;
+  opacity: 0.9;
+}
