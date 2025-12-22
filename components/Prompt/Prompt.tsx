@@ -9,6 +9,7 @@ import { AutoTextarea } from "./AutoTextareaProps";
 import { ActionButtons } from "./ActionButtons";
 import { ParsedDataView } from "./ParsedData";
 import { memo } from "react";
+import { SquareTerminal } from "lucide-react";
 
 export const PromptComponent: React.FC = () => {
   const {
@@ -35,8 +36,11 @@ export const PromptComponent: React.FC = () => {
       aria-labelledby="prompt-heading"
       className="bg-amber-600 text-black p-4 rounded shadow min-h-[300px]"
     >
-      <h2 id="prompt-heading" className="text-xl font-bold mb-4 border-b">
-        Mejora tu Prompt
+      <h2
+        id="prompt-heading"
+        className="flex gap-2 text-xl font-bold mb-4 border-b"
+      >
+        <SquareTerminal size={25} /> Mejora tu Prompt
       </h2>
 
       <AutoTextarea value={input} onChange={setInput} />

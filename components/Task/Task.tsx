@@ -14,6 +14,7 @@ import { Task } from "@/types";
 import { useToast } from "@/hooks/useToast";
 import { TaskItem } from "./TaskItem";
 import { TaskInput } from "./TaskInput";
+import { ListChecks } from "lucide-react";
 
 const Tasks: React.FC = () => {
   const [title, setTitle] = useState("");
@@ -66,7 +67,7 @@ const Tasks: React.FC = () => {
   const handleSave = async () => {
     try {
       setIsLoading(true);
-      editTask(editingTaskId, title, date);
+      await editTask(editingTaskId, title, date);
       setEditingTaskId("");
       setTitle("");
       setDate("");
@@ -136,7 +137,11 @@ const Tasks: React.FC = () => {
         />
       )}
 
-      <h2 id="tasks-heading" className="text-xl font-bold mb-4 border-b">
+      <h2
+        id="tasks-heading"
+        className="flex gap-2 text-xl font-bold mb-4 border-b"
+      >
+        <ListChecks size={25} />
         Lista de pendientes
       </h2>
 

@@ -1,5 +1,5 @@
-import React from "react";
-import { CirclePlus, SquarePen, Trash } from "lucide-react";
+import React, { useContext, useEffect, useRef } from "react";
+import { CirclePlus, Logs, SquarePen, Trash } from "lucide-react";
 import { modalTitles, typeLabels } from "@/constants";
 import {
   formatCLP,
@@ -20,8 +20,9 @@ import { Toast } from "../ui/Toast";
 import { movementSchema } from "./movementSchema";
 import { usePrivacyMode } from "@/hooks/usePrivacyMode";
 import { usePersonalFinance } from "@/hooks/usePersonalFinance";
+import { PersonalFinanceContext } from "@/context/PersonalFinanceContext";
 
-export function Movements() {
+export default function Movements() {
   const [modalType, setModalType] = React.useState<MovementTypes | null>(null);
   const [category, setCategory] = React.useState("");
   const [value, setValue] = React.useState<string>("");
@@ -39,8 +40,8 @@ export function Movements() {
 
   const { toast, openToast, closeToast } = useToast();
   const { isPrivate } = usePrivacyMode();
-  const { movements, addMovement, updateMovement, deleteMovement } =
-    usePersonalFinance();
+  const { movements } = useContext(PersonalFinanceContext)!;
+  const { addMovement, updateMovement, deleteMovement } = usePersonalFinance();
 
   const filtrados: PersonalFinance[] = movements.filter(
     (item: PersonalFinance) => {
@@ -48,6 +49,14 @@ export function Movements() {
       return item.type === selectedType && `${month}-${year}` === selectedMonth;
     },
   );
+
+  const inputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    if (modalType && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [modalType]);
+
   const total = filtrados.reduce((acc, curr) => acc + curr.value, 0);
 
   const validateForm = (): boolean => {
@@ -167,9 +176,12 @@ export function Movements() {
       <div className="max-w-4xl mx-auto">
         <div className="bg-white text-black p-6 rounded-xl shadow-lg">
           <div className="flex flex-wrap items-center justify-between mb-6 border-b pb-4 gap-3">
-            <h2 className="text-2xl font-bold text-gray-800">Movimientos</h2>
+            <h2 className="text-xl font-bold mb-2 border-b pb-1 w-full flex gap-2">
+              <Logs size={25} />
+              Movimientos
+            </h2>
 
-            <div className="flex gap-3">
+            <div className="flex gap-3 w-full justify-between">
               <div className="relative">
                 <select
                   className="appearance-none border border-gray-300 rounded-lg p-2 pr-10 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -291,7 +303,6 @@ export function Movements() {
                 className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2 cursor-pointer"
               >
                 <CirclePlus size={24} />
-                <span>Agregar</span>
               </button>
             </div>
 
@@ -352,6 +363,7 @@ export function Movements() {
                       </label>
                       <input
                         type="text"
+                        ref={inputRef}
                         placeholder="Ingresa el monto"
                         value={value}
                         onKeyDown={handleKeyDown}

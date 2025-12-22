@@ -269,3 +269,20 @@ export type MonthlyAccumulator = {
 export type Movement = z.infer<typeof movementDomainSchema>;
 
 export type ResumeType = "ingresos" | "gastos" | "ahorros";
+
+export type Summary = {
+  ingresos: number;
+  gastos: number;
+  ahorros: number;
+  saldo: number;
+};
+
+export type PersonalFinanceContextType = {
+  movements: PersonalFinance[];
+  summary: Summary;
+  loading: boolean;
+  getMovements: () => Promise<void>;
+  addMovement: (m: PersonalFinance) => Promise<void>;
+  updateMovement: (updated: PersonalFinanceMovement) => Promise<void>;
+  deleteMovement: (id: string) => void;
+};

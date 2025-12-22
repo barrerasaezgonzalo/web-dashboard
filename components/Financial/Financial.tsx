@@ -5,6 +5,7 @@ import { memo, useCallback, useMemo } from "react";
 import { LineChart, Line, ResponsiveContainer } from "recharts";
 import FinancialIndicator from "./FinancialIndicator";
 import { useFinancial } from "@/hooks/useFinancial";
+import { ChartCandlestick } from "lucide-react";
 
 const Financial: React.FC = ({}) => {
   const { financial } = useFinancial();
@@ -39,7 +40,8 @@ const Financial: React.FC = ({}) => {
   );
   return (
     <div className="bg-blue-50 text-black p-4 rounded-lg shadow-md">
-      <h2 className="text-xl font-bold mb-4 border-b pb-2">
+      <h2 className="text-xl font-bold flex gap-2 mb-4 border-b pb-2">
+        <ChartCandlestick size={25} />
         Indicadores Financieros
       </h2>
       <div

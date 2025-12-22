@@ -20,9 +20,9 @@ import { supabase } from "@/lib/supabaseClient";
 import { useUser } from "@/context/UserContext";
 import Player from "@/components/Player/Player";
 import PersonalFinance from "@/components/PersonalFinance/PersonalFinance";
-import { Movements } from "@/components/PersonalFinance/Movements";
 import { Pending } from "@/components/PersonalFinance/Pending";
 import { PersonalFinanceProvider } from "@/context/PersonalFinanceContext";
+import { Routine } from "@/components/Routine/Routine";
 
 const Task = dynamic(() => import("@/components/Task/Task"), {
   ssr: false,
@@ -38,6 +38,11 @@ const Financial = dynamic(() => import("@/components/Financial/Financial"), {
   ssr: false,
   loading: () => <Skeleton rows={5} height={40} />,
 });
+
+const Movements = dynamic(
+  () => import("@/components/PersonalFinance/Movements"),
+  { ssr: false, loading: () => <Skeleton rows={5} height={40} /> },
+);
 
 export const App: React.FC = () => {
   const columnStyle = "flex flex-col gap-4";
@@ -72,106 +77,109 @@ export const App: React.FC = () => {
     );
   }
 
+  // Columnas
+  const column1 = (
+    <div className={columnStyle}>
+      <ErrorBoundary>
+        <User />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <Player />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <NewsProvider>
+          <News />
+        </NewsProvider>
+      </ErrorBoundary>
+    </div>
+  );
+
+  const column2 = (
+    <div className={columnStyle}>
+      <ErrorBoundary>
+        <Search />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <FinancialProvider>
+          <Financial />
+        </FinancialProvider>
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <Prompt />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <PersonalFinance />
+      </ErrorBoundary>
+    </div>
+  );
+
+  const column3 = (
+    <div className={columnStyle}>
+      <ErrorBoundary>
+        <Wheater />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <Notes />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <Gpt />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <Movements />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <Pending />
+      </ErrorBoundary>
+    </div>
+  );
+
+  const column4 = (
+    <div className={columnStyle}>
+      <ErrorBoundary>
+        <Task />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <Routine />
+      </ErrorBoundary>
+    </div>
+  );
+
   return (
-    <div>
-      {userId && (
-        <div className="relative w-full min-h-screen">
-          <BackGround />
-          <div
-            className="relative z-10 p-4 grid gap-4 
-                grid-cols-1 
-                sm:grid-cols-2 
-                md:grid-cols-2 
-                lg:grid-cols-4"
-          >
+    <div className="relative w-full min-h-screen">
+      <BackGround />
+      <div
+        className="relative z-10 p-4 grid gap-4 
+                  grid-cols-1 
+                  sm:grid-cols-2 
+                  md:grid-cols-2 
+                  lg:grid-cols-4"
+      >
+        <ErrorBoundary>
+          <TasksProvider>
             {/* Column 1 */}
-            <ErrorBoundary>
-              <TasksProvider>
-                <div className={columnStyle}>
-                  <ErrorBoundary>
-                    <User />
-                  </ErrorBoundary>
+            {column1}
 
-                  <ErrorBoundary>
-                    <Player />
-                  </ErrorBoundary>
+            {/* Columnas 2 y 3 con el mismo PersonalFinanceProvider */}
+            <PersonalFinanceProvider>
+              {column2}
+              {column3}
+            </PersonalFinanceProvider>
 
-                  <ErrorBoundary>
-                    <NewsProvider>
-                      <News />
-                    </NewsProvider>
-                  </ErrorBoundary>
-                </div>
+            {/* Column 4 */}
+            {column4}
+          </TasksProvider>
+        </ErrorBoundary>
+      </div>
 
-                {/* Column 2 */}
-                <div className={columnStyle}>
-                  <ErrorBoundary>
-                    <Search />
-                  </ErrorBoundary>
-
-                  <ErrorBoundary>
-                    <FinancialProvider>
-                      <Financial />
-                    </FinancialProvider>
-                  </ErrorBoundary>
-
-                  <ErrorBoundary>
-                    <Prompt />
-                  </ErrorBoundary>
-
-                  <ErrorBoundary>
-                    <PersonalFinanceProvider>
-                      <PersonalFinance />
-                    </PersonalFinanceProvider>
-                  </ErrorBoundary>
-                </div>
-
-                {/* Column 3 */}
-                <div className={columnStyle}>
-                  <ErrorBoundary>
-                    <Wheater />
-                  </ErrorBoundary>
-
-                  <ErrorBoundary>
-                    <Notes />
-                  </ErrorBoundary>
-
-                  <ErrorBoundary>
-                    <Gpt />
-                  </ErrorBoundary>
-
-                  <ErrorBoundary>
-                    <PersonalFinanceProvider>
-                      <Movements />
-                    </PersonalFinanceProvider>
-                  </ErrorBoundary>
-
-                  <ErrorBoundary>
-                    <Pending />
-                  </ErrorBoundary>
-                </div>
-
-                {/* Column 4 */}
-                <div className={columnStyle}>
-                  <ErrorBoundary>
-                    <Task />
-                  </ErrorBoundary>
-                </div>
-              </TasksProvider>
-            </ErrorBoundary>
+      {/* Footer */}
+      <ErrorBoundary>
+        <PerformanceProvider>
+          <div id="main-content">
+            <WebVitals />
+            <PerformancePanel />
           </div>
-
-          {/* Footer */}
-          <ErrorBoundary>
-            <PerformanceProvider>
-              <div id="main-content">
-                <WebVitals />
-                <PerformancePanel />
-              </div>
-            </PerformanceProvider>
-          </ErrorBoundary>
-        </div>
-      )}
+        </PerformanceProvider>
+      </ErrorBoundary>
     </div>
   );
 };

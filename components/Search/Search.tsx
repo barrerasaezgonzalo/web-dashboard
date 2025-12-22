@@ -1,4 +1,5 @@
 import { abrirGoogle } from "@/utils";
+import { Glasses } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 export const Search: React.FC = () => {
@@ -21,7 +22,11 @@ export const Search: React.FC = () => {
       aria-labelledby="search-heading"
       className="bg-amber-600 p-4 rounded shadow "
     >
-      <h2 id="search-heading" className="text-xl font-bold mb-4 border-b">
+      <h2
+        id="search-heading"
+        className=" flex gap-2 text-xl font-bold mb-4 border-b"
+      >
+        <Glasses size={25} />
         Búsqueda
       </h2>
       <label htmlFor="search-input" className="sr-only">

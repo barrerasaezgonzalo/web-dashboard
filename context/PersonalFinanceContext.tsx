@@ -17,6 +17,12 @@ import { useUser } from "./UserContext";
 
 type PersonalFinanceContextType = {
   movements: PersonalFinance[];
+  summary: {
+    ingresos: number;
+    gastos: number;
+    ahorros: number;
+    saldo: number;
+  };
   loading: boolean;
   getMovements: () => Promise<void>;
   addMovement: (m: PersonalFinance) => Promise<void>;
@@ -35,14 +41,34 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
   children,
 }) => {
   const [movements, setMovements] = useState<PersonalFinance[]>([]);
+  const [summary, setSummary] = useState({
+    ingresos: 0,
+    gastos: 0,
+    ahorros: 0,
+    saldo: 0,
+  });
   const [loading, setLoading] = useState(false);
 
   const { userId } = useUser();
 
+  // Calcula el summary cada vez que movements cambia
+  useEffect(() => {
+    const ingresos = movements
+      .filter((m) => m.type === "ingresos")
+      .reduce((acc, m) => acc + m.value, 0);
+    const gastos = movements
+      .filter((m) => m.type === "gastos")
+      .reduce((acc, m) => acc + m.value, 0);
+    const ahorros = movements
+      .filter((m) => m.type === "ahorros")
+      .reduce((acc, m) => acc + m.value, 0);
+    const saldo = ingresos - gastos;
+
+    setSummary({ ingresos, gastos, ahorros, saldo });
+  }, [movements]);
+
   const getMovements = useCallback(async (): Promise<void> => {
-    if (userId === null) {
-      return;
-    }
+    if (!userId) return;
     setLoading(true);
     try {
       const response = await fetch(`/api/personalFinances?authData=${userId}`);
@@ -61,7 +87,7 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
       });
       setMovements(financials);
     } catch (error) {
-      console.error("Error al obtener las finanzas personales");
+      console.error("Error al obtener las finanzas personales:", error);
       setMovements([]);
     } finally {
       setLoading(false);
@@ -69,9 +95,7 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
   }, [userId]);
 
   const addMovement = async (newMovement: PersonalFinance): Promise<void> => {
-    if (userId === null) {
-      return;
-    }
+    if (!userId) return;
     setLoading(true);
     try {
       const response = await fetch(`/api/personalFinances?authData=${userId}`, {
@@ -81,12 +105,11 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
       });
       if (!response.ok) {
         const errData = await response.json();
-        throw new Error(errData.message || "Error al agregar personal Ficance");
+        throw new Error(errData.message || "Error al agregar personal finance");
       }
       const data = await response.json();
       const financial: PersonalFinance = data[0];
       setMovements((prev) => [...prev, financial]);
-      return data;
     } catch (error) {
       console.error("Error al agregar personal financial:", error);
       throw error;
@@ -109,7 +132,6 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
       setMovements((prev) =>
         prev.map((t) => (t.id === updated.id ? updated : t)),
       );
-      return updated;
     } catch (error) {
       console.error("Error al editar personal financial:", error);
       throw error;
@@ -121,20 +143,19 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
     try {
       await fetch(`/api/personalFinances?id=${id}`, { method: "DELETE" });
     } catch (error) {
-      console.error("Error al eliminar fiancial personal:", error);
+      console.error("Error al eliminar personal financial:", error);
     }
   };
 
   useEffect(() => {
-    if (userId !== null) {
-      getMovements();
-    }
+    if (userId) getMovements();
   }, [userId, getMovements]);
 
   return (
     <PersonalFinanceContext.Provider
       value={{
         movements,
+        summary,
         loading,
         getMovements,
         addMovement,

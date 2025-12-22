@@ -4,6 +4,7 @@ import { memo, useRef } from "react";
 import { useData } from "@/hooks/useData";
 import { useAutoResize } from "@/hooks/useAutoResize";
 import { handleTextChange } from "@/utils";
+import { StickyNote } from "lucide-react";
 
 export const NotesComponent: React.FC = () => {
   const { note, setNote, saveNote } = useData();
@@ -16,7 +17,11 @@ export const NotesComponent: React.FC = () => {
       aria-labelledby="note-heading"
       className="bg-amber-300 p-4 rounded shadow min-h-72"
     >
-      <h2 id="note-heading" className="text-xl font-bold mb-4 border-b">
+      <h2
+        id="note-heading"
+        className="text-xl flex gap-2 font-bold mb-4 border-b"
+      >
+        <StickyNote size={25} />
         Nota Rápida
       </h2>
       <label htmlFor="note-input" className="sr-only">

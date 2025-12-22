@@ -1,21 +1,33 @@
+import { PersonalFinanceContext } from "@/context/PersonalFinanceContext";
+import { getUnpaidExpensesForCurrentMonth } from "@/utils";
+import { PiggyBank } from "lucide-react";
+import { useContext } from "react";
+
 export const Pending = () => {
+  const { movements } = useContext(PersonalFinanceContext)!;
+  const unpaidExpensesForMonth = getUnpaidExpensesForCurrentMonth(movements);
   return (
-    <div className="bg-blue-50 text-black p-4 rounded-lg shadow-md">
-      <h2 className="text-xl font-bold mb-4 border-b pb-2">Pagos Pendientes</h2>
-      <div className="text-black rounded-lg shadow-md mt-4">
-        <ul className="flex flex-col gap-2">
-          {["Arriendo", "Luz (3313497-5)", "Internet"].map(
-            (categoria, index) => (
-              <li
-                key={index}
-                className="flex justify-between items-center bg-white p-2 rounded shadow"
-              >
-                <span>{categoria}</span>
-                <span className="text-red-500 font-semibold">Pendiente</span>
-              </li>
-            ),
-          )}
-        </ul>
+    <div className=" bg-linear-to-br from-blue-50 to-indigo-100 p-6">
+      <div className="max-w-4xl mx-auto">
+        <div className="bg-white text-black p-6 rounded-xl shadow-lg">
+          <div className="flex flex-wrap items-center justify-between mb-6  pb-4 gap-3">
+            <h2 className="text-xl font-bold mb-4 border-b pb-2 w-full flex gap-2">
+              <PiggyBank size={25} />
+              Pendientes de pago
+            </h2>
+
+            <div className="flex flex-col gap-3 w-full">
+              {unpaidExpensesForMonth.map((item) => (
+                <div
+                  key={item.category}
+                  className="text-red-500 font-bold border-b border-black"
+                >
+                  {item.label}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

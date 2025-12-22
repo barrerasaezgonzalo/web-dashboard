@@ -1,5 +1,6 @@
 import { useNews } from "@/hooks/useNews";
 import { Feed, NewsArticle } from "@/types";
+import { Newspaper } from "lucide-react";
 import { memo } from "react";
 
 const feeds: { label: string; value: Feed }[] = [
@@ -19,15 +20,15 @@ const News: React.FC = ({}) => {
 
   return (
     <div
-      className={`bg-blue-50 text-black p-4 rounded shadow min-h-[600px] overflow-x-auto`}
+      className={`bg-blue-50 text-black p-4 rounded shadow min-h-[982px] overflow-x-auto`}
       role="region"
       aria-labelledby="news-heading"
     >
       <h2
         id="news-heading"
-        className="text-xl font-bold mb-4 border-b border-blue-300"
+        className="text-xl flex gap-2 font-bold mb-4 border-b border-blue-300"
       >
-        Noticias
+        <Newspaper size={25} /> Noticias
       </h2>
 
       <div className="mb-4 flex items-center gap-2 justify-between">
@@ -79,7 +80,7 @@ const News: React.FC = ({}) => {
       ) : news.articles.length === 0 ? (
         <p>No se encontraron noticias para este feed.</p>
       ) : (
-        <ul className="h-[500px] overflow-y-auto">
+        <ul className="h-[800px] overflow-y-auto">
           {news.articles.map((article: NewsArticle, index: number) => (
             <li
               key={index}

@@ -2,6 +2,7 @@
 
 import { useAutoResize } from "@/hooks/useAutoResize";
 import { abrirGpt } from "@/utils";
+import { Brain } from "lucide-react";
 import { useRef, useState } from "react";
 
 export const Gpt: React.FC = () => {
@@ -15,8 +16,11 @@ export const Gpt: React.FC = () => {
       aria-labelledby="gpt-heading"
       className="bg-amber-600 text-black p-4 rounded shadow min-h-[300px]"
     >
-      <h2 id="gpt-heading" className="text-xl font-bold mb-4 border-b">
-        Consulta a AI
+      <h2
+        id="gpt-heading"
+        className="flex gap-2 text-xl font-bold mb-4 border-b"
+      >
+        <Brain size={25} /> Consulta a AI
       </h2>
       <label htmlFor="gpt-prompt" className="sr-only">
         Escribe tu pregunta para la AI

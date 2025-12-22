@@ -8,11 +8,6 @@ export default async function handler(
 ) {
   if (req.method === "GET") {
     const { authData } = req.query;
-    if (!authData || typeof authData !== "string") {
-      return res
-        .status(400)
-        .json({ error: "Falta o es inválido el parámetro 'authData'." });
-    }
     const { data, error } = await supabase
       .from("movements")
       .select("*")
@@ -27,9 +22,6 @@ export default async function handler(
 
   if (req.method === "POST") {
     const { authData } = req.query;
-    if (!authData || typeof authData !== "string") {
-      return res.status(400).json({ error: "authData missing or invalid" });
-    }
     const { newMovement } = req.body;
     const { type, date, value, category } = newMovement;
     const { data, error } = await supabase
@@ -54,9 +46,6 @@ export default async function handler(
 
   if (req.method === "PATCH") {
     const { authData } = req.query;
-    if (!authData || typeof authData !== "string") {
-      return res.status(400).json({ error: "authData missing or invalid" });
-    }
     const { updatedMovement } = req.body;
     const { id, type, date, value, category } = updatedMovement;
     const updates: Partial<PersonalFinanceMovement> = {};

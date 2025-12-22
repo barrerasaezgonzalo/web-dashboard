@@ -16,6 +16,7 @@ import {
   Movement,
   OrderedFinancialHistory,
   ParsedData,
+  PersonalFinance,
   PersonalFinanceMovement,
   PromptData,
   Task,
@@ -315,40 +316,33 @@ export const getCategoryLabel = (
   }
 };
 
-export function calculateMonthlyResume(
-  movements: PersonalFinanceMovement[],
-  month: string, // "MM-YYYY"
-) {
-  const filtered = movements.filter((m) => {
-    const [year, monthValue] = m.date.split("-");
-    return `${monthValue}-${year}` === month;
-  });
+export const calculateMonthlyResume = (
+  movements: PersonalFinance[] | undefined,
+  targetMonth: string, // formato "MM-YYYY"
+) => {
+  const safeMovements = movements ?? [];
 
-  const resume = {
-    ingresos: 0,
-    gastos: 0,
-    ahorros: 0,
-    saldo: 0,
-  };
+  const ingresos = safeMovements
+    .filter((m) => m.type === "ingresos" && isSameMonth(m.date, targetMonth))
+    .reduce((acc, m) => acc + m.value, 0);
 
-  for (const m of filtered) {
-    switch (m.type) {
-      case "ingresos":
-        resume.ingresos += m.value;
-        break;
-      case "gastos":
-        resume.gastos += m.value;
-        break;
-      case "ahorros":
-        resume.ahorros += m.value;
-        break;
-    }
-  }
+  const gastos = safeMovements
+    .filter((m) => m.type === "gastos" && isSameMonth(m.date, targetMonth))
+    .reduce((acc, m) => acc + m.value, 0);
 
-  resume.saldo = resume.ingresos - resume.gastos;
+  const ahorros = safeMovements
+    .filter((m) => m.type === "ahorros" && isSameMonth(m.date, targetMonth))
+    .reduce((acc, m) => acc + m.value, 0);
 
-  return financeResumeSchema.parse(resume);
-}
+  const saldo = ingresos - gastos;
+
+  return { ingresos, gastos, ahorros, saldo };
+};
+
+const isSameMonth = (dateStr: string, targetMonth: string) => {
+  const [year, month] = dateStr.split("-");
+  return `${month}-${year}` === targetMonth;
+};
 
 export function calculateFinanceHistory(movements: PersonalFinanceMovement[]) {
   const byMonth: Record<string, MonthlyAccumulator> = {};
@@ -389,16 +383,66 @@ export function calculateFinanceHistory(movements: PersonalFinanceMovement[]) {
   return financeHistorySchema.parse(history);
 }
 
+export const getLastMonths = (count = 6): string[] => {
+  const months: string[] = [];
+  const now = new Date();
+
+  for (let i = count - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const month = (d.getMonth() + 1).toString().padStart(2, "0");
+    const year = d.getFullYear();
+    months.push(`${month}-${year}`);
+  }
+
+  return months;
+};
+
 export function buildFinanceHistory(
-  movements: PersonalFinanceMovement[],
-  months: string[], // ["02-2025", "03-2025", ...]
+  movements: PersonalFinance[],
 ): FinanceHistoryItem[] {
+  const months = getLastMonths(6); // tu función que da ["12-2025", "11-2025", ...]
   return months.map((month) => {
     const resume = calculateMonthlyResume(movements, month);
-
     return {
       date: month,
-      ...resume,
+      ...resume, // ingresos, gastos, ahorros, saldo
     };
   });
 }
+
+export const getUnpaidExpensesForCurrentMonth = (
+  movements: PersonalFinance[],
+) => {
+  const now = new Date();
+  const currentMonth = (now.getMonth() + 1).toString().padStart(2, "0");
+  const currentYear = now.getFullYear().toString();
+
+  const result = Object.keys(GastosCategoryLabels).map((category) => {
+    const mov = movements.find((item) => {
+      const [year, month, day] = item.date.split("-");
+
+      return (
+        item.type === "gastos" &&
+        item.category === category &&
+        month === currentMonth &&
+        year === currentYear
+      );
+    });
+
+    return {
+      category,
+      label: GastosCategoryLabels[category],
+      value: mov ? mov.value : 0,
+      isPaid: !!(mov?.value && mov.value > 0),
+    };
+  });
+
+  return result.filter((item) => !item.isPaid);
+};
+
+export const getCurrentMonth = () => {
+  const now = new Date();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const year = now.getFullYear();
+  return `${month}-${year}`;
+};
