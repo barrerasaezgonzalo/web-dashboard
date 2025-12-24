@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef } from "react";
 import { CirclePlus, Logs, SquarePen, Trash } from "lucide-react";
-import { modalTitles, typeLabels } from "@/constants";
+import { typeLabels } from "@/constants";
 import {
   formatCLP,
   formatDateToDMY,
@@ -21,6 +21,8 @@ import { movementSchema } from "./movementSchema";
 import { usePrivacyMode } from "@/hooks/usePrivacyMode";
 import { usePersonalFinance } from "@/hooks/usePersonalFinance";
 import { PersonalFinanceContext } from "@/context/PersonalFinanceContext";
+import { useFinancial } from "@/hooks/useFinancial";
+import { MovementModal } from "./MovementModal";
 
 export default function Movements() {
   const [modalType, setModalType] = React.useState<MovementTypes | null>(null);
@@ -42,6 +44,30 @@ export default function Movements() {
   const { isPrivate } = usePrivacyMode();
   const { movements } = useContext(PersonalFinanceContext)!;
   const { addMovement, updateMovement, deleteMovement } = usePersonalFinance();
+  const { financial } = useFinancial();
+
+  const specialCategoryRules: Record<string, (financial: any) => number> = {
+    "gastos-fa": (financial) => financial.current.utm * 8.1,
+    "gastos-celular": () => 16280,
+    "gastos-internet": () => 18990,
+    "gastos-apv": () => 150000,
+    "gastos-fintual": () => 150000,
+    "gastos-fondo_mutuo": () => 100000,
+  };
+
+  const savingsUsdCategoryRules: Record<
+    string,
+    (financial: any, usdValue: number) => number
+  > = {
+    fintual_dolares: (financial, usdValue) =>
+      usdValue * (financial.current.dolar ?? 0),
+    cripto_bitcoin: (financial, usdValue) =>
+      usdValue * (financial.current.dolar ?? 0),
+    cripto_eth: (financial, usdValue) =>
+      usdValue * (financial.current.dolar ?? 0),
+    us_home: (financial, usdValue) => usdValue * (financial.current.dolar ?? 0),
+    nvidia: (financial, usdValue) => usdValue * (financial.current.dolar ?? 0),
+  };
 
   const filtrados: PersonalFinance[] = movements.filter(
     (item: PersonalFinance) => {
@@ -86,6 +112,11 @@ export default function Movements() {
       return;
     }
 
+    let finalValue = Number(value);
+    if (modalType === "ahorros" && savingsUsdCategoryRules[category]) {
+      finalValue = savingsUsdCategoryRules[category](financial, Number(value));
+    }
+
     let newMovement: PersonalFinance;
     switch (modalType) {
       case "ingresos":
@@ -93,7 +124,7 @@ export default function Movements() {
           id: Date.now().toString(),
           type: "ingresos",
           category: category as IngresosCategory,
-          value: Number(value),
+          value: Number(finalValue),
           date: new Date().toISOString().split("T")[0],
         };
         break;
@@ -102,7 +133,7 @@ export default function Movements() {
           id: Date.now().toString(),
           type: "gastos",
           category: category as GastosCategory,
-          value: Number(value),
+          value: Number(finalValue),
           date: new Date().toISOString().split("T")[0],
         };
         break;
@@ -111,7 +142,7 @@ export default function Movements() {
           id: Date.now().toString(),
           type: "ahorros",
           category: category as AhorrosCategory,
-          value: Number(value),
+          value: Number(finalValue),
           date: new Date().toISOString().split("T")[0],
         };
         break;
@@ -166,7 +197,7 @@ export default function Movements() {
     setErrors({});
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && value.trim())
       editingItem ? handleUpdateMovement() : handleAddMovement();
   };
@@ -307,99 +338,21 @@ export default function Movements() {
             </div>
 
             {modalType && (
-              <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-                <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 relative">
-                  <button
-                    className="absolute top-3 right-4 cursor-pointer text-3xl text-gray-400 hover:text-gray-700 font-bold transition-colors"
-                    onClick={resetModal}
-                  >
-                    ×
-                  </button>
-
-                  <h2 className="text-2xl font-bold mb-6 text-gray-800 border-b pb-3">
-                    {editingItem ? "Editar movimiento" : modalTitles[modalType]}
-                  </h2>
-
-                  <div className="flex flex-col gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Categoría
-                      </label>
-                      <select
-                        value={category}
-                        onChange={(e) => {
-                          setCategory(e.target.value);
-                          if (errors.category) {
-                            setErrors((prev) => ({
-                              ...prev,
-                              category: undefined,
-                            }));
-                          }
-                        }}
-                        className={`w-full border rounded-lg p-2.5 focus:outline-none focus:ring-2 transition-all ${
-                          errors.category
-                            ? "border-red-500 focus:ring-red-500"
-                            : "border-gray-300 focus:ring-blue-500"
-                        }`}
-                      >
-                        {Object.entries(getCategoryLabels(selectedType)).map(
-                          ([key, label]) => (
-                            <option key={key} value={key}>
-                              {label as string}
-                            </option>
-                          ),
-                        )}
-                      </select>
-                      {errors.category && (
-                        <p className="text-red-500 text-sm mt-1 font-semibold">
-                          ⚠️ {errors.category}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Valor
-                      </label>
-                      <input
-                        type="text"
-                        ref={inputRef}
-                        placeholder="Ingresa el monto"
-                        value={value}
-                        onKeyDown={handleKeyDown}
-                        onChange={(e) => {
-                          setValue(e.target.value);
-                          if (errors.value) {
-                            setErrors((prev) => ({
-                              ...prev,
-                              value: undefined,
-                            }));
-                          }
-                        }}
-                        className={`w-full border rounded-lg p-2.5 focus:outline-none focus:ring-2 transition-all ${
-                          errors.value
-                            ? "border-red-500 focus:ring-red-500"
-                            : "border-gray-300 focus:ring-blue-500"
-                        }`}
-                      />
-                      {errors.value && (
-                        <p className="text-red-500 text-sm mt-1 font-semibold">
-                          ⚠️ {errors.value}
-                        </p>
-                      )}
-                    </div>
-
-                    <button
-                      className="bg-blue-500 text-white py-2.5 rounded-lg hover:bg-blue-600 transition-colors font-medium cursor-pointer mt-2"
-                      onClick={
-                        editingItem ? handleUpdateMovement : handleAddMovement
-                      }
-                    >
-                      {editingItem ? "Actualizar" : "Guardar"}
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <MovementModal
+                modalType={modalType}
+                category={category}
+                value={value}
+                errors={errors}
+                specialCategoryRules={specialCategoryRules}
+                financial={financial}
+                selectedType={selectedType}
+                editingItem={editingItem}
+                onClose={resetModal}
+                onSave={editingItem ? handleUpdateMovement : handleAddMovement}
+                onChangeCategory={setCategory}
+                onChangeValue={setValue}
+                onKeyDown={handleInputKeyDown}
+              />
             )}
           </div>
         </div>

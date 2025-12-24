@@ -446,3 +446,17 @@ export const getCurrentMonth = () => {
   const year = now.getFullYear();
   return `${month}-${year}`;
 };
+
+export const getSpecialValue = (
+  type: string,
+  category: string,
+  financial: any,
+  defaultValue: number,
+  rules: Record<string, (financial: any) => number>,
+) => {
+  const key = `${type}-${category}`;
+  if (rules[key]) {
+    return rules[key](financial);
+  }
+  return defaultValue;
+};

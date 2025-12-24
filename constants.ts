@@ -8,7 +8,7 @@ export const GastosCategoryLabels: Record<string, string> = {
   gastos_comunes: "Gastos Comunes",
   luz: "Luz",
   agua: "Agua",
-  fa: "FA",
+  fa: "FA (UTM)",
   celular: "Celular",
   internet: "Internet",
   apv: "APV",
@@ -21,13 +21,13 @@ export const GastosCategoryLabels: Record<string, string> = {
 
 export const AhorrosCategoryLabels: Record<string, string> = {
   fintual: "Fintual",
-  fintual_dolares: "Fintual Dólares",
+  fintual_dolares: "Fintual USD",
   fondo_mutuo: "Fondo Mutuo",
-  us_home: "US Home",
+  us_home: "Home USD",
   dorada_be: "Dorada BE",
-  cripto_bitcoin: "Bitcoin",
-  cripto_eth: "Ethereum",
-  nvidia: "Nvidia",
+  cripto_bitcoin: "Bitcoin USD",
+  cripto_eth: "Ethereum USD",
+  nvidia: "Nvidia USD",
 };
 
 export const typeLabels: Record<string, string> = {

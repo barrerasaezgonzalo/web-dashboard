@@ -125,7 +125,9 @@ export const App: React.FC = () => {
         <Gpt />
       </ErrorBoundary>
       <ErrorBoundary>
-        <Movements />
+        <FinancialProvider>
+          <Movements />
+        </FinancialProvider>
       </ErrorBoundary>
       <ErrorBoundary>
         <Pending />

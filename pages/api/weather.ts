@@ -34,7 +34,7 @@ export async function getWeather(): Promise<ClimaData> {
   } catch (error) {
     console.error("Error fetching clima:", error);
     return {
-      temperatura: "18°C",
+      temperatura: "0°C",
       _fallback: true,
     };
   }
