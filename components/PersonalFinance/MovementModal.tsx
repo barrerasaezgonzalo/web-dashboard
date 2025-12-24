@@ -1,23 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { modalTitles } from "@/constants";
 import { getCategoryLabels, getSpecialValue } from "@/utils";
-import { PersonalFinance, MovementTypes } from "@/types";
-
-interface MovementModalProps {
-  modalType: MovementTypes;
-  category: string;
-  value: string;
-  errors: { category?: string; value?: string };
-  specialCategoryRules: Record<string, (financial: any) => number>;
-  financial: any;
-  selectedType: PersonalFinance["type"];
-  editingItem: string;
-  onClose: () => void;
-  onSave: () => void;
-  onChangeCategory: (category: string) => void;
-  onChangeValue: (value: string) => void;
-  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-}
+import { MovementModalProps } from "@/types";
 
 export const MovementModal: React.FC<MovementModalProps> = ({
   modalType,

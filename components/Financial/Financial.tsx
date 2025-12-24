@@ -1,26 +1,30 @@
 "use client";
 
 import { getIndicators, getTrend, getTrendUI, mapSparklineData } from "@/utils";
-import { memo, useCallback, useMemo } from "react";
+import { memo, useCallback, useMemo, useRef } from "react";
 import { LineChart, Line, ResponsiveContainer } from "recharts";
 import FinancialIndicator from "./FinancialIndicator";
 import { useFinancial } from "@/hooks/useFinancial";
 import { ChartCandlestick } from "lucide-react";
 
-const Financial: React.FC = ({}) => {
+const Financial: React.FC = () => {
   const { financial } = useFinancial();
-  const indicators = useMemo(
-    () => getIndicators(financial),
-    [financial.history],
-  );
+  const inputRef = useRef<HTMLInputElement>(null);
+  const modalType = null; // si viene de props o hook, reemplaza
+
+  // Calcula indicadores
+  const indicators = useMemo(() => getIndicators(financial), [financial]);
+
+  // Datos para sparkline
   const sparklineData = useMemo(
     () => mapSparklineData(financial.history),
-    [financial.history],
+    [financial],
   );
 
+  // Función para obtener tendencias
   const getTrendMemo = useCallback(
     (key: "dolar" | "utm" | "btc" | "eth") => getTrend(financial.history, key),
-    [financial.history],
+    [financial],
   );
 
   const SparklineChart: React.FC<{ data: any[]; dataKey: string }> = memo(

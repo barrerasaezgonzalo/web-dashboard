@@ -1,10 +1,5 @@
 import { useContext, useMemo } from "react";
-import {
-  buildFinanceHistory,
-  calculateMonthlyResume,
-  formatCLP,
-  getCurrentMonth,
-} from "@/utils";
+import { buildFinanceHistory, formatCLP } from "@/utils";
 import { usePrivacyMode } from "@/hooks/usePrivacyMode";
 import { Activity } from "lucide-react";
 import { PersonalFinanceContext } from "@/context/PersonalFinanceContext";

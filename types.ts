@@ -296,3 +296,52 @@ export interface Routine {
   done: boolean;
   last_updated: string;
 }
+
+export interface NewsListProps {
+  newsLoading: boolean;
+  news: News;
+}
+
+export interface MovementModalProps {
+  modalType: MovementTypes;
+  category: string;
+  value: string;
+  errors: { category?: string; value?: string };
+  specialCategoryRules: Record<string, (financial: any) => number>;
+  financial: any;
+  selectedType: PersonalFinance["type"];
+  editingItem: string;
+  onClose: () => void;
+  onSave: () => void;
+  onChangeCategory: (category: string) => void;
+  onChangeValue: (value: string) => void;
+  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+}
+
+export interface MovementFiltersProps {
+  selectedMonth: string;
+  setSelectedMonth: (value: string) => void;
+  selectedType: PersonalFinance["type"];
+  setSelectedType: (value: PersonalFinance["type"]) => void;
+}
+
+export interface MovementFooterProps {
+  total: number;
+  isPrivate: boolean;
+  handleOpenAddModal: () => void;
+}
+type Errors = {
+  category?: string;
+  value?: string;
+};
+
+export interface MovementListProps {
+  filtrados: PersonalFinance[];
+  isPrivate: boolean;
+  setEditingItem: (id: string) => void;
+  setCategory: (id: string) => void;
+  setValue: (id: string) => void;
+  setModalType: (value: MovementTypes) => void;
+  setErrors: (id: Errors) => void;
+  handleDeleteMovement: (id: string) => void;
+}

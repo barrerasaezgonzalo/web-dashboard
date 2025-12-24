@@ -32,30 +32,60 @@ export const FinancialProvider: React.FC<FinancialProviderProps> = ({
       const response = await fetch("/api/financial");
       const data: Financial = await response.json();
 
-      // Mantener último valor si los datos vienen en cero
+      const dataIsEmpty =
+        data.current.dolar === 0 &&
+        data.current.utm === 0 &&
+        data.current.btc === 0 &&
+        data.current.eth === 0;
+
+      if (dataIsEmpty || data._fallback) {
+        console.log(
+          "⚠️ Datos vacíos o fallback del servidor, leyendo localStorage",
+        );
+
+        const cachedData = localStorage.getItem("financialCache");
+        if (cachedData) {
+          const parsed: Financial = JSON.parse(cachedData);
+          console.log("✅ Usando datos del localStorage");
+          setFinancial({
+            ...parsed,
+            _fallback: true,
+          });
+          return;
+        }
+      }
+
       const newCurrent = {
         dolar: data.current.dolar || financial.current.dolar,
         utm: data.current.utm || financial.current.utm,
         btc: data.current.btc || financial.current.btc,
         eth: data.current.eth || financial.current.eth,
       };
-
-      setFinancial({
+      const newFinancial: Financial = {
         current: newCurrent,
         history: data.history.length > 0 ? data.history : financial.history,
-      });
+      };
+
+      localStorage.setItem("financialCache", JSON.stringify(newFinancial));
+      setFinancial(newFinancial);
     } catch (error) {
-      console.error("Error al obtener finanzas:", error);
-      // Mantener último valor como fallback
-      setFinancial((prev) => ({
-        ...prev,
-        _fallback: true,
-      }));
+      const cachedData = localStorage.getItem("financialCache");
+      if (cachedData) {
+        const parsed: Financial = JSON.parse(cachedData);
+        setFinancial({
+          ...parsed,
+          _fallback: true,
+        });
+      } else {
+        setFinancial((prev) => ({
+          ...prev,
+          _fallback: true,
+        }));
+      }
     } finally {
       setFinancialLoading(false);
     }
   };
-
   useEffect(() => {
     getFinancial();
   }, []);

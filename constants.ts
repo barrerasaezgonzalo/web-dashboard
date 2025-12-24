@@ -1,3 +1,5 @@
+import { Feed } from "./types";
+
 export const IngresosCategoryLabels: Record<string, string> = {
   sueldo: "Sueldo",
   otros: "Otros",
@@ -41,3 +43,19 @@ export const modalTitles = {
   gastos: "Agregar Gasto",
   ahorros: "Agregar Ahorro",
 };
+
+export const feeds: { label: string; value: Feed }[] = [
+  { label: "BioBio", value: "biobio" },
+  { label: "La Tercera", value: "latercera" },
+  { label: "GNews", value: "gnews" },
+];
+
+export const specialCategoryRules: Record<string, (financial: any) => number> =
+  {
+    "gastos-fa": (financial) => financial.current.utm * 8.1,
+    "gastos-celular": () => 16280,
+    "gastos-internet": () => 18990,
+    "gastos-apv": () => 150000,
+    "gastos-fintual": () => 150000,
+    "gastos-fondo_mutuo": () => 100000,
+  };
