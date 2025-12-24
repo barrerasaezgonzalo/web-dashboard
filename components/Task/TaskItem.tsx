@@ -24,10 +24,6 @@ export const TaskItem: React.FC<TaskItemProps> = ({
   handleRemove,
   handleTaskToggle,
 }) => {
-  const daysRemaining = task.date
-    ? getDaysRemainingUntil(task.date)
-    : undefined;
-
   return (
     <li
       ref={provided.innerRef}

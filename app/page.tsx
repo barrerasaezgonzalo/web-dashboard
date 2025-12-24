@@ -22,7 +22,7 @@ import Player from "@/components/Player/Player";
 import PersonalFinance from "@/components/PersonalFinance/PersonalFinance";
 import { Pending } from "@/components/PersonalFinance/Pending";
 import { PersonalFinanceProvider } from "@/context/PersonalFinanceContext";
-import { Routine } from "@/components/Routine/Routine";
+import { Routine } from "@/components/Routine/Ruotine";
 
 const Task = dynamic(() => import("@/components/Task/Task"), {
   ssr: false,
@@ -91,6 +91,12 @@ export const App: React.FC = () => {
           <News />
         </NewsProvider>
       </ErrorBoundary>
+      <ErrorBoundary>
+        <Notes />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <Gpt />
+      </ErrorBoundary>
     </div>
   );
 
@@ -100,15 +106,7 @@ export const App: React.FC = () => {
         <Search />
       </ErrorBoundary>
       <ErrorBoundary>
-        <FinancialProvider>
-          <Financial />
-        </FinancialProvider>
-      </ErrorBoundary>
-      <ErrorBoundary>
-        <Prompt />
-      </ErrorBoundary>
-      <ErrorBoundary>
-        <PersonalFinance />
+        <Routine />
       </ErrorBoundary>
     </div>
   );
@@ -119,11 +117,9 @@ export const App: React.FC = () => {
         <Wheater />
       </ErrorBoundary>
       <ErrorBoundary>
-        <Notes />
+        <PersonalFinance />
       </ErrorBoundary>
-      <ErrorBoundary>
-        <Gpt />
-      </ErrorBoundary>
+
       <ErrorBoundary>
         <FinancialProvider>
           <Movements />
@@ -141,7 +137,12 @@ export const App: React.FC = () => {
         <Task />
       </ErrorBoundary>
       <ErrorBoundary>
-        <Routine />
+        <FinancialProvider>
+          <Financial />
+        </FinancialProvider>
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <Prompt />
       </ErrorBoundary>
     </div>
   );
@@ -162,13 +163,14 @@ export const App: React.FC = () => {
             {column1}
 
             {/* Columnas 2 y 3 con el mismo PersonalFinanceProvider */}
+
+            {column2}
             <PersonalFinanceProvider>
-              {column2}
               {column3}
+              {column4}
             </PersonalFinanceProvider>
 
             {/* Column 4 */}
-            {column4}
           </TasksProvider>
         </ErrorBoundary>
       </div>

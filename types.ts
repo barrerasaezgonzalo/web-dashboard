@@ -286,3 +286,13 @@ export type PersonalFinanceContextType = {
   updateMovement: (updated: PersonalFinanceMovement) => Promise<void>;
   deleteMovement: (id: string) => void;
 };
+export interface Routine {
+  id: number;
+  start_time: string; // Formato HH:mm:ss
+  end_time: string; // Formato HH:mm:ss
+  label: string;
+  icon: string;
+  done_count: number;
+  done: boolean;
+  last_updated: string;
+}
