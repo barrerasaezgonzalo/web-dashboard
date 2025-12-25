@@ -2,7 +2,6 @@ import { MovementFooter } from "./MovementFooter";
 import { Logs } from "lucide-react";
 import { specialCategoryRules } from "@/constants";
 import { Toast } from "../ui/Toast";
-import { useFinancial } from "@/hooks/useFinancial";
 import { useMovements } from "@/hooks/useMovements";
 import { MovementModal } from "./MovementModal";
 import { MovementFilters } from "./MovementFilters";
@@ -35,8 +34,6 @@ export default function Movements() {
     handleInputKeyDown,
     resetModal,
   } = useMovements();
-
-  const { financial } = useFinancial();
 
   return (
     <div className="bg-linear-to-br from-blue-50 to-indigo-100 p-6">
@@ -81,7 +78,6 @@ export default function Movements() {
                 value={value}
                 errors={errors}
                 specialCategoryRules={specialCategoryRules}
-                financial={financial}
                 selectedType={selectedType}
                 editingItem={editingItem}
                 onClose={resetModal}

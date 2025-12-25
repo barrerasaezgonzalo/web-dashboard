@@ -41,7 +41,7 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
       }
       setTasksLoading(true);
       try {
-        const response = await fetch(`/api/tasks/get?authData=${userId}`);
+        const response = await fetch(`/api/task/?authData=${userId}`);
         const data = await response.json();
         setTasks(data);
       } catch (error) {
@@ -57,7 +57,7 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
   const addTask = async (title: string, date?: string): Promise<Task> => {
     try {
       setTasksLoading(true);
-      const response = await fetch("/api/tasks/add", {
+      const response = await fetch("/api/task", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title, userId, date }),
@@ -82,7 +82,7 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
   const editTask = async (id: string, newTitle: string, newDate: string) => {
     try {
       setTasksLoading(true);
-      const response = await fetch("/api/tasks/edit", {
+      const response = await fetch("/api/task", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -120,7 +120,7 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
 
     try {
       setTasksLoading(true);
-      const res = await fetch("/api/tasks/edit", {
+      const res = await fetch("/api/task", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, in_dev: !taskBefore.in_dev, userId }),
@@ -143,7 +143,7 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
     setTasks((prev) => prev.filter((t) => t.id !== id));
     try {
       setTasksLoading(true);
-      await fetch(`/api/tasks/${id}`, { method: "DELETE" });
+      await fetch(`/api/task?id=${id}`, { method: "DELETE" });
     } catch (error) {
       console.error("Error al eliminar tarea:", error);
     } finally {

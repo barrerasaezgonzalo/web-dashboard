@@ -7,11 +7,6 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   const noteId = "11111111-1111-1111-1111-111111111111";
-  // const { data: { session } } = await supabase.auth.getSession();
-  // console.log( session)
-  // const reqUserId = session?.user.id;
-  // if (!reqUserId) return res.status(401).json({ error: "No autorizado" });
-
   if (req.method === "GET") {
     const { authData } = req.query;
     const { data, error } = await supabase

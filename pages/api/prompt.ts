@@ -7,7 +7,7 @@ const groqClient = new Groq({
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse,
+  res: NextApiResponse<{ data?: string; error?: string }>,
 ) {
   if (req.method === "POST") {
     const { input } = req.body;

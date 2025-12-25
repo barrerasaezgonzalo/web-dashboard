@@ -15,7 +15,6 @@ export const NewsProvider: React.FC<NewsProviderProps> = ({ children }) => {
 
   const readCache = (feed: Feed): News | null => {
     if (!canAccessBrowserStorage(getBrowserWindow())) return null;
-
     const cacheKey = `newsCache_${feed}`;
     const cacheTimeKey = `newsCacheTime_${feed}`;
     const cacheStr = window.localStorage.getItem(cacheKey);
@@ -23,12 +22,9 @@ export const NewsProvider: React.FC<NewsProviderProps> = ({ children }) => {
 
     if (cacheStr && cacheTimeStr) {
       const expiresAt = parseInt(cacheTimeStr);
-      if (Date.now() < expiresAt) {
-        return JSON.parse(cacheStr);
-      } else {
-        window.localStorage.removeItem(cacheKey);
-        window.localStorage.removeItem(cacheTimeKey);
-      }
+      if (Date.now() < expiresAt) return JSON.parse(cacheStr);
+      window.localStorage.removeItem(cacheKey);
+      window.localStorage.removeItem(cacheTimeKey);
     }
     return null;
   };
@@ -54,6 +50,7 @@ export const NewsProvider: React.FC<NewsProviderProps> = ({ children }) => {
       const data: News = await response.json();
 
       setNews(data);
+
       if (canAccessBrowserStorage(getBrowserWindow())) {
         window.localStorage.setItem(`newsCache_${feed}`, JSON.stringify(data));
         window.localStorage.setItem(
@@ -61,8 +58,6 @@ export const NewsProvider: React.FC<NewsProviderProps> = ({ children }) => {
           (Date.now() + 12 * 60 * 60 * 1000).toString(),
         );
       }
-
-      console.log("Noticias desde API:", feed);
     } catch (error) {
       console.error("Error al obtener noticias:", error);
       setNews({ totalArticles: 0, articles: [], _fallback: true });
@@ -71,22 +66,17 @@ export const NewsProvider: React.FC<NewsProviderProps> = ({ children }) => {
     }
   };
 
-  // --- Función para bloquear noticias 12h ---
   const bloquearNews12Horas = () => {
     if (!canAccessBrowserStorage(getBrowserWindow())) return;
-
     const cacheTimeKey = `newsCacheTime_${selectedFeed}`;
     window.localStorage.setItem(
       cacheTimeKey,
       (Date.now() + 12 * 60 * 60 * 1000).toString(),
     );
-    // Actualizar el estado para reflejar bloqueo
     setNews({ totalArticles: 0, articles: [], _fallback: true });
-    // Refrescar noticias desde API si se desea
     getNews();
   };
 
-  // --- Efecto principal: actualizar noticias al cambiar feed ---
   useEffect(() => {
     getNews(selectedFeed);
   }, [selectedFeed]);

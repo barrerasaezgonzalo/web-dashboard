@@ -1,5 +1,5 @@
-import { NewsContext } from "@/context/NewsContext";
 import { useContext } from "react";
+import { NewsContext } from "@/context/NewsContext";
 
 export const useNews = () => {
   const context = useContext(NewsContext);
@@ -8,5 +8,12 @@ export const useNews = () => {
     throw new Error("useNews debe ser usado dentro de un NewsProvider");
   }
 
-  return context;
+  // Helper derivado: obtener las N primeras noticias
+  const getTopArticles = (count: number) =>
+    context.news.articles.slice(0, count);
+
+  return {
+    ...context,
+    getTopArticles,
+  };
 };

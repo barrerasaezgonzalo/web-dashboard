@@ -7,7 +7,7 @@ const parser = new Parser();
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse,
+  res: NextApiResponse<News | { error: string }>,
 ) {
   const { url } = req.query;
 
