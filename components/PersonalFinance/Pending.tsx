@@ -5,7 +5,6 @@ import { CreditCard, PiggyBank } from "lucide-react";
 import { useContext } from "react";
 import { MovementModal } from "./MovementModal";
 import { specialCategoryRules } from "@/constants";
-import { useFinancial } from "@/hooks/useFinancial";
 import { getTooltipClass } from "@/app/styles/labelStyles";
 
 export const Pending = () => {
@@ -26,7 +25,6 @@ export const Pending = () => {
     setValue,
     handleInputKeyDown,
   } = useMovements();
-  const { financial } = useFinancial();
 
   return (
     <div className="bg-linear-to-br from-blue-50 to-indigo-50 p-4 sm:p-6 rounded-xl">
@@ -76,7 +74,6 @@ export const Pending = () => {
           value={value}
           errors={errors}
           specialCategoryRules={specialCategoryRules}
-          financial={financial}
           selectedType={selectedType}
           editingItem={editingItem}
           onClose={resetModal}
