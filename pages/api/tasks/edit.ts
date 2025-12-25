@@ -14,7 +14,7 @@ export default async function handler(
     const updates: Partial<Task> = {};
     if (title !== undefined) updates.title = title;
     if (in_dev !== undefined) updates.in_dev = in_dev;
-    if (date !== undefined) updates.date = date || null;
+    if (date !== undefined) updates.date = date;
 
     const { data, error } = await supabase
       .from("todos")

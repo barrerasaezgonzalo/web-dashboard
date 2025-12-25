@@ -3,9 +3,7 @@
 import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
-import { Search } from "@/components/Search/Search";
 import { Notes } from "@/components/Notes/Notes";
-import { Gpt } from "@/components/Gpt/Gpt";
 import { Prompt } from "@/components/Prompt/Prompt";
 import { User } from "@/components/User/User";
 import { BackGround } from "@/components/ui/BackGround";
@@ -22,7 +20,7 @@ import Player from "@/components/Player/Player";
 import PersonalFinance from "@/components/PersonalFinance/PersonalFinance";
 import { Pending } from "@/components/PersonalFinance/Pending";
 import { PersonalFinanceProvider } from "@/context/PersonalFinanceContext";
-import { Routine } from "@/components/Routine/Ruotine";
+import { Routine } from "@/components/Routine/Routine";
 
 const Task = dynamic(() => import("@/components/Task/Task"), {
   ssr: false,
@@ -94,17 +92,11 @@ export const App: React.FC = () => {
       <ErrorBoundary>
         <Notes />
       </ErrorBoundary>
-      <ErrorBoundary>
-        <Gpt />
-      </ErrorBoundary>
     </div>
   );
 
   const column2 = (
     <div className={columnStyle}>
-      <ErrorBoundary>
-        <Search />
-      </ErrorBoundary>
       <ErrorBoundary>
         <Routine />
       </ErrorBoundary>
@@ -120,14 +112,14 @@ export const App: React.FC = () => {
         <PersonalFinance />
       </ErrorBoundary>
 
-      <ErrorBoundary>
-        <FinancialProvider>
+      <FinancialProvider>
+        <ErrorBoundary>
           <Movements />
-        </FinancialProvider>
-      </ErrorBoundary>
-      <ErrorBoundary>
-        <Pending />
-      </ErrorBoundary>
+        </ErrorBoundary>
+        <ErrorBoundary>
+          <Pending />
+        </ErrorBoundary>
+      </FinancialProvider>
     </div>
   );
 

@@ -41,7 +41,10 @@ export const ToastConponet: React.FC<ToastProps> = ({
             <>
               <button
                 className="bg-white text-black px-3 py-1 rounded hover:bg-gray-200"
-                onClick={onConfirm}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onConfirm();
+                }}
               >
                 Sí
               </button>

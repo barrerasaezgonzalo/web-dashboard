@@ -12,9 +12,20 @@ export function useToast() {
     setToast(null);
   }, []);
 
+  const showToast = useCallback(
+    (message: string) => {
+      openToast({
+        message,
+        onConfirm: closeToast,
+      });
+    },
+    [openToast, closeToast],
+  );
+
   return {
     toast,
     openToast,
     closeToast,
+    showToast,
   };
 }

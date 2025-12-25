@@ -11,31 +11,14 @@ export default async function handler(
   if (req.method === "POST") {
     const { title, userId, date } = req.body;
 
-    const { data: maxOrderData, error: maxOrderError } = await supabase
-      .from("todos")
-      .select("order")
-      .order("order", { ascending: false })
-      .limit(1);
-
-    if (maxOrderError) {
-      console.error("Error al obtener max order:", maxOrderError);
-      return res.status(500).json({ error: maxOrderError.message });
-    }
-
-    const nextOrder =
-      maxOrderData && maxOrderData.length > 0
-        ? (maxOrderData[0].order ?? 0) + 1
-        : 1;
-
     const { data, error } = await supabase
       .from("todos")
       .insert([
         {
           title,
           in_dev: false,
-          order: nextOrder,
           auth_data: userId,
-          date: date || null,
+          date: date,
         },
       ])
       .select();

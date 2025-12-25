@@ -29,7 +29,7 @@ const PersonalFinance = () => {
         {summaryCards.map(({ label, value, color }) => (
           <div
             key={label}
-            className={`${color} text-white p-4 rounded-lg shadow h-32`}
+            className={`${color} text-white p-4 rounded-lg shadow h-24`}
           >
             <h3 className="text-sm font-medium">{label}</h3>
             <p

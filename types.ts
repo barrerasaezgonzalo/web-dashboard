@@ -1,4 +1,8 @@
-import { DraggableProvidedDragHandleProps } from "@hello-pangea/dnd";
+import {
+  DraggableProvided,
+  DraggableProvidedDragHandleProps,
+  DraggableStateSnapshot,
+} from "@hello-pangea/dnd";
 import { ReactNode } from "react";
 import { z } from "zod";
 import {
@@ -87,8 +91,8 @@ export interface Task {
   id: string;
   title: string;
   in_dev?: boolean;
-  order: number;
-  date?: string;
+  order?: number;
+  date: string;
 }
 
 export interface ErrorBoundaryState {
@@ -116,10 +120,9 @@ export type ToastConfig = {
 
 export interface TaskItemProps {
   task: Task;
-  index: number;
-  onTaskToggle: (taskId: string) => void;
-  onTaskUpdate: (taskId: string, newTitle: string) => void;
-  onTaskRequestRemove: (taskId: string) => void;
+  handleEdit: (task: Task) => void;
+  handleRemove: (taskId: string) => void;
+  handleTaskToggle: (taskId: string) => void;
 }
 
 export interface ErrorBoundaryProps {
@@ -173,13 +176,14 @@ export interface PromptData {
 export interface TaskInputProps {
   title: string;
   setTitle: (v: string) => void;
-  date?: string;
+  date: string;
   setDate: (date: string) => void;
   handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   inputRef: React.Ref<HTMLInputElement>;
   editingTaskId: string;
   handleAdd: () => void;
   handleSave: () => void;
+  isLoading: boolean;
 }
 
 export type TrendKey = "dolar" | "utm" | "btc" | "eth";
@@ -286,7 +290,19 @@ export type PersonalFinanceContextType = {
   updateMovement: (updated: PersonalFinanceMovement) => Promise<void>;
   deleteMovement: (id: string) => void;
 };
+
 export interface Routine {
+  id: number;
+  start_time: string; // Formato HH:mm:ss
+  end_time: string; // Formato HH:mm:ss
+  label: string;
+  icon: string;
+  done_count: number;
+  done: boolean;
+  last_updated: string;
+}
+
+export interface RoutineType {
   id: number;
   start_time: string; // Formato HH:mm:ss
   end_time: string; // Formato HH:mm:ss
@@ -344,4 +360,36 @@ export interface MovementListProps {
   setModalType: (value: MovementTypes) => void;
   setErrors: (id: Errors) => void;
   handleDeleteMovement: (id: string) => void;
+}
+
+export interface ProgressCircleProps {
+  done_count: number;
+}
+
+export interface NewsContextType {
+  news: News;
+  newsLoading: boolean;
+  selectedFeed: Feed;
+  setSelectedFeed: (feed: Feed) => void;
+  getNews: (feed?: Feed) => Promise<void>;
+  bloquearNews12Horas: () => void;
+}
+export interface NewsProviderProps {
+  children: ReactNode;
+}
+
+export interface FinancialContextType {
+  financial: Financial;
+  financialLoading: boolean;
+  getFinancial: () => Promise<void | null>;
+}
+
+export interface FinancialProviderProps {
+  children: ReactNode;
+}
+
+export interface RoutineListProps {
+  item: Routine;
+  toggleDone: (item: Routine | null) => void;
+  getBg: (doneCount: number, status: string) => string;
 }

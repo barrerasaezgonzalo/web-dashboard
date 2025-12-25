@@ -1,7 +1,5 @@
-import {
-  financeHistorySchema,
-  financeResumeSchema,
-} from "./components/PersonalFinance/movementSchema";
+import { LucideIcon } from "lucide-react";
+import { financeHistorySchema } from "./components/PersonalFinance/movementSchema";
 import {
   AhorrosCategoryLabels,
   GastosCategoryLabels,
@@ -13,7 +11,6 @@ import {
   FinancialHistory,
   Indicator,
   MonthlyAccumulator,
-  Movement,
   OrderedFinancialHistory,
   ParsedData,
   PersonalFinance,
@@ -23,6 +20,7 @@ import {
   Trend,
   TrendKey,
 } from "./types";
+import * as Icons from "lucide-react";
 
 export const formatCLP = (valor: number | string) => {
   return new Intl.NumberFormat("es-CL", {
@@ -120,22 +118,27 @@ export function getTrend(
 ): Trend {
   if (!history || history.length < 2) return null;
 
-  if (!history[0]?.created_at || !history[history.length - 1]?.created_at) {
-    console.warn("getTrend: history sin created_at válido");
-    return null;
+  const n = history.length;
+  let sumX = 0,
+    sumY = 0,
+    sumXY = 0,
+    sumX2 = 0;
+
+  for (let i = 0; i < n; i++) {
+    const y = history[i][key];
+    const x = i;
+    sumX += x;
+    sumY += y;
+    sumXY += x * y;
+    sumX2 += x * x;
   }
 
-  const first = history[0][key];
-  const last = history[history.length - 1][key];
+  const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
 
-  if (first === 0) return null;
+  const THRESHOLD = 0.01;
 
-  const variation = (last - first) / first;
-  const THRESHOLD = 0.01; // 1%
-
-  if (variation > THRESHOLD) return "up";
-  if (variation < -THRESHOLD) return "down";
-
+  if (slope > THRESHOLD) return "up";
+  if (slope < -THRESHOLD) return "down";
   return "flat";
 }
 
@@ -459,4 +462,21 @@ export const getSpecialValue = (
     return rules[key](financial);
   }
   return defaultValue;
+};
+
+const ICON_SANITIZE_REGEX = /[<>]/g;
+const iconMap = Icons as unknown as Record<string, LucideIcon>;
+
+export const getIcon = (name?: string): LucideIcon => {
+  if (!name) return Icons.Activity;
+  const key = name.replace(ICON_SANITIZE_REGEX, "");
+  return iconMap[key] ?? Icons.Activity;
+};
+
+export const canAccessBrowserStorage = (win: unknown): boolean => {
+  return typeof win !== "undefined";
+};
+
+export const getBrowserWindow = () => {
+  return typeof window !== "undefined" ? window : undefined;
 };

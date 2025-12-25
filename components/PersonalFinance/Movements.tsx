@@ -15,7 +15,6 @@ export default function Movements() {
     value,
     editingItem,
     errors,
-    inputRef,
     filtrados,
     total,
     selectedType,

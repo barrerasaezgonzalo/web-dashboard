@@ -14,7 +14,7 @@ export function usePrivacyMode() {
 
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() === "h") {
+      if (e?.key?.toLowerCase() === "h") {
         const target = e.target as HTMLElement;
 
         if (

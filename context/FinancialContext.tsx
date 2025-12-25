@@ -1,21 +1,16 @@
 "use client";
 
-import { Financial } from "@/types";
-import React, { createContext, useState, ReactNode, useEffect } from "react";
-
-interface FinancialContextType {
-  financial: Financial;
-  financialLoading: boolean;
-  getFinancial: () => Promise<void>;
-}
+import {
+  Financial,
+  FinancialContextType,
+  FinancialProviderProps,
+} from "@/types";
+import { canAccessBrowserStorage, getBrowserWindow } from "@/utils";
+import React, { createContext, useState, useEffect } from "react";
 
 export const FinancialContext = createContext<FinancialContextType | undefined>(
   undefined,
 );
-
-interface FinancialProviderProps {
-  children: ReactNode;
-}
 
 export const FinancialProvider: React.FC<FinancialProviderProps> = ({
   children,
@@ -39,14 +34,11 @@ export const FinancialProvider: React.FC<FinancialProviderProps> = ({
         data.current.eth === 0;
 
       if (dataIsEmpty || data._fallback) {
-        console.log(
-          "⚠️ Datos vacíos o fallback del servidor, leyendo localStorage",
-        );
+        if (!canAccessBrowserStorage(getBrowserWindow())) return null;
 
         const cachedData = localStorage.getItem("financialCache");
         if (cachedData) {
           const parsed: Financial = JSON.parse(cachedData);
-          console.log("✅ Usando datos del localStorage");
           setFinancial({
             ...parsed,
             _fallback: true,
@@ -66,9 +58,11 @@ export const FinancialProvider: React.FC<FinancialProviderProps> = ({
         history: data.history.length > 0 ? data.history : financial.history,
       };
 
+      if (!canAccessBrowserStorage(getBrowserWindow())) return null;
       localStorage.setItem("financialCache", JSON.stringify(newFinancial));
       setFinancial(newFinancial);
     } catch (error) {
+      if (!canAccessBrowserStorage(getBrowserWindow())) return null;
       const cachedData = localStorage.getItem("financialCache");
       if (cachedData) {
         const parsed: Financial = JSON.parse(cachedData);

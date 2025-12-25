@@ -19,7 +19,7 @@ export default async function handler(
       .from("todos")
       .select("*")
       .eq("auth_data", authData)
-      .order("order", { ascending: true });
+      .order("date", { ascending: true });
     if (error) {
       console.error("Error al obtener task:", error);
       return res.status(500).json({ error: error.message });

@@ -1,39 +1,18 @@
 "use client";
 
-import { Feed, News } from "@/types";
+import { Feed, News, NewsContextType, NewsProviderProps } from "@/types";
+import { canAccessBrowserStorage, getBrowserWindow } from "@/utils";
 import React, { createContext, useEffect, useState, ReactNode } from "react";
-
-export interface NewsContextType {
-  news: News;
-  newsLoading: boolean;
-  selectedFeed: Feed;
-  setSelectedFeed: (feed: Feed) => void;
-  getNews: (feed?: Feed) => Promise<void>;
-  bloquearNews12Horas: () => void;
-}
 
 export const NewsContext = createContext<NewsContextType | undefined>(
   undefined,
 );
-
-interface NewsProviderProps {
-  children: ReactNode;
-}
-
-export const canAccessBrowserStorage = (win: unknown): boolean => {
-  return typeof win !== "undefined";
-};
-
-export const getBrowserWindow = () => {
-  return typeof window !== "undefined" ? window : undefined;
-};
 
 export const NewsProvider: React.FC<NewsProviderProps> = ({ children }) => {
   const [news, setNews] = useState<News>({ totalArticles: 0, articles: [] });
   const [newsLoading, setNewsLoading] = useState(false);
   const [selectedFeed, setSelectedFeed] = useState<Feed>("biobio");
 
-  // --- Función unificada de lectura de cache ---
   const readCache = (feed: Feed): News | null => {
     if (!canAccessBrowserStorage(getBrowserWindow())) return null;
 
@@ -54,14 +33,12 @@ export const NewsProvider: React.FC<NewsProviderProps> = ({ children }) => {
     return null;
   };
 
-  // --- Función unificada de fetch de noticias ---
   const getNews = async (feed: Feed = selectedFeed) => {
     setNewsLoading(true);
     try {
       const cached = readCache(feed);
       if (cached) {
         setNews(cached);
-        console.log("Noticias desde cache:", feed);
         return;
       }
 

@@ -21,7 +21,7 @@ type Errors = {
 
 export const useMovements = () => {
   const [modalType, setModalType] = useState<MovementTypes | null>(null);
-  const [category, setCategory] = useState("");
+  const [category, setCategory] = useState<string>("");
   const [value, setValue] = useState<string>("");
   const [editingItem, setEditingItem] = useState("");
   const [errors, setErrors] = useState<Errors>({});
@@ -70,7 +70,7 @@ export const useMovements = () => {
   const validateForm = (): boolean => {
     const formattedErrors: Errors = {};
 
-    if (!category || category.trim() === "") {
+    if (!category || String(category).trim() === "") {
       formattedErrors.category = "Debes seleccionar una categoría";
     }
     const numericValue = Number(value);
@@ -192,12 +192,16 @@ export const useMovements = () => {
     });
   };
 
-  const handleOpenAddModal = () => {
+  const handleOpenAddModal = (initialCategory?: string) => {
     setModalType(selectedType);
     setEditingItem("");
     setValue("");
-    const firstCategory = Object.keys(getCategoryLabels(selectedType))[0];
-    setCategory(firstCategory);
+    if (initialCategory) {
+      setCategory(initialCategory);
+    } else {
+      const firstCategory = Object.keys(getCategoryLabels(selectedType))[0];
+      setCategory(firstCategory);
+    }
     setErrors({});
   };
 
@@ -206,18 +210,6 @@ export const useMovements = () => {
       editingItem ? handleUpdateMovement() : handleAddMovement();
   };
 
-  const castCategory = (type: MovementTypes, cat: string) => {
-    switch (type) {
-      case "ingresos":
-        return cat as IngresosCategory;
-      case "gastos":
-        return cat as GastosCategory;
-      case "ahorros":
-        return cat as AhorrosCategory;
-      default:
-        throw new Error("Tipo de movimiento inválido");
-    }
-  };
   return {
     modalType,
     category,

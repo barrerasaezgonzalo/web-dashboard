@@ -4,12 +4,7 @@ import { TaskInputProps } from "@/types";
 import { CirclePlus, Loader2, Save } from "lucide-react";
 import React, { memo } from "react";
 
-// Forzamos la interfaz para incluir isLoading explícitamente
-interface Props extends TaskInputProps {
-  isLoading?: boolean;
-}
-
-export const TaskInputComponent: React.FC<Props> = ({
+export const TaskInputComponent: React.FC<TaskInputProps> = ({
   title,
   setTitle,
   date,
@@ -19,7 +14,7 @@ export const TaskInputComponent: React.FC<Props> = ({
   editingTaskId,
   handleAdd,
   handleSave,
-  isLoading = false, // Valor por defecto
+  isLoading,
 }) => {
   return (
     <div className="flex gap-2 mt-2">
@@ -40,15 +35,16 @@ export const TaskInputComponent: React.FC<Props> = ({
         />
         <input
           id="task-date"
-          value={date || ""}
+          value={date}
           onChange={(e) => setDate(e.target.value)}
           type="date"
+          onKeyDown={handleKeyDown}
           disabled={isLoading}
           className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:bg-gray-100"
         />
       </div>
       <button
-        type="button" // Cambiado de role="button" a type="button"
+        type="button"
         onClick={editingTaskId ? handleSave : handleAdd}
         disabled={isLoading}
         className="bg-blue-500 text-white px-4 rounded hover:bg-blue-600 h-10 flex items-center justify-center min-w-[60px] disabled:opacity-50 disabled:cursor-not-allowed transition-all"

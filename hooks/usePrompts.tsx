@@ -2,13 +2,14 @@ import { formatPromptOutput, parsePromptResponse } from "@/utils";
 import { useState } from "react";
 import { useData } from "./useData";
 import { PromptData } from "@/types";
+import { useToast } from "./useToast";
 
 export const usePrompts = () => {
   const [input, setInput] = useState<string>("");
   const [parsedData, setParsedData] = useState<PromptData | null>(null);
   const [loading, setLoading] = useState(false);
-  const [showToast, setShowToast] = useState(false);
   const { getPrompt } = useData();
+  const { toast, showToast } = useToast();
 
   const handleAdd = async () => {
     if (!input) return;
@@ -41,7 +42,7 @@ export const usePrompts = () => {
     if (!parsedData) return;
 
     navigator.clipboard.writeText(getTextOutput());
-    setShowToast(true);
+    showToast("Texto copiado al portapapeles");
   };
 
   return {
@@ -50,7 +51,6 @@ export const usePrompts = () => {
     parsedData,
     loading,
     showToast,
-    setShowToast,
     handleCopy,
     handleAdd,
     getTextOutput,

@@ -20,8 +20,6 @@ export const PromptComponent: React.FC = () => {
     handleCopy,
     parsedData,
     getTextOutput,
-    showToast,
-    setShowToast,
   } = usePrompts();
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   useAutoResize(textareaRef, input);
@@ -49,13 +47,6 @@ export const PromptComponent: React.FC = () => {
 
       {parsedData && (
         <ParsedDataView data={parsedData} onEnviar={handleEnviar} />
-      )}
-
-      {showToast && (
-        <Toast
-          message="¡Texto copiado al portapapeles!"
-          onConfirm={() => setShowToast(false)}
-        />
       )}
     </div>
   );

@@ -17,8 +17,7 @@ export interface TaskContextType {
   addTask: (title: string, date?: string) => Promise<Task>;
   toggleTaskInDev: (id: string) => void;
   removeTask: (id: string) => void;
-  editTask: (id: string, newTitle: string, newDate?: string) => void;
-  updateTasksOrder: (tasks: Task[]) => Promise<void>;
+  editTask: (id: string, newTitle: string, newDate: string) => void;
 }
 
 export const TasksContext = createContext<TaskContextType | undefined>(
@@ -55,18 +54,13 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
     [userId],
   );
 
-  useEffect(() => {
-    if (userId !== null) {
-      getTasks(userId);
-    }
-  }, [userId, getTasks]);
-
   const addTask = async (title: string, date?: string): Promise<Task> => {
     try {
+      setTasksLoading(true);
       const response = await fetch("/api/tasks/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, userId, date: date ?? null }),
+        body: JSON.stringify({ title, userId, date }),
       });
       if (!response.ok) {
         const errData = await response.json();
@@ -75,31 +69,44 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
       const data = await response.json();
       const task: Task = data[0];
       setTasks((prev) => [...prev, task]);
+      if (userId) getTasks(userId);
       return task;
     } catch (error) {
       console.error("Error al agregar tarea:", error);
       throw error;
+    } finally {
+      setTasksLoading(false);
     }
   };
 
-  const editTask = async (id: string, newTitle: string, newDate?: string) => {
+  const editTask = async (id: string, newTitle: string, newDate: string) => {
     try {
+      setTasksLoading(true);
       const response = await fetch("/api/tasks/edit", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           id,
           title: newTitle,
-          date: newDate ?? null,
+          date: newDate,
           userId,
         }),
       });
       const updatedTask = await response.json();
       setTasks((prev) => prev.map((t) => (t.id === id ? updatedTask : t)));
+      if (userId) getTasks(userId);
     } catch (error) {
       console.error("Error al editar tarea:", error);
+    } finally {
+      setTasksLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (userId !== null) {
+      getTasks(userId);
+    }
+  }, [userId, getTasks]);
 
   const toggleTaskInDev = async (id: string) => {
     const taskBefore = tasks.find((t) => t.id === id);
@@ -112,6 +119,7 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
     );
 
     try {
+      setTasksLoading(true);
       const res = await fetch("/api/tasks/edit", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -126,39 +134,20 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
           task.id === id ? { ...task, in_dev: taskBefore.in_dev } : task,
         ),
       );
+    } finally {
+      setTasksLoading(false);
     }
   };
 
   const removeTask = async (id: string) => {
     setTasks((prev) => prev.filter((t) => t.id !== id));
     try {
+      setTasksLoading(true);
       await fetch(`/api/tasks/${id}`, { method: "DELETE" });
     } catch (error) {
       console.error("Error al eliminar tarea:", error);
-    }
-  };
-
-  const updateTasksOrder = async (newTasks: Task[]) => {
-    const oldTasks = [...tasks];
-    setTasks(newTasks);
-
-    try {
-      const payload = newTasks.map((task, index) => ({
-        id: task.id,
-        order: index,
-        userId: userId,
-      }));
-
-      const res = await fetch("/api/tasks/reorder", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!res.ok) throw new Error("Error reordenando tareas");
-    } catch (error) {
-      console.error("Error en updateTasksOrder:", error);
-      setTasks(oldTasks); // revertimos si falla
+    } finally {
+      setTasksLoading(false);
     }
   };
 
@@ -166,13 +155,12 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
     <TasksContext.Provider
       value={{
         tasks,
+        addTask,
+        editTask,
+        removeTask,
+        toggleTaskInDev,
         tasksLoading,
         getTasks,
-        addTask,
-        toggleTaskInDev,
-        removeTask,
-        editTask,
-        updateTasksOrder,
       }}
     >
       {children}
