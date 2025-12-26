@@ -141,7 +141,9 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
   const deleteMovement = async (id: string) => {
     setMovements((prev) => prev.filter((t) => t.id !== id));
     try {
-      await fetch(`/api/personalFinances?id=${id}`, { method: "DELETE" });
+      await fetch(`/api/personalFinances?id=${id}&authData=${userId}`, {
+        method: "DELETE",
+      });
     } catch (error) {
       console.error("Error al eliminar personal financial:", error);
     }

@@ -167,16 +167,6 @@ export function getTrendUI(trend: Trend) {
   }
 }
 
-export function handleTextChange(
-  event: React.ChangeEvent<HTMLTextAreaElement>,
-  setNote: (v: string) => void,
-  saveNote: (v: string) => void,
-) {
-  const value = event.target.value;
-  setNote(value);
-  saveNote(value);
-}
-
 export function formatFechaHora(date: Date) {
   const fecha = date.toLocaleDateString("es-CL", {
     day: "numeric",

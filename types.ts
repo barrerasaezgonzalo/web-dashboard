@@ -324,6 +324,7 @@ export interface MovementModalProps {
   value: string;
   errors: { category?: string; value?: string };
   specialCategoryRules: Record<string, (financial: any) => number>;
+  financial: any;
   selectedType: PersonalFinance["type"];
   editingItem: string;
   onClose: () => void;

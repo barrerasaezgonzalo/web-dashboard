@@ -31,9 +31,7 @@ export const useMovements = () => {
   });
   const [selectedType, setSelectedType] =
     useState<PersonalFinance["type"]>("gastos");
-
   const inputRef = useRef<HTMLInputElement>(null);
-
   const { movements } = useContext(PersonalFinanceContext)!;
   const { addMovement, updateMovement, deleteMovement } = usePersonalFinance();
   const { toast, openToast, closeToast } = useToast();

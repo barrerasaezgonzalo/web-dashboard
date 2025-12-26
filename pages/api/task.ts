@@ -63,7 +63,6 @@ export default async function handler(
     return res.status(200).json(data[0]);
   }
 
-  // DELETE: eliminar task
   if (req.method === "DELETE") {
     const taskId = id || queryId;
     if (!taskId) return res.status(400).json({ error: "ID inválido" });
