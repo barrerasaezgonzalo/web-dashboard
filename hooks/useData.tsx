@@ -1,11 +1,39 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { useUser } from "@/context/UserContext";
+import { WheaterResponse } from "@/types";
 
 export const useData = () => {
   const { userId } = useUser();
 
   const [note, setNote] = useState<{ id: string; content: string }>();
   const [notes, setNotes] = useState<{ id: string; content: string }[]>([]);
+  const [wheater, setWheather] = useState<WheaterResponse | null>(null);
+  const [prompt, setPrompt] = useState("");
+
+  const getPrompt = useCallback(
+    async (input?: string): Promise<string | null> => {
+      if (!input) return null;
+
+      try {
+        const res = await fetch("/api/prompt", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ input }),
+        });
+        const result = await res.json();
+        if (result.data) {
+          setPrompt(result.data);
+          return result.data;
+        }
+        console.error("No se recibió data del endpoint", result);
+        return null;
+      } catch (error) {
+        console.error("Error al generar prompt:", error);
+        return null;
+      }
+    },
+    [],
+  );
 
   // guardamos el timeout en un ref para que no se pierda entre renders
   const saveTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -116,6 +144,20 @@ export const useData = () => {
     }
   };
 
+  const fetchWeather = useCallback(async () => {
+    try {
+      const res = await fetch("/api/weather");
+      const data: WheaterResponse = await res.json();
+      setWheather(data);
+    } catch {
+      console.error("Error al obtener Clima");
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchWeather();
+  }, [fetchWeather]);
+
   // inicializar al montar
   useEffect(() => {
     fetchNotes();
@@ -130,5 +172,8 @@ export const useData = () => {
     createNote,
     deleteNote,
     createNoteAPI,
+    wheater,
+    prompt,
+    getPrompt,
   };
 };
