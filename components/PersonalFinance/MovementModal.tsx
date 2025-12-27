@@ -16,7 +16,6 @@ export const MovementModal: React.FC<MovementModalProps> = ({
   onSave,
   onChangeCategory,
   onChangeValue,
-  onKeyDown,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { financial } = useFinancial();
@@ -99,7 +98,12 @@ export const MovementModal: React.FC<MovementModalProps> = ({
               placeholder="Ingresa el monto"
               value={value}
               onChange={(e) => onChangeValue(e.target.value)}
-              onKeyDown={onKeyDown}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  onSave();
+                }
+              }}
               className={`w-full border rounded-lg p-2.5 focus:outline-none focus:ring-2 transition-all ${
                 errors.value
                   ? "border-red-500 focus:ring-red-500"

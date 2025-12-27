@@ -191,22 +191,12 @@ export const useMovements = () => {
     });
   };
 
-  const handleOpenAddModal = (initialCategory?: string) => {
+  const handleOpenAddModal = () => {
     setModalType(selectedType);
     setEditingItem("");
     setValue("");
-    if (initialCategory) {
-      setCategory(initialCategory);
-    } else {
-      const firstCategory = Object.keys(getCategoryLabels(selectedType))[0];
-      setCategory(firstCategory);
-    }
+    setCategory("");
     setErrors({});
-  };
-
-  const handleInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && value.trim())
-      editingItem ? handleUpdateMovement() : handleAddMovement();
   };
 
   return {
@@ -233,7 +223,6 @@ export const useMovements = () => {
     handleAddMovement,
     handleUpdateMovement,
     handleDeleteMovement,
-    handleInputKeyDown,
     resetModal,
     validateForm,
   };

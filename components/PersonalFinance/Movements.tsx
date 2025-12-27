@@ -31,7 +31,6 @@ export default function Movements() {
     handleAddMovement,
     handleUpdateMovement,
     handleDeleteMovement,
-    handleInputKeyDown,
     resetModal,
   } = useMovements();
 
@@ -84,7 +83,6 @@ export default function Movements() {
                 onSave={editingItem ? handleUpdateMovement : handleAddMovement}
                 onChangeCategory={setCategory}
                 onChangeValue={setValue}
-                onKeyDown={handleInputKeyDown}
               />
             )}
           </div>

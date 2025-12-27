@@ -330,7 +330,6 @@ export interface MovementModalProps {
   onSave: () => void;
   onChangeCategory: (category: string) => void;
   onChangeValue: (value: string) => void;
-  onKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 export interface MovementFiltersProps {
