@@ -1,28 +1,23 @@
 "use client";
 
-import { memo, useRef, useState } from "react";
+import { memo, useState } from "react";
 import { StickyNote, Plus, List } from "lucide-react";
-import { useAutoResize } from "@/hooks/useAutoResize";
-import { Toast } from "../ui/Toast";
 import { useToast } from "@/hooks/useToast";
 import { useNotes } from "@/hooks/useNotes";
 import { NotesList } from "./NotesList";
+import { Toast } from "../ui/Toast";
 
 export const NotesComponent: React.FC = () => {
   const { note, setNote, notes, deleteNote, createNote, handleChange } =
     useNotes();
   const [openList, setOpenList] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const { toast, openToast, closeToast } = useToast();
-
-  useAutoResize(textareaRef, note?.content || "");
 
   const handleAddNote = () => {
     openToast({
-      message:
-        "Esta nota se va a guardar en tu historial. ¿Querés crear una nueva nota?",
-      onConfirm: () => {
-        createNote();
+      message: "¿Querés crear una nueva nota?",
+      onConfirm: async () => {
+        await createNote();
         closeToast();
       },
       onCancel: closeToast,
@@ -51,38 +46,51 @@ export const NotesComponent: React.FC = () => {
         </div>
       </div>
 
-      <textarea
-        ref={textareaRef}
-        value={note?.content || ""}
-        onChange={handleChange}
-        rows={6}
-        placeholder="Escribe tu nota..."
-        className="
-          w-full p-2 outline-none resize-none
-          focus:bg-amber-200 focus:shadow-lg focus:shadow-amber-300/50
-        "
-      />
+      {notes.length === 0 ? (
+        <div className="text-center py-10">
+          <p>No tienes notas todavía.</p>
+          <button
+            onClick={handleAddNote}
+            className="mt-4 px-4 py-2 bg-amber-400 rounded hover:bg-amber-500"
+          >
+            Crear primera nota
+          </button>
+        </div>
+      ) : (
+        <textarea
+          value={note?.content || ""}
+          onChange={handleChange}
+          rows={6}
+          placeholder="Escribe tu nota..."
+          className="
+            w-full p-2 outline-none resize-none
+            focus:bg-amber-200 focus:shadow-lg focus:shadow-amber-300/50
+          "
+        />
+      )}
 
-      <NotesList
-        openList={openList}
-        notes={notes}
-        setOpenList={setOpenList}
-        handleDeleteNote={(n) => {
-          openToast({
-            message: "¿Querés eliminar esta nota?",
-            onConfirm: () => {
-              deleteNote(n.id);
-              closeToast();
-            },
-            onCancel: closeToast,
-          });
-        }}
-        openToast={openToast}
-        handleClickNote={(n) => {
-          setNote(n);
-          setOpenList(false);
-        }}
-      />
+      {notes.length > 0 && (
+        <NotesList
+          openList={openList}
+          notes={notes}
+          setOpenList={setOpenList}
+          handleDeleteNote={(n) => {
+            openToast({
+              message: "¿Querés eliminar esta nota?",
+              onConfirm: () => {
+                deleteNote(n.id);
+                closeToast();
+              },
+              onCancel: closeToast,
+            });
+          }}
+          openToast={openToast}
+          handleClickNote={(n) => {
+            setNote(n);
+            setOpenList(false);
+          }}
+        />
+      )}
 
       {toast && (
         <Toast
