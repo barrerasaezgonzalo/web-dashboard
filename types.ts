@@ -400,12 +400,9 @@ export interface Note {
 
 export interface NotesListProps {
   openList: boolean;
-  search: string;
-  setSearch: (s: string) => void;
   notes: Note[];
-  setNote: (n: Note) => void;
   setOpenList: (s: boolean) => void;
   openToast: (config: ToastConfig) => void;
-  deleteNote: (id: string) => void;
-  closeToast: () => void;
+  handleDeleteNote: (note: Note) => void;
+  handleClickNote: (note: Note) => void;
 }

@@ -1,17 +1,15 @@
 import { Note, NotesListProps } from "@/types";
 import { Trash } from "lucide-react";
+import { useState } from "react";
 
 export const NotesList: React.FC<NotesListProps> = ({
   openList,
-  search,
-  setSearch,
   notes,
-  setNote,
-  setOpenList,
-  openToast,
-  deleteNote,
-  closeToast,
+  handleDeleteNote,
+  handleClickNote,
 }) => {
+  const [search, setSearch] = useState("");
+
   return (
     <>
       {openList && (
@@ -35,25 +33,12 @@ export const NotesList: React.FC<NotesListProps> = ({
               >
                 <span
                   className="truncate flex-1"
-                  onClick={() => {
-                    setNote(n);
-                    setOpenList(false);
-                  }}
+                  onClick={() => handleClickNote(n)}
                 >
                   {n.content}
                 </span>
                 <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    openToast({
-                      message: "¿Querés eliminar esta nota?",
-                      onConfirm: () => {
-                        deleteNote(n.id);
-                        closeToast();
-                      },
-                      onCancel: closeToast,
-                    });
-                  }}
+                  onClick={() => handleDeleteNote(n)}
                   className="p-1 rounded hover:bg-red-400"
                 >
                   <Trash size={16} />

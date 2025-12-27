@@ -6,41 +6,44 @@ export const useNotes = () => {
   const [note, setNote] = useState<Note>();
   const [notes, setNotes] = useState<Note[]>([]);
   const { userId } = useUser();
-
   const saveTimeout = useRef<NodeJS.Timeout | null>(null);
+  const isCreatingRef = useRef(false);
 
   const saveNote = useCallback(
     (content: string, noteId: string) => {
       if (!userId) return;
-      if (saveTimeout.current) clearTimeout(saveTimeout.current);
-      clearTimeout(saveTimeout.current || 0);
+      if (saveTimeout.current) {
+        clearTimeout(saveTimeout.current);
+      }
       saveTimeout.current = setTimeout(async () => {
         try {
-          await fetch("/api/note", {
+          await fetch(`/api/note?authData=${userId}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ content, userId, noteId }),
           });
+
           setNotes((prev) =>
             prev.map((n) => (n.id === noteId ? { ...n, content } : n)),
           );
+
           setNote((prev) =>
             prev?.id === noteId ? { ...prev, content } : prev,
           );
         } catch (err) {
           console.error("Error saving note:", err);
         }
-      }, 1000);
+      }, 500);
     },
     [userId],
   );
 
   const createNote = async () => {
-    if (!note) return;
+    if (!note || !userId) return;
 
     try {
       saveNote(note.content, note.id);
-      const res = await fetch("/api/note", {
+      const res = await fetch(`/api/note?authData=${userId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: "" }),
@@ -48,6 +51,7 @@ export const useNotes = () => {
 
       const newNote = await res.json();
       setNote(newNote);
+      fetchNotes();
     } catch (err) {
       console.error("Error creando nueva nota:", err);
     }
@@ -96,12 +100,39 @@ export const useNotes = () => {
       }
 
       const data = await res.json();
+      fetchNotes();
       return data;
     } catch (err) {
       console.error("Error creando nota:", err);
       return null;
     }
   };
+
+  const draftRef = useRef("");
+  const handleChange = useCallback(
+    async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const value = e.target.value;
+      draftRef.current = value;
+
+      setNote((prev) => (prev ? { ...prev, content: value } : prev));
+      const noteId = note?.id;
+      if (!noteId && userId && !isCreatingRef.current) {
+        isCreatingRef.current = true;
+
+        const newNote = await createNoteAPI(draftRef.current, userId);
+        if (newNote) {
+          setNote({ ...newNote, content: draftRef.current });
+        }
+
+        isCreatingRef.current = false;
+        return;
+      }
+      if (noteId) {
+        saveNote(draftRef.current, noteId);
+      }
+    },
+    [note?.id, userId, saveNote],
+  );
 
   useEffect(() => {
     fetchNotes();
@@ -116,5 +147,6 @@ export const useNotes = () => {
     createNote,
     deleteNote,
     createNoteAPI,
+    handleChange,
   };
 };

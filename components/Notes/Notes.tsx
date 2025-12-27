@@ -1,32 +1,22 @@
 "use client";
 
 import { memo, useRef, useState } from "react";
-import { StickyNote, Plus, List, Trash } from "lucide-react";
+import { StickyNote, Plus, List } from "lucide-react";
 import { useAutoResize } from "@/hooks/useAutoResize";
 import { Toast } from "../ui/Toast";
 import { useToast } from "@/hooks/useToast";
-import { useUser } from "@/context/UserContext";
 import { useNotes } from "@/hooks/useNotes";
 import { NotesList } from "./NotesList";
 
 export const NotesComponent: React.FC = () => {
-  const {
-    note,
-    setNote,
-    saveNote,
-    notes,
-    deleteNote,
-    createNote,
-    createNoteAPI,
-  } = useNotes();
+  const { note, setNote, notes, deleteNote, createNote, handleChange } =
+    useNotes();
   const [openList, setOpenList] = useState(false);
-  const [search, setSearch] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const { toast, openToast, closeToast } = useToast();
-  const { userId } = useUser();
-  const [isTempNote, setIsTempNote] = useState(false);
 
   useAutoResize(textareaRef, note?.content || "");
+
   const handleAddNote = () => {
     openToast({
       message:
@@ -64,21 +54,8 @@ export const NotesComponent: React.FC = () => {
       <textarea
         ref={textareaRef}
         value={note?.content || ""}
+        onChange={handleChange}
         rows={6}
-        onChange={async (e) => {
-          const value = e.target.value;
-          if (!note?.id && !isTempNote) {
-            setIsTempNote(true);
-            const newNote = await createNoteAPI(value, userId!);
-            if (newNote) {
-              setNote(newNote);
-              setIsTempNote(false);
-            }
-          } else if (note?.id) {
-            setNote({ ...note, content: value });
-            saveNote(value, note.id);
-          }
-        }}
         placeholder="Escribe tu nota..."
         className="
           w-full p-2 outline-none resize-none
@@ -88,14 +65,23 @@ export const NotesComponent: React.FC = () => {
 
       <NotesList
         openList={openList}
-        search={search}
-        setSearch={setSearch}
         notes={notes}
-        setNote={setNote}
         setOpenList={setOpenList}
+        handleDeleteNote={(n) => {
+          openToast({
+            message: "¿Querés eliminar esta nota?",
+            onConfirm: () => {
+              deleteNote(n.id);
+              closeToast();
+            },
+            onCancel: closeToast,
+          });
+        }}
         openToast={openToast}
-        deleteNote={deleteNote}
-        closeToast={closeToast}
+        handleClickNote={(n) => {
+          setNote(n);
+          setOpenList(false);
+        }}
       />
 
       {toast && (
