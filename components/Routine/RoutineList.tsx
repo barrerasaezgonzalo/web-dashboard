@@ -10,7 +10,6 @@ export const RoutineList: React.FC<RoutineListProps> = ({
   getBg,
 }) => {
   const [currentHour, setCurrentHour] = useState(new Date());
-  const { toast, openToast, closeToast, showToast } = useToast();
   const [toastItem, setToastItem] = useState<any | null>(null);
 
   const getStatus = (start: string, end: string) => {

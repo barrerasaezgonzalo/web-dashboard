@@ -28,7 +28,7 @@ export default async function handler(
         .from("notes")
         .select("*")
         .eq("auth_data", effectiveUserId)
-        .order("updated_at", { ascending: true });
+        .order("updated_at", { ascending: false });
 
       if (error) return res.status(500).json({ error: error.message });
 

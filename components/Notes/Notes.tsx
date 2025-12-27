@@ -1,23 +1,24 @@
 "use client";
 
-import { memo, useEffect, useRef, useState } from "react";
-import { useData } from "@/hooks/useData";
+import { memo, useRef, useState } from "react";
 import { StickyNote, Plus, List, Trash } from "lucide-react";
 import { useAutoResize } from "@/hooks/useAutoResize";
 import { Toast } from "../ui/Toast";
 import { useToast } from "@/hooks/useToast";
 import { useUser } from "@/context/UserContext";
+import { useNotes } from "@/hooks/useNotes";
+import { NotesList } from "./NotesList";
 
 export const NotesComponent: React.FC = () => {
   const {
     note,
     setNote,
     saveNote,
-    fetchNotes,
     notes,
     deleteNote,
+    createNote,
     createNoteAPI,
-  } = useData();
+  } = useNotes();
   const [openList, setOpenList] = useState(false);
   const [search, setSearch] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -26,32 +27,6 @@ export const NotesComponent: React.FC = () => {
   const [isTempNote, setIsTempNote] = useState(false);
 
   useAutoResize(textareaRef, note?.content || "");
-
-  useEffect(() => {
-    fetchNotes();
-  }, [fetchNotes]);
-
-  const createNote = async () => {
-    if (!note) return;
-
-    try {
-      // guardamos la nota actual
-      await saveNote(note.content, note.id);
-
-      // creamos nueva nota en blanco
-      const res = await fetch("/api/note", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: "" }),
-      });
-
-      const newNote = await res.json();
-      setNote(newNote);
-    } catch (err) {
-      console.error("Error creando nueva nota:", err);
-    }
-  };
-
   const handleAddNote = () => {
     openToast({
       message:
@@ -92,10 +67,8 @@ export const NotesComponent: React.FC = () => {
         rows={6}
         onChange={async (e) => {
           const value = e.target.value;
-
-          // Si no hay nota real, crear nota nueva UNA VEZ
           if (!note?.id && !isTempNote) {
-            setIsTempNote(true); // evita múltiples llamadas
+            setIsTempNote(true);
             const newNote = await createNoteAPI(value, userId!);
             if (newNote) {
               setNote(newNote);
@@ -113,60 +86,17 @@ export const NotesComponent: React.FC = () => {
         "
       />
 
-      {openList && (
-        <div className="mt-4 p-2 bg-amber-100 rounded shadow max-h-64 overflow-auto">
-          <input
-            type="text"
-            placeholder="Buscar notas..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full p-1 mb-2 rounded border focus:outline-none focus:ring focus:border-amber-300"
-          />
-
-          {notes
-            .filter((n) =>
-              n.content.toLowerCase().includes(search.toLowerCase()),
-            )
-            .map((n) => (
-              <div
-                key={n.id}
-                className="flex justify-between items-center p-2 border-b hover:bg-amber-200 cursor-pointer"
-              >
-                <span
-                  className="truncate flex-1"
-                  onClick={() => {
-                    setNote(n);
-                    setOpenList(false);
-                  }}
-                >
-                  {n.content}
-                </span>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    openToast({
-                      message: "¿Querés eliminar esta nota?",
-                      onConfirm: () => {
-                        deleteNote(n.id);
-                        closeToast();
-                      },
-                      onCancel: closeToast,
-                    });
-                  }}
-                  className="p-1 rounded hover:bg-red-400"
-                >
-                  <Trash size={16} />
-                </button>
-              </div>
-            ))}
-
-          {notes.filter((n) =>
-            n.content.toLowerCase().includes(search.toLowerCase()),
-          ).length === 0 && (
-            <p className="text-sm text-gray-500">No se encontraron notas</p>
-          )}
-        </div>
-      )}
+      <NotesList
+        openList={openList}
+        search={search}
+        setSearch={setSearch}
+        notes={notes}
+        setNote={setNote}
+        setOpenList={setOpenList}
+        openToast={openToast}
+        deleteNote={deleteNote}
+        closeToast={closeToast}
+      />
 
       {toast && (
         <Toast

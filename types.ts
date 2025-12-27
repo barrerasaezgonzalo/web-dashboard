@@ -392,3 +392,20 @@ export interface RoutineListProps {
   toggleDone: (item: Routine | null) => void;
   getBg: (doneCount: number, status: string) => string;
 }
+
+export interface Note {
+  id: string;
+  content: string;
+}
+
+export interface NotesListProps {
+  openList: boolean;
+  search: string;
+  setSearch: (s: string) => void;
+  notes: Note[];
+  setNote: (n: Note) => void;
+  setOpenList: (s: boolean) => void;
+  openToast: (config: ToastConfig) => void;
+  deleteNote: (id: string) => void;
+  closeToast: () => void;
+}
