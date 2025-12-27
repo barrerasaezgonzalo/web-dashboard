@@ -191,11 +191,11 @@ export const useMovements = () => {
     });
   };
 
-  const handleOpenAddModal = () => {
+  const handleOpenAddModal = (category?: string) => {
     setModalType(selectedType);
     setEditingItem("");
     setValue("");
-    setCategory("");
+    setCategory(category ? category : "");
     setErrors({});
   };
 

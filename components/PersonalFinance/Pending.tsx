@@ -23,7 +23,6 @@ export const Pending = () => {
     handleAddMovement,
     setCategory,
     setValue,
-    handleInputKeyDown,
   } = useMovements();
 
   return (
@@ -80,7 +79,6 @@ export const Pending = () => {
           onSave={editingItem ? handleUpdateMovement : handleAddMovement}
           onChangeCategory={setCategory}
           onChangeValue={setValue}
-          onKeyDown={handleInputKeyDown}
         />
       )}
     </div>
