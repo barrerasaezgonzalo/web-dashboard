@@ -68,9 +68,10 @@ export const useMovements = () => {
   const validateForm = (): boolean => {
     const formattedErrors: Errors = {};
 
-    if (!category || String(category).trim() === "") {
-      formattedErrors.category = "Debes seleccionar una categoría";
+    if (!category || typeof category !== "string" || !category.trim()) {
+      formattedErrors.value = "Selecciona una categoría válida";
     }
+
     const numericValue = Number(value);
     if (value === undefined || value === null || value === "") {
       formattedErrors.value = "Debes ingresar un valor";

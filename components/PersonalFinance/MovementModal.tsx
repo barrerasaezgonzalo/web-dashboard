@@ -65,7 +65,7 @@ export const MovementModal: React.FC<MovementModalProps> = ({
               Categoría
             </label>
             <select
-              value={category}
+              value={category || ""}
               onChange={(e) => onChangeCategory(e.target.value)}
               className={`w-full border rounded-lg p-2.5 focus:outline-none focus:ring-2 transition-all ${
                 errors.category
@@ -73,6 +73,7 @@ export const MovementModal: React.FC<MovementModalProps> = ({
                   : "border-gray-300 focus:ring-blue-500"
               }`}
             >
+              <option value="">Selecciona una categoría</option>
               {Object.entries(getCategoryLabels(selectedType)).map(
                 ([key, label]) => (
                   <option key={key} value={key}>
