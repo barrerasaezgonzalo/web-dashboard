@@ -1,5 +1,5 @@
 import { useNews } from "@/hooks/useNews";
-import { Feed } from "@/types";
+import { Feed } from "@/types/";
 import { Newspaper } from "lucide-react";
 import { memo } from "react";
 import { NewsList } from "./NewsList";

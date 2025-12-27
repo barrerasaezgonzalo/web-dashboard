@@ -12,7 +12,7 @@ import type {
   IngresosCategory,
   PersonalFinance,
   PersonalFinanceMovement,
-} from "@/types";
+} from "@/types/";
 import { useUser } from "./UserContext";
 
 type PersonalFinanceContextType = {

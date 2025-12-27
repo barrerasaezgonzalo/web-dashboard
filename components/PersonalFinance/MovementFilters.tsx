@@ -1,5 +1,5 @@
 import { typeLabels } from "@/constants";
-import { MovementFiltersProps, PersonalFinance } from "@/types";
+import { MovementFiltersProps, PersonalFinance } from "@/types/";
 import { generateMonthOptions } from "@/utils";
 
 export const MovementFilters: React.FC<MovementFiltersProps> = ({

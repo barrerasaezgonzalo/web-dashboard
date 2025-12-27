@@ -1,4 +1,4 @@
-import { ProgressCircleProps } from "@/types";
+import { ProgressCircleProps } from "@/types/";
 
 export const ProgressCircle: React.FC<ProgressCircleProps> = ({
   done_count,

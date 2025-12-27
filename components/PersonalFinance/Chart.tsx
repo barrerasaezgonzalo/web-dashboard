@@ -1,5 +1,5 @@
 import { usePrivacyMode } from "@/hooks/usePrivacyMode";
-import { FinanceHistoryProps } from "@/types";
+import { FinanceHistoryProps } from "@/types/";
 import { formatCLP } from "@/utils";
 import {
   CartesianGrid,

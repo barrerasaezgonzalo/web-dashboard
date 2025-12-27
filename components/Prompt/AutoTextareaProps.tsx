@@ -1,5 +1,5 @@
 import { useAutoResize } from "@/hooks/useAutoResize";
-import { AutoTextareaProps } from "@/types";
+import { AutoTextareaProps } from "@/types/";
 import { useRef } from "react";
 
 export const AutoTextarea: React.FC<AutoTextareaProps> = ({

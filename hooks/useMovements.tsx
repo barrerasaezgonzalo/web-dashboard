@@ -6,7 +6,7 @@ import {
   AhorrosCategory,
   GastosCategory,
   IngresosCategory,
-} from "@/types";
+} from "@/types/";
 import { PersonalFinanceContext } from "@/context/PersonalFinanceContext";
 import { usePersonalFinance } from "@/hooks/usePersonalFinance";
 import { useToast } from "@/hooks/useToast";

@@ -3,7 +3,7 @@ import * as Icons from "lucide-react";
 import { useRoutine } from "@/hooks/useRoutine";
 import { useToast } from "@/hooks/useToast";
 import { RoutineList } from "./RoutineList";
-import { RoutineType } from "@/types";
+import { RoutineType } from "@/types/";
 import { useCallback } from "react";
 import { Skeleton } from "../ui/Skeleton";
 import { Toast } from "../ui/Toast";

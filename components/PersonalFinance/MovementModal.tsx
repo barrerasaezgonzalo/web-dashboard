@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { modalTitles } from "@/constants";
 import { getCategoryLabels, getSpecialValue } from "@/utils";
-import { MovementModalProps } from "@/types";
+import { MovementModalProps } from "@/types/";
 import { useFinancial } from "@/hooks/useFinancial";
 
 export const MovementModal: React.FC<MovementModalProps> = ({

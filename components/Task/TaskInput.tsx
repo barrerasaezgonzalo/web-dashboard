@@ -1,6 +1,6 @@
 "use client";
 
-import { TaskInputProps } from "@/types";
+import { TaskInputProps } from "@/types/";
 import { CirclePlus, Loader2, Save } from "lucide-react";
 import React, { memo } from "react";
 

@@ -1,7 +1,7 @@
 // pages/api/tasks.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { supabase } from "@/lib/supabaseClient";
-import { Task } from "@/types";
+import { Task } from "@/types/";
 
 export default async function handler(
   req: NextApiRequest,

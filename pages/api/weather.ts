@@ -1,15 +1,15 @@
-import { ClimaData } from "@/types";
+import { WheaterData } from "@/types/";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ClimaData>,
+  res: NextApiResponse<WheaterData>,
 ) {
   const clima = await getWeather();
   res.status(200).json(clima);
 }
 
-export async function getWeather(): Promise<ClimaData> {
+export async function getWeather(): Promise<WheaterData> {
   const lat = -33.4489;
   const lon = -70.6693;
 

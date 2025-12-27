@@ -1,4 +1,4 @@
-import type { ToastProps } from "@/types";
+import type { ToastProps } from "@/types/";
 import { memo, useEffect, useRef } from "react";
 
 export const ToastConponet: React.FC<ToastProps> = ({

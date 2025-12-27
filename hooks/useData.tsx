@@ -1,5 +1,5 @@
-import { useState, useCallback, useEffect, useRef } from "react";
-import { WheaterResponse } from "@/types";
+import { useState, useCallback, useEffect } from "react";
+import { WheaterResponse } from "@/types/";
 
 export const useData = () => {
   const [wheater, setWheather] = useState<WheaterResponse | null>(null);

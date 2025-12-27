@@ -1,4 +1,4 @@
-import { Feed } from "./types";
+import { Feed } from "./types/";
 
 export const IngresosCategoryLabels: Record<string, string> = {
   sueldo: "Sueldo",

@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/useToast";
 import { useNotes } from "@/hooks/useNotes";
 import { NotesList } from "./NotesList";
 import { Toast } from "../ui/Toast";
+import { Note } from "@/types/";
 
 export const NotesComponent: React.FC = () => {
   const { note, setNote, notes, deleteNote, createNote, handleChange } =
@@ -74,7 +75,7 @@ export const NotesComponent: React.FC = () => {
           openList={openList}
           notes={notes}
           setOpenList={setOpenList}
-          handleDeleteNote={(n) => {
+          handleDeleteNote={(n: Note) => {
             openToast({
               message: "¿Querés eliminar esta nota?",
               onConfirm: () => {
@@ -85,7 +86,7 @@ export const NotesComponent: React.FC = () => {
             });
           }}
           openToast={openToast}
-          handleClickNote={(n) => {
+          handleClickNote={(n: Note) => {
             setNote(n);
             setOpenList(false);
           }}

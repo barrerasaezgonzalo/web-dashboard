@@ -1,4 +1,4 @@
-import { FinancialIndicatorProps } from "@/types";
+import { FinancialIndicatorProps } from "@/types/";
 import { getTrendUI } from "@/utils";
 
 const FinancialIndicator: React.FC<FinancialIndicatorProps> = ({

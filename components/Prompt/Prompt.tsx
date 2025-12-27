@@ -1,6 +1,5 @@
 "use client";
 
-import { Toast } from "../ui/Toast";
 import { abrirGpt } from "@/utils";
 import { usePrompts } from "@/hooks/usePrompts";
 import { useAutoResize } from "@/hooks/useAutoResize";

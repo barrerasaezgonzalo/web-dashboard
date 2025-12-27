@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { Routine } from "@/types";
+import type { Routine } from "@/types/";
 import { supabase } from "@/lib/supabaseClient";
 
 export const useRoutine = () => {

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { TaskItemProps } from "@/types";
+import { TaskItemProps } from "@/types/";
 import { TaskActionButton } from "./TaskActionButton";
 import { formatDateToDMY, getDaysRemainingUntil } from "@/utils";
 import { Rocket, SquarePen, Trash } from "lucide-react";

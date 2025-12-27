@@ -1,6 +1,6 @@
 "use client";
 
-import { Feed, News, NewsContextType, NewsProviderProps } from "@/types";
+import { Feed, News, NewsContextType, NewsProviderProps } from "@/types/";
 import { canAccessBrowserStorage, getBrowserWindow } from "@/utils";
 import React, { createContext, useEffect, useState, ReactNode } from "react";
 

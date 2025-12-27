@@ -1,5 +1,3 @@
-import { LucideIcon } from "lucide-react";
-import { financeHistorySchema } from "./components/PersonalFinance/movementSchema";
 import {
   AhorrosCategoryLabels,
   GastosCategoryLabels,
@@ -10,17 +8,13 @@ import {
   Financial,
   FinancialHistory,
   Indicator,
-  MonthlyAccumulator,
   OrderedFinancialHistory,
   ParsedData,
   PersonalFinance,
-  PersonalFinanceMovement,
   PromptData,
-  Task,
   Trend,
   TrendKey,
-} from "./types";
-import * as Icons from "lucide-react";
+} from "./types/";
 
 export const formatCLP = (valor: number | string) => {
   return new Intl.NumberFormat("es-CL", {
@@ -39,18 +33,6 @@ export function abrirGpt(
   }
   const url = ` https://chatgpt.com/?prompt=${encodeURIComponent(pregunta)}`;
 
-  window.open(url, "_blank");
-  setPregunta("");
-}
-
-export function abrirGoogle(
-  pregunta: string,
-  setPregunta: (preguna: string) => void,
-) {
-  if (!pregunta.trim()) {
-    return;
-  }
-  const url = `https://www.google.com/search?q=${encodeURIComponent(pregunta)}`;
   window.open(url, "_blank");
   setPregunta("");
 }
@@ -80,17 +62,6 @@ export function parsePromptResponse(raw: string): ParsedData {
   const jsonString = cleaned.slice(startIndex, endIndex + 1);
 
   return JSON.parse(jsonString);
-}
-
-export function reorderTasks(
-  tasks: Task[],
-  sourceIndex: number,
-  destinationIndex: number,
-): Task[] {
-  const items = Array.from(tasks);
-  const [movedItem] = items.splice(sourceIndex, 1);
-  items.splice(destinationIndex, 0, movedItem);
-  return items;
 }
 
 export function getIndicators(financial: Financial): Indicator[] {
@@ -228,19 +199,6 @@ export function getDaysRemainingUntil(date: string): number {
   return diffInDays;
 }
 
-export function formatMonthYear(dateStr: string): string {
-  const date = new Date(dateStr);
-  const formatter = new Intl.DateTimeFormat("es-CL", {
-    month: "short",
-    year: "numeric",
-  });
-  let formatted = formatter.format(date); // ej: "nov. 2025"
-  formatted = formatted.replace(".", ""); // "nov 2025"
-  formatted = formatted.charAt(0).toUpperCase() + formatted.slice(1); // "Nov 2025"
-
-  return formatted;
-}
-
 export function formatMonthYearFromYMD(year: number, month: number): string {
   const monthNames = [
     "Ene",
@@ -337,45 +295,6 @@ const isSameMonth = (dateStr: string, targetMonth: string) => {
   return `${month}-${year}` === targetMonth;
 };
 
-export function calculateFinanceHistory(movements: PersonalFinanceMovement[]) {
-  const byMonth: Record<string, MonthlyAccumulator> = {};
-
-  for (const m of movements) {
-    const [year, month] = m.date.split("-");
-    const key = `${month}-${year}`; // MM-YYYY
-
-    if (!byMonth[key]) {
-      byMonth[key] = {
-        ingresos: 0,
-        gastos: 0,
-        ahorros: 0,
-      };
-    }
-
-    byMonth[key][m.type] += m.value;
-  }
-
-  const history = Object.entries(byMonth)
-    .sort(([a], [b]) => {
-      const [ma, ya] = a.split("-").map(Number);
-      const [mb, yb] = b.split("-").map(Number);
-      return ya !== yb ? ya - yb : ma - mb;
-    })
-    .map(([date, values]) => {
-      const saldo = values.ingresos - values.gastos;
-
-      return {
-        date,
-        ingresos: values.ingresos,
-        gastos: values.gastos,
-        ahorros: values.ahorros,
-        saldo,
-      };
-    });
-
-  return financeHistorySchema.parse(history);
-}
-
 export const getLastMonths = (count = 6): string[] => {
   const months: string[] = [];
   const now = new Date();
@@ -433,13 +352,6 @@ export const getUnpaidExpensesForCurrentMonth = (
   return result.filter((item) => !item.isPaid);
 };
 
-export const getCurrentMonth = () => {
-  const now = new Date();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const year = now.getFullYear();
-  return `${month}-${year}`;
-};
-
 export const getSpecialValue = (
   type: string,
   category: string,
@@ -452,15 +364,6 @@ export const getSpecialValue = (
     return rules[key](financial);
   }
   return defaultValue;
-};
-
-const ICON_SANITIZE_REGEX = /[<>]/g;
-const iconMap = Icons as unknown as Record<string, LucideIcon>;
-
-export const getIcon = (name?: string): LucideIcon => {
-  if (!name) return Icons.Activity;
-  const key = name.replace(ICON_SANITIZE_REGEX, "");
-  return iconMap[key] ?? Icons.Activity;
 };
 
 export const canAccessBrowserStorage = (win: unknown): boolean => {

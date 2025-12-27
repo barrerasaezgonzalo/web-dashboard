@@ -1,4 +1,4 @@
-import { MovementListProps } from "@/types";
+import { MovementListProps } from "@/types/";
 import { formatCLP, formatDateToDMY, getCategoryLabel } from "@/utils";
 import { SquarePen, Trash } from "lucide-react";
 

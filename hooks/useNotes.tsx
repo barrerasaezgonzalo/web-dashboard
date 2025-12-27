@@ -1,5 +1,5 @@
 import { useUser } from "@/context/UserContext";
-import { Note } from "@/types";
+import { Note } from "@/types/";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export const useNotes = () => {

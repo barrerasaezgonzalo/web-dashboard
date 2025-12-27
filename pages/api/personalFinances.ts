@@ -1,7 +1,7 @@
 // pages/api/personalFinances.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { supabase } from "@/lib/supabaseClient";
-import { PersonalFinanceMovement } from "@/types";
+import { PersonalFinanceMovement } from "@/types/";
 
 type ApiResponse =
   | PersonalFinanceMovement[]

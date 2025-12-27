@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabaseClient";
-import { Financial } from "@/types";
+import { Financial } from "@/types/";
 import { roundToThousands } from "@/utils";
 import type { NextApiRequest, NextApiResponse } from "next";
 

@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import * as Icons from "lucide-react";
-import { RoutineListProps } from "@/types";
-import { useToast } from "@/hooks/useToast";
+import { RoutineListProps } from "@/types/";
 import { Toast } from "../ui/Toast";
 
 export const RoutineList: React.FC<RoutineListProps> = ({

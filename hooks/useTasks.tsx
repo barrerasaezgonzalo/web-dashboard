@@ -1,7 +1,7 @@
 import { TasksContext } from "@/context/TasksContext";
 import { useContext, useState, useRef } from "react";
 import { useToast } from "@/hooks/useToast";
-import { Task } from "@/types";
+import { Task } from "@/types/";
 
 export const useTasks = () => {
   const context = useContext(TasksContext);
@@ -38,8 +38,12 @@ export const useTasks = () => {
 
   const handleSave = async (id: string, title: string, date: string) => {
     try {
+      if (!title.trim() || !date.trim()) {
+        showToast(`Recuerda ingresar todos los campos`);
+        return;
+      }
       setIsLoading(true);
-      await context.editTask(id, title, date);
+      context.editTask(id, title, date);
       setEditingTaskId("");
       setTitle("");
       setDate("");
@@ -54,11 +58,21 @@ export const useTasks = () => {
     setEditingTaskId(task.id);
     setTitle(task.title);
     setDate(task.date);
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   };
 
   const handleTaskToggle = (taskId: string) => context.toggleTaskInDev(taskId);
 
-  const handleRemove = (taskId: string) => context.removeTask(taskId);
+  const handleRemove = async (taskId: string) => {
+    try {
+      await context.removeTask(taskId);
+      showToast("Tarea eliminada correctamente");
+    } catch (error) {
+      showToast("No se pudo eliminar la tarea. Intenta nuevamente");
+    }
+  };
 
   const handleDelete = (taskId: string) => {
     openToast({

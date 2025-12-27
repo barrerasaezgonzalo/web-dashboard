@@ -1,4 +1,4 @@
-import { MovementFooterProps } from "@/types";
+import { MovementFooterProps } from "@/types/";
 import React from "react";
 
 export const MovementFooter: React.FC<MovementFooterProps> = ({

@@ -1,4 +1,4 @@
-import { News } from "@/types";
+import { News } from "@/types/";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(

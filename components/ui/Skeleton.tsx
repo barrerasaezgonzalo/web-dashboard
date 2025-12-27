@@ -1,6 +1,6 @@
 "use client";
 
-import { SkeletonProps } from "@/types";
+import { SkeletonProps } from "@/types/";
 import React from "react";
 
 export const Skeleton: React.FC<SkeletonProps> = ({

@@ -1,7 +1,7 @@
 // pages/api/rss.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import Parser from "rss-parser";
-import { News, NewsArticle } from "@/types";
+import { News, NewsArticle } from "@/types/";
 
 const parser = new Parser();
 

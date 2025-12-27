@@ -1,6 +1,6 @@
 "use client";
 
-import { Task } from "@/types";
+import { Task } from "@/types/";
 import React, {
   createContext,
   useState,
@@ -140,10 +140,11 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
   };
 
   const removeTask = async (id: string) => {
-    setTasks((prev) => prev.filter((t) => t.id !== id));
     try {
       setTasksLoading(true);
-      await fetch(`/api/task?id=${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/task?id=${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Error eliminando tarea");
+      setTasks((prev) => prev.filter((t) => t.id !== id));
     } catch (error) {
       console.error("Error al eliminar tarea:", error);
     } finally {

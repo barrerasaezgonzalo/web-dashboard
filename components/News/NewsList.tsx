@@ -1,4 +1,4 @@
-import { NewsArticle, NewsListProps } from "@/types";
+import { NewsArticle, NewsListProps } from "@/types/";
 
 export const NewsList: React.FC<NewsListProps> = ({ newsLoading, news }) => {
   return (

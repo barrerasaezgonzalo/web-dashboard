@@ -1,4 +1,4 @@
-import { ParsedDataViewProps } from "@/types";
+import { ParsedDataViewProps } from "@/types/";
 import { memo } from "react";
 
 export const ParsedDataViewComponent: React.FC<ParsedDataViewProps> = ({

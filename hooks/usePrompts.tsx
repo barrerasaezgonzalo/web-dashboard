@@ -1,7 +1,7 @@
 import { formatPromptOutput, parsePromptResponse } from "@/utils";
 import { useState } from "react";
 import { useData } from "./useData";
-import { PromptData } from "@/types";
+import { PromptData } from "@/types/";
 import { useToast } from "./useToast";
 
 export const usePrompts = () => {

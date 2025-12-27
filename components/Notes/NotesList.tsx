@@ -1,4 +1,4 @@
-import { Note, NotesListProps } from "@/types";
+import { Note, NotesListProps } from "@/types/";
 import { Trash } from "lucide-react";
 import { useState } from "react";
 

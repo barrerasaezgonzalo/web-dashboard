@@ -4,7 +4,7 @@ import {
   Financial,
   FinancialContextType,
   FinancialProviderProps,
-} from "@/types";
+} from "@/types/";
 import { canAccessBrowserStorage, getBrowserWindow } from "@/utils";
 import React, { createContext, useState, useEffect } from "react";
 

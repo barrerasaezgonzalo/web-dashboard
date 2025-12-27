@@ -2,7 +2,7 @@
 
 import React from "react";
 import { getTooltipClass } from "@/app/styles/labelStyles";
-import { TaskActionButtonProps } from "@/types";
+import { TaskActionButtonProps } from "@/types/";
 
 export const TaskActionButton: React.FC<TaskActionButtonProps> = ({
   icon,

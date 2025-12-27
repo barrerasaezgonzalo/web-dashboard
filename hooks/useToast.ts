@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import type { ToastConfig } from "@/types";
+import type { ToastConfig } from "@/types/";
 
 export function useToast() {
   const [toast, setToast] = useState<ToastConfig | null>(null);

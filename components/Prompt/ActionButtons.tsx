@@ -1,4 +1,4 @@
-import { ActionButtonsProps } from "@/types";
+import { ActionButtonsProps } from "@/types/";
 
 export const ActionButtons: React.FC<ActionButtonsProps> = ({
   loading,
