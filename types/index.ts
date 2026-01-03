@@ -1,4 +1,3 @@
-export * from "./financial";
 export * from "./prompts";
 export * from "./personalFinance";
 export * from "./news";
