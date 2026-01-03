@@ -4,16 +4,11 @@ import {
   IngresosCategoryLabels,
 } from "./constants";
 import {
-  FinanceHistoryItem,
-  Financial,
-  FinancialHistory,
-  Indicator,
-  OrderedFinancialHistory,
+  CategoryOption,
+  MovementType,
   ParsedData,
   PersonalFinance,
   PromptData,
-  Trend,
-  TrendKey,
 } from "./types/";
 
 export const formatCLP = (valor: number | string) => {
@@ -64,80 +59,6 @@ export function parsePromptResponse(raw: string): ParsedData {
   return JSON.parse(jsonString);
 }
 
-export function getIndicators(financial: Financial): Indicator[] {
-  return [
-    { label: "Dólar", value: financial.current.dolar, key: "dolar" },
-    { label: "UTM", value: financial.current.utm, key: "utm" },
-    { label: "BTC", value: financial.current.btc, key: "btc" },
-    { label: "ETH", value: financial.current.eth, key: "eth" },
-  ];
-}
-
-export function mapSparklineData(history: FinancialHistory[]) {
-  return history.map((f) => ({
-    date: f.created_at,
-    dolar: f.dolar,
-    utm: f.utm,
-    btc: f.btc,
-    eth: f.eth,
-  }));
-}
-
-export function getTrend(
-  history: OrderedFinancialHistory,
-  key: TrendKey,
-): Trend {
-  if (!history || history.length < 2) return null;
-
-  const n = history.length;
-  let sumX = 0,
-    sumY = 0,
-    sumXY = 0,
-    sumX2 = 0;
-
-  for (let i = 0; i < n; i++) {
-    const y = history[i][key];
-    const x = i;
-    sumX += x;
-    sumY += y;
-    sumXY += x * y;
-    sumX2 += x * x;
-  }
-
-  const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-
-  const THRESHOLD = 0.01;
-
-  if (slope > THRESHOLD) return "up";
-  if (slope < -THRESHOLD) return "down";
-  return "flat";
-}
-
-export function getTrendUI(trend: Trend) {
-  switch (trend) {
-    case "up":
-      return {
-        color: "text-green-600",
-        label: "Tendencia en alta",
-      };
-    case "down":
-      return {
-        color: "text-red-600",
-        label: "Tendencia en baja",
-      };
-    case "flat":
-      return {
-        color: "text-gray-500",
-        label: "Lateral",
-      };
-    default:
-      return {
-        color: "text-gray-400",
-        label: "Sin datos",
-      };
-  }
-}
-
 export function formatFechaHora(date: Date) {
   const fecha = date.toLocaleDateString("es-CL", {
     day: "numeric",
@@ -162,13 +83,6 @@ export function formatPromptOutput(data: PromptData) {
   Ejemplos: ${data.examples.map((e) => e.trim()).join(", ")}
   Resultado esperado: ${data.expected_output.trim()}`;
 }
-
-export const roundToThousands = (number: number) => {
-  if (typeof number !== "number" || !isFinite(number)) {
-    return 0;
-  }
-  return Math.round(number / 1000) * 1000;
-};
 
 export function formatDateToDMY(date: string): string {
   const [year, month, day] = date.split("-");
@@ -240,7 +154,7 @@ export const generateMonthOptions = () => {
   return options;
 };
 
-export const getCategoryLabels = (type: "ingresos" | "gastos" | "ahorros") => {
+export const getCategoryLabels = (type: MovementType): CategoryOption[] => {
   switch (type) {
     case "ingresos":
       return IngresosCategoryLabels;
@@ -248,23 +162,18 @@ export const getCategoryLabels = (type: "ingresos" | "gastos" | "ahorros") => {
       return GastosCategoryLabels;
     case "ahorros":
       return AhorrosCategoryLabels;
+    default:
+      return [];
   }
 };
 
 export const getCategoryLabel = (
-  type: "ingresos" | "gastos" | "ahorros",
-  category: string,
-) => {
-  switch (type) {
-    case "ingresos":
-      return IngresosCategoryLabels[category as string] || category;
-    case "gastos":
-      return GastosCategoryLabels[category as string] || category;
-    case "ahorros":
-      return AhorrosCategoryLabels[category as string] || category;
-    default:
-      return category;
-  }
+  type: MovementType,
+  categoryId: string,
+): string => {
+  const categories = getCategoryLabels(type);
+  const category = categories.find((cat) => cat.id === categoryId);
+  return category ? category.label : categoryId;
 };
 
 export const calculateMonthlyResume = (
@@ -309,47 +218,38 @@ export const getLastMonths = (count = 6): string[] => {
   return months;
 };
 
-export function buildFinanceHistory(
-  movements: PersonalFinance[],
-): FinanceHistoryItem[] {
-  const months = getLastMonths(6); // tu función que da ["12-2025", "11-2025", ...]
-  return months.map((month) => {
-    const resume = calculateMonthlyResume(movements, month);
-    return {
-      date: month,
-      ...resume, // ingresos, gastos, ahorros, saldo
-    };
-  });
-}
-
-export const getUnpaidExpensesForCurrentMonth = (
-  movements: PersonalFinance[],
-) => {
+export const getPendingAndVariableExpenses = (movements: PersonalFinance[]) => {
   const now = new Date();
   const currentMonth = (now.getMonth() + 1).toString().padStart(2, "0");
   const currentYear = now.getFullYear().toString();
 
-  const result = Object.keys(GastosCategoryLabels).map((category) => {
-    const mov = movements.find((item) => {
-      const [year, month, day] = item.date.split("-");
-
+  return GastosCategoryLabels.map((category) => {
+    const categoryMovements = movements.filter((m) => {
+      const [year, month] = m.date.split("-");
       return (
-        item.type === "gastos" &&
-        item.category === category &&
+        m.type === "gastos" &&
+        m.category === category.id &&
         month === currentMonth &&
         year === currentYear
       );
     });
 
-    return {
-      category,
-      label: GastosCategoryLabels[category],
-      value: mov ? mov.value : 0,
-      isPaid: !!(mov?.value && mov.value > 0),
-    };
-  });
+    const totalPaid = categoryMovements.reduce(
+      (acc, current) => acc + current.value,
+      0,
+    );
+    const isPaid = totalPaid > 0;
 
-  return result.filter((item) => !item.isPaid);
+    return {
+      ...category,
+      totalPaid,
+      isPaid,
+    };
+  }).filter((item) => {
+    if (!item.fijo) return true;
+
+    return !item.isPaid;
+  });
 };
 
 export const getSpecialValue = (

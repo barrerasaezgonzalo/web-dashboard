@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { modalTitles } from "@/constants";
 import { getCategoryLabels, getSpecialValue } from "@/utils";
 import { MovementModalProps } from "@/types/";
-import { useFinancial } from "@/hooks/useFinancial";
+import { usePersonalFinance } from "@/hooks/usePersonalFinance";
 
 export const MovementModal: React.FC<MovementModalProps> = ({
   modalType,
@@ -18,7 +18,7 @@ export const MovementModal: React.FC<MovementModalProps> = ({
   onChangeValue,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { financial } = useFinancial();
+  const { financial } = usePersonalFinance();
 
   useEffect(() => {
     if (modalType && inputRef.current) {
@@ -64,7 +64,7 @@ export const MovementModal: React.FC<MovementModalProps> = ({
               Categoría
             </label>
             <select
-              value={category || ""}
+              value={category}
               onChange={(e) => onChangeCategory(e.target.value)}
               className={`w-full border rounded-lg p-2.5 focus:outline-none focus:ring-2 transition-all ${
                 errors.category
@@ -73,13 +73,11 @@ export const MovementModal: React.FC<MovementModalProps> = ({
               }`}
             >
               <option value="">Selecciona una categoría</option>
-              {Object.entries(getCategoryLabels(selectedType)).map(
-                ([key, label]) => (
-                  <option key={key} value={key}>
-                    {label as string}
-                  </option>
-                ),
-              )}
+              {getCategoryLabels(selectedType).map(({ id, label }) => (
+                <option key={id} value={id}>
+                  {label}
+                </option>
+              ))}
             </select>
             {errors.category && (
               <p className="text-red-500 text-sm mt-1 font-semibold">

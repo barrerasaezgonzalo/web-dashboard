@@ -26,8 +26,6 @@ export const NewsList: React.FC<NewsListProps> = ({ newsLoading, news }) => {
                 >
                   {article.title}
                 </h3>
-
-                <p className="mt-1 text-sm">{article.description}</p>
               </a>
               <p className="text-gray-500 mt-2 text-sm">
                 {article.source.name}

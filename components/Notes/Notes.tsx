@@ -61,10 +61,10 @@ export const NotesComponent: React.FC = () => {
         <textarea
           value={note?.content || ""}
           onChange={handleChange}
-          rows={6}
+          rows={8}
           placeholder="Escribe tu nota..."
           className="
-            w-full p-2 outline-none resize-none
+            w-full p-2 outline-none 
             focus:bg-amber-200 focus:shadow-lg focus:shadow-amber-300/50
           "
         />

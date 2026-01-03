@@ -7,6 +7,7 @@ export interface Routine {
   done_count: number;
   done: boolean;
   last_updated: string;
+  dias: "L-V" | "Finde" | "Todos";
 }
 
 export interface RoutineType {

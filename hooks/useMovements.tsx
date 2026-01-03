@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect, useContext } from "react";
 import {
   PersonalFinance,
-  MovementTypes,
+  MovementType,
   AhorrosCategory,
   GastosCategory,
   IngresosCategory,
@@ -11,8 +11,6 @@ import { PersonalFinanceContext } from "@/context/PersonalFinanceContext";
 import { usePersonalFinance } from "@/hooks/usePersonalFinance";
 import { useToast } from "@/hooks/useToast";
 import { usePrivacyMode } from "@/hooks/usePrivacyMode";
-import { useFinancial } from "@/hooks/useFinancial";
-import { getCategoryLabels } from "@/utils";
 
 type Errors = {
   category?: string;
@@ -20,7 +18,7 @@ type Errors = {
 };
 
 export const useMovements = () => {
-  const [modalType, setModalType] = useState<MovementTypes | null>(null);
+  const [modalType, setModalType] = useState<MovementType | null>(null);
   const [category, setCategory] = useState<string>("");
   const [value, setValue] = useState<string>("");
   const [editingItem, setEditingItem] = useState("");
@@ -36,21 +34,6 @@ export const useMovements = () => {
   const { addMovement, updateMovement, deleteMovement } = usePersonalFinance();
   const { toast, openToast, closeToast } = useToast();
   const { isPrivate } = usePrivacyMode();
-  const { financial } = useFinancial();
-
-  const savingsUsdCategoryRules: Record<
-    string,
-    (financial: any, usdValue: number) => number
-  > = {
-    fintual_dolares: (financial, usdValue) =>
-      usdValue * (financial.current.dolar ?? 0),
-    cripto_bitcoin: (financial, usdValue) =>
-      usdValue * (financial.current.dolar ?? 0),
-    cripto_eth: (financial, usdValue) =>
-      usdValue * (financial.current.dolar ?? 0),
-    us_home: (financial, usdValue) => usdValue * (financial.current.dolar ?? 0),
-    nvidia: (financial, usdValue) => usdValue * (financial.current.dolar ?? 0),
-  };
 
   const filtrados: PersonalFinance[] = movements.filter((item) => {
     const [year, month] = item.date.split("-");
@@ -95,9 +78,6 @@ export const useMovements = () => {
     if (!validateForm() || !modalType) return;
 
     let finalValue = Number(value);
-    if (modalType === "ahorros" && savingsUsdCategoryRules[category]) {
-      finalValue = savingsUsdCategoryRules[category](financial, Number(value));
-    }
 
     let newMovement: PersonalFinance;
     switch (modalType) {
@@ -139,9 +119,6 @@ export const useMovements = () => {
   const handleUpdateMovement = () => {
     if (!validateForm() || !editingItem || !modalType) return;
     let finalValue = Number(value);
-    if (modalType === "ahorros" && savingsUsdCategoryRules[category]) {
-      finalValue = savingsUsdCategoryRules[category](financial, Number(value));
-    }
 
     let updatedMovement: PersonalFinance;
     switch (modalType) {

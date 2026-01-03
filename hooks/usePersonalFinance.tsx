@@ -1,4 +1,4 @@
-import { useContext, useMemo } from "react";
+import { useContext } from "react";
 import { PersonalFinanceContext } from "@/context/PersonalFinanceContext";
 
 export function usePersonalFinance() {
@@ -9,17 +9,7 @@ export function usePersonalFinance() {
     );
   }
 
-  // Helper derivado: filtrar movimientos por tipo
-  const movimientosPorTipo = useMemo(() => {
-    return {
-      ingresos: context.movements.filter((m) => m.type === "ingresos"),
-      gastos: context.movements.filter((m) => m.type === "gastos"),
-      ahorros: context.movements.filter((m) => m.type === "ahorros"),
-    };
-  }, [context.movements]);
-
   return {
     ...context,
-    movimientosPorTipo,
   };
 }

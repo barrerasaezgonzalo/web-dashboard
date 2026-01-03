@@ -1,17 +1,13 @@
-import { useContext, useMemo } from "react";
-import { buildFinanceHistory, formatCLP } from "@/utils";
+import { useContext } from "react";
+import { formatCLP } from "@/utils";
 import { usePrivacyMode } from "@/hooks/usePrivacyMode";
 import { Activity } from "lucide-react";
 import { PersonalFinanceContext } from "@/context/PersonalFinanceContext";
-import { Chart } from "./Chart";
 
 const PersonalFinance = () => {
   const { isPrivate } = usePrivacyMode();
-  const { movements, summary } = useContext(PersonalFinanceContext)!;
+  const { summary } = useContext(PersonalFinanceContext)!;
   const { ingresos, gastos, ahorros, saldo } = summary;
-
-  const history = useMemo(() => buildFinanceHistory(movements), [movements]);
-
   const summaryCards = [
     { label: "Ingresos", value: ingresos, color: "bg-green-400" },
     { label: "Gastos", value: gastos, color: "bg-red-400" },
@@ -39,13 +35,6 @@ const PersonalFinance = () => {
             </p>
           </div>
         ))}
-      </div>
-
-      <h2 className="text-xl font-bold mt-4 border-b pb-2">
-        Histórico 6 Meses
-      </h2>
-      <div className="mt-4 bg-white p-4 rounded-lg shadow">
-        <Chart data={history} />
       </div>
     </div>
   );

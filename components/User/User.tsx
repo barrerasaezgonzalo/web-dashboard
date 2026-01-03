@@ -1,57 +1,64 @@
 "use client";
 
-import { Smile } from "lucide-react";
-import { getDaysRemainingUntil, getGreeting } from "@/utils";
+import { formatFechaHora, getDaysRemainingUntil, getGreeting } from "@/utils";
 import { useTasks } from "@/hooks/useTasks";
 import { useUser } from "@/context/UserContext";
+import { useData } from "@/hooks/useData";
+import { useState, useEffect } from "react";
 
-export const User: React.FC = ({}) => {
+export const User = () => {
+  const { userName } = useUser();
   const { tasks } = useTasks();
-  const inDevTask = tasks.filter((task) => task.in_dev).length;
+  const taskSide = tasks.length;
   const pending = tasks.filter(
     (task) =>
       !task.in_dev && task.date && getDaysRemainingUntil(task.date) >= 0,
   ).length;
-  const { userName } = useUser();
   const overdueTasks = tasks.filter(
     (task) => !task.in_dev && task.date && getDaysRemainingUntil(task.date) < 0,
   ).length;
+  const { wheater } = useData();
+  const [fecha, setFecha] = useState("Cargando...");
+  const [hora, setHora] = useState("Cargando...");
+
+  useEffect(() => {
+    function actualizar() {
+      const ahora = new Date();
+      const { fecha, hora } = formatFechaHora(ahora);
+      setFecha(fecha);
+      setHora(hora);
+    }
+
+    actualizar();
+    const intervalo = setInterval(actualizar, 1000);
+    return () => clearInterval(intervalo);
+  }, []);
 
   return (
-    <div
-      role="region"
-      aria-labelledby="user-heading"
-      className={`
-        bg-slate-600
-        text-white
-        p-4
-        rounded 
-        shadow
-      `}
-      data-testid="User"
-    >
-      <p
-        id="user-heading"
-        className="text-center text-4xl mb-2 mx-4 flex items-left gap-2"
-      >
-        {getGreeting()}, {userName?.split(" ")[0]}!{" "}
-        <Smile className="text-yellow-300" />
-      </p>
-
-      <p className="text-center text-lg">
-        Tienes <span className="font-bold">{inDevTask}</span> tareas en curso,{" "}
-        <span className="font-bold text-red-300">{pending} pendientes </span>
-        (aún a tiempo)
-        {overdueTasks > 0 && (
-          <>
-            {" "}
-            y{" "}
-            <span className="font-bold text-orange-300">
-              {overdueTasks} vencidas
-            </span>
-          </>
-        )}
-      </p>
+    <div className="flex flex-col bg-[#4D677E] p-4 rounded gap-4">
+      <div className="w-full">
+        <h1 className="text-2xl text-white">
+          {getGreeting()}, {userName?.split(" ")[0]}!{" "}
+        </h1>
+        <p className="text-md flex gap-3 mt-1">
+          <span className="flex gap-1 text-white">
+            <b className="text-white">{taskSide}</b> Tareas
+          </span>
+          <span className="flex gap-1 text-white">
+            <b className="text-amber-500 ">{pending}</b> Pendientes
+          </span>
+          <span className="flex items-center gap-1  text-white">
+            <b className="text-red-500">{overdueTasks}</b> Atrasadas
+          </span>
+        </p>
+      </div>
+      <div className="w-full">
+        <span className="text-4xl text-white">{wheater?.temperatura}</span>
+        <div className="flex flex-col items-end">
+          <span className="text-lg  text-white leading-none">{hora}</span>
+          <span className="text-lg text-white ">{fecha}</span>
+        </div>
+      </div>
     </div>
   );
 };

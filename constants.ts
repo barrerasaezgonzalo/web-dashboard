@@ -1,36 +1,39 @@
-import { Feed } from "./types/";
+import { CategoryOption, Feed } from "./types/";
 
-export const IngresosCategoryLabels: Record<string, string> = {
-  sueldo: "Sueldo",
-  otros: "Otros",
-};
+export const IngresosCategoryLabels: CategoryOption[] = [
+  { id: "sueldo", label: "Sueldo", fijo: false },
+  { id: "otros", label: "Otros", fijo: false },
+];
 
-export const GastosCategoryLabels: Record<string, string> = {
-  arriendo: "Arriendo",
-  gastos_comunes: "Gastos Comunes",
-  luz: "Luz",
-  agua: "Agua",
-  fa: "FA (UTM)",
-  celular: "Celular",
-  internet: "Internet",
-  apv: "APV",
-  fintual: "Fintual",
-  comisiones: "Comisiones",
-  fondo_mutuo: "Fondo Mutuo",
-  bip: "Bip",
-  mercado_pago: "Mercado Pago",
-};
+export const GastosCategoryLabels: CategoryOption[] = [
+  { id: "arriendo", label: "Arriendo", fijo: true },
+  { id: "gastos_comunes", label: "Gastos Comunes", fijo: true },
+  { id: "luz", label: "Luz", fijo: true },
+  { id: "agua", label: "Agua", fijo: true },
+  { id: "fa", label: "FA (UTM)", fijo: true },
+  { id: "celular", label: "Celular", fijo: true },
+  { id: "internet", label: "Internet", fijo: true },
+  { id: "apv", label: "APV", fijo: true },
+  { id: "fintual", label: "Fintual", fijo: true },
+  { id: "comisiones", label: "Comisiones", fijo: false },
+  { id: "fondo_mutuo", label: "Fondo Mutuo", fijo: true },
+  { id: "bip", label: "Bip", fijo: false },
+  { id: "mercado_pago", label: "Mercado Pago", fijo: false },
+  { id: "btc", label: "BitCoin", fijo: true },
+  { id: "eth", label: "Ethereum", fijo: true },
+  { id: "otros", label: "Otros", fijo: true },
+];
 
-export const AhorrosCategoryLabels: Record<string, string> = {
-  fintual: "Fintual",
-  fintual_dolares: "Fintual USD",
-  fondo_mutuo: "Fondo Mutuo",
-  us_home: "Home USD",
-  dorada_be: "Dorada BE",
-  cripto_bitcoin: "Bitcoin USD",
-  cripto_eth: "Ethereum USD",
-  nvidia: "Nvidia USD",
-};
+export const AhorrosCategoryLabels: CategoryOption[] = [
+  { id: "fintual", label: "Fintual", fijo: false },
+  { id: "fintual_dolares", label: "Fintual USD", fijo: false },
+  { id: "fondo_mutuo", label: "Fondo Mutuo", fijo: false },
+  { id: "us_home", label: "Home USD", fijo: false },
+  { id: "dorada_be", label: "Dorada BE", fijo: false },
+  { id: "cripto_bitcoin", label: "Bitcoin", fijo: false },
+  { id: "cripto_eth", label: "Ethereum", fijo: false },
+  { id: "nvidia", label: "Nvidia USD", fijo: false },
+];
 
 export const typeLabels: Record<string, string> = {
   gastos: "Gastos",
@@ -58,4 +61,7 @@ export const specialCategoryRules: Record<string, (financial: any) => number> =
     "gastos-apv": () => 150000,
     "gastos-fintual": () => 150000,
     "gastos-fondo_mutuo": () => 100000,
+    "gastos-comisiones": () => 300,
+    "gastos-btc": () => 50000,
+    "gastos-eth": () => 50000,
   };

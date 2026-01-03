@@ -11,16 +11,12 @@ import { PerformanceProvider } from "@/context/PerformanceContext";
 import { WebVitals } from "@/components/WebVitals/WebVitals";
 import { TasksProvider } from "@/context/TasksContext";
 import { PerformancePanel } from "@/components/PerformancePanel/PerformancePanel";
-import { Wheater } from "@/components/Wheater/Wheater";
-import { FinancialProvider } from "@/context/FinancialContext";
 import { NewsProvider } from "@/context/NewsContext";
 import { supabase } from "@/lib/supabaseClient";
 import { useUser } from "@/context/UserContext";
-import Player from "@/components/Player/Player";
 import PersonalFinance from "@/components/PersonalFinance/PersonalFinance";
 import { Pending } from "@/components/PersonalFinance/Pending";
 import { PersonalFinanceProvider } from "@/context/PersonalFinanceContext";
-import { Routine } from "@/components/Routine/Routine";
 
 const Task = dynamic(() => import("@/components/Task/Task"), {
   ssr: false,
@@ -28,11 +24,6 @@ const Task = dynamic(() => import("@/components/Task/Task"), {
 });
 
 const News = dynamic(() => import("@/components/News/News"), {
-  ssr: false,
-  loading: () => <Skeleton rows={5} height={40} />,
-});
-
-const Financial = dynamic(() => import("@/components/Financial/Financial"), {
   ssr: false,
   loading: () => <Skeleton rows={5} height={40} />,
 });
@@ -82,44 +73,36 @@ export const App: React.FC = () => {
         <User />
       </ErrorBoundary>
       <ErrorBoundary>
-        <Player />
+        <Notes />
       </ErrorBoundary>
       <ErrorBoundary>
         <NewsProvider>
           <News />
         </NewsProvider>
       </ErrorBoundary>
-      <ErrorBoundary>
-        <Notes />
-      </ErrorBoundary>
     </div>
   );
 
   const column2 = (
     <div className={columnStyle}>
-      <ErrorBoundary>
-        <Routine />
-      </ErrorBoundary>
+      <PersonalFinanceProvider>
+        <ErrorBoundary>
+          <Movements />
+        </ErrorBoundary>
+      </PersonalFinanceProvider>
     </div>
   );
 
   const column3 = (
     <div className={columnStyle}>
-      <ErrorBoundary>
-        <Wheater />
-      </ErrorBoundary>
-      <ErrorBoundary>
-        <PersonalFinance />
-      </ErrorBoundary>
-
-      <FinancialProvider>
+      <PersonalFinanceProvider>
         <ErrorBoundary>
-          <Movements />
+          <PersonalFinance />
         </ErrorBoundary>
         <ErrorBoundary>
           <Pending />
         </ErrorBoundary>
-      </FinancialProvider>
+      </PersonalFinanceProvider>
     </div>
   );
 
@@ -127,11 +110,6 @@ export const App: React.FC = () => {
     <div className={columnStyle}>
       <ErrorBoundary>
         <Task />
-      </ErrorBoundary>
-      <ErrorBoundary>
-        <FinancialProvider>
-          <Financial />
-        </FinancialProvider>
       </ErrorBoundary>
       <ErrorBoundary>
         <Prompt />
@@ -156,8 +134,8 @@ export const App: React.FC = () => {
 
             {/* Columnas 2 y 3 con el mismo PersonalFinanceProvider */}
 
-            {column2}
             <PersonalFinanceProvider>
+              {column2}
               {column3}
               {column4}
             </PersonalFinanceProvider>

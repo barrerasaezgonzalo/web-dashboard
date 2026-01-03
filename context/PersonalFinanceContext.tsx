@@ -7,29 +7,15 @@ import {
   useState,
 } from "react";
 import type {
+  Financial,
   AhorrosCategory,
   GastosCategory,
   IngresosCategory,
   PersonalFinance,
+  PersonalFinanceContextType,
   PersonalFinanceMovement,
 } from "@/types/";
 import { useUser } from "./UserContext";
-
-type PersonalFinanceContextType = {
-  movements: PersonalFinance[];
-  summary: {
-    ingresos: number;
-    gastos: number;
-    ahorros: number;
-    saldo: number;
-  };
-  loading: boolean;
-  getMovements: () => Promise<void>;
-  addMovement: (m: PersonalFinance) => Promise<void>;
-  updateMovement: (updated: PersonalFinanceMovement) => Promise<void>;
-  deleteMovement: (id: string) => void;
-};
-
 export const PersonalFinanceContext =
   createContext<PersonalFinanceContextType | null>(null);
 
@@ -48,8 +34,25 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
     saldo: 0,
   });
   const [loading, setLoading] = useState(false);
-
   const { userId } = useUser();
+  const [financial, setFinancial] = useState<any>({
+    current: { utm: 0 },
+  });
+
+  const getFinancial = async () => {
+    try {
+      const response = await fetch("/api/getUtm");
+      const data: Financial = await response.json();
+      const newCurrent = { utm: data.current.utm || financial.current.utm };
+      const newFinancial: Financial = { current: newCurrent };
+      setFinancial(newFinancial);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  useEffect(() => {
+    getFinancial();
+  }, []);
 
   // Calcula el summary cada vez que movements cambia
   useEffect(() => {
@@ -163,6 +166,7 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
         addMovement,
         updateMovement,
         deleteMovement,
+        financial,
       }}
     >
       {children}

@@ -1,27 +1,7 @@
-export type PersonalFinance =
-  | {
-      id: string;
-      type: "ingresos";
-      date: string;
-      value: number;
-      category: IngresosCategory;
-    }
-  | {
-      id: string;
-      type: "gastos";
-      date: string;
-      value: number;
-      category: GastosCategory;
-    }
-  | {
-      id: string;
-      type: "ahorros";
-      date: string;
-      value: number;
-      category: AhorrosCategory;
-    };
+export type MovementType = "ingresos" | "gastos" | "ahorros";
 
 export type IngresosCategory = "sueldo" | "otros";
+
 export type GastosCategory =
   | "arriendo"
   | "gastos_comunes"
@@ -35,7 +15,11 @@ export type GastosCategory =
   | "comisiones"
   | "fondo_mutuo"
   | "bip"
-  | "mercado_pago";
+  | "mercado_pago"
+  | "btc"
+  | "eth"
+  | "otros";
+
 export type AhorrosCategory =
   | "fintual"
   | "fintual_dolares"
@@ -46,27 +30,32 @@ export type AhorrosCategory =
   | "cripto_eth"
   | "nvidia";
 
+export interface BaseMovement {
+  id: string;
+  date: string;
+  value: number;
+}
+
+export type PersonalFinance =
+  | (BaseMovement & { type: "ingresos"; category: IngresosCategory })
+  | (BaseMovement & { type: "gastos"; category: GastosCategory })
+  | (BaseMovement & { type: "ahorros"; category: AhorrosCategory });
+
+export interface CategoryOption {
+  id: string;
+  label: string;
+  fijo: boolean;
+}
+
 export interface MovementFiltersProps {
   selectedMonth: string;
   setSelectedMonth: (value: string) => void;
-  selectedType: PersonalFinance["type"];
-  setSelectedType: (value: PersonalFinance["type"]) => void;
+  selectedType: MovementType;
+  setSelectedType: (value: MovementType) => void;
 }
 
-export type PersonalFinanceMovement = {
-  id: string;
-  type: ResumeType;
-  category: string;
-  value: number;
-  date: string;
-};
-
-export type MovementTypes = "gastos" | "ahorros" | "ingresos";
-
-export type ResumeType = "ingresos" | "gastos" | "ahorros";
-
 export interface MovementModalProps {
-  modalType: MovementTypes;
+  modalType: MovementType;
   category: string;
   value: string;
   errors: { category?: string; value?: string };
@@ -79,15 +68,45 @@ export interface MovementModalProps {
   onChangeValue: (value: string) => void;
 }
 
+export interface MovementListProps {
+  filtrados: PersonalFinance[];
+  isPrivate: boolean;
+  setEditingItem: (id: string) => void;
+  setCategory: (category: string) => void;
+  setValue: (value: string) => void;
+  setModalType: (value: MovementType) => void;
+  setErrors: (id: MovementErrors) => void;
+  handleDeleteMovement: (id: string) => void;
+}
+
 export type PersonalFinanceContextType = {
   movements: PersonalFinance[];
   summary: Summary;
   loading: boolean;
   getMovements: () => Promise<void>;
   addMovement: (m: PersonalFinance) => Promise<void>;
-  updateMovement: (updated: PersonalFinanceMovement) => Promise<void>;
+  updateMovement: (updated: PersonalFinance) => Promise<void>;
   deleteMovement: (id: string) => void;
+  financial: Financial;
 };
+
+type MovementErrors = {
+  category?: string;
+  value?: string;
+};
+export type PersonalFinanceMovement = {
+  id: string;
+  type: MovementType;
+  category: string;
+  value: number;
+  date: string;
+};
+
+export interface MovementFooterProps {
+  total: number;
+  isPrivate: boolean;
+  handleOpenAddModal: () => void;
+}
 
 export type Summary = {
   ingresos: number;
@@ -96,24 +115,8 @@ export type Summary = {
   saldo: number;
 };
 
-type MovementErrors = {
-  category?: string;
-  value?: string;
-};
-
-export interface MovementListProps {
-  filtrados: PersonalFinance[];
-  isPrivate: boolean;
-  setEditingItem: (id: string) => void;
-  setCategory: (id: string) => void;
-  setValue: (id: string) => void;
-  setModalType: (value: MovementTypes) => void;
-  setErrors: (id: MovementErrors) => void;
-  handleDeleteMovement: (id: string) => void;
-}
-
-export interface MovementFooterProps {
-  total: number;
-  isPrivate: boolean;
-  handleOpenAddModal: () => void;
+export interface Financial {
+  current: {
+    utm: number;
+  };
 }

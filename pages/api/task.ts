@@ -75,24 +75,6 @@ export default async function handler(
     if (deleteError)
       return res.status(500).json({ error: deleteError.message });
 
-    // Reordenar tasks restantes
-    const { data: remainingTasks, error: selectError } = await supabase
-      .from("todos")
-      .select("*")
-      .order("date", { ascending: true });
-
-    if (selectError)
-      return res.status(500).json({ error: selectError.message });
-
-    if (remainingTasks) {
-      for (let index = 0; index < remainingTasks.length; index++) {
-        await supabase
-          .from("todos")
-          .update({ order: index + 1 })
-          .eq("id", remainingTasks[index].id);
-      }
-    }
-
     return res.status(200).json({ success: true });
   }
 

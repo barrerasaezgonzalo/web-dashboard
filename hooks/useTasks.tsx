@@ -69,6 +69,9 @@ export const useTasks = () => {
     try {
       await context.removeTask(taskId);
       showToast("Tarea eliminada correctamente");
+      setEditingTaskId("");
+      setTitle("");
+      setDate("");
     } catch (error) {
       showToast("No se pudo eliminar la tarea. Intenta nuevamente");
     }
