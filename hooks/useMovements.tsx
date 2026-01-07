@@ -48,6 +48,34 @@ export const useMovements = () => {
     }
   }, [modalType]);
 
+  const checkInversionDorada = (movements: any[]) => {
+    const VALOR_BASE = 2800000;
+    const FACTOR = 6;
+    const minimoDorada = VALOR_BASE * FACTOR; // 16.800.000
+
+    // 1. Sumamos todos los movimientos de tipo 'ahorro'
+    const totalAhorro = movements
+      .filter((m) => m.type === "ahorro")
+      .reduce((acc, curr) => acc + curr.amount, 0);
+
+    // 2. Evaluamos la condición
+    if (totalAhorro >= minimoDorada) {
+      return {
+        canInvest: true,
+        message: `Ahorro Dorada Normal: Puedes invertir.`,
+        ahorros: totalAhorro,
+        falta: 0,
+      };
+    } else {
+      return {
+        canInvest: false,
+        message: `Ahorro Dorada Bajo: No puedes invertir.`,
+        ahorros: totalAhorro,
+        falta: minimoDorada - totalAhorro,
+      };
+    }
+  };
+
   const validateForm = (): boolean => {
     const formattedErrors: Errors = {};
 
@@ -177,6 +205,7 @@ export const useMovements = () => {
   };
 
   return {
+    movements,
     modalType,
     category,
     value,
@@ -202,5 +231,6 @@ export const useMovements = () => {
     handleDeleteMovement,
     resetModal,
     validateForm,
+    checkInversionDorada,
   };
 };

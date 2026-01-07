@@ -19,9 +19,10 @@ export const GastosCategoryLabels: CategoryOption[] = [
   { id: "fondo_mutuo", label: "Fondo Mutuo", fijo: true },
   { id: "bip", label: "Bip", fijo: false },
   { id: "mercado_pago", label: "Mercado Pago", fijo: false },
-  { id: "btc", label: "BitCoin", fijo: true },
-  { id: "eth", label: "Ethereum", fijo: true },
-  { id: "otros", label: "Otros", fijo: true },
+  { id: "btc", label: "BitCoin", fijo: false },
+  { id: "eth", label: "Ethereum", fijo: false },
+  { id: "ahorro", label: "Ahorro", fijo: false },
+  { id: "otros", label: "Otros", fijo: false },
 ];
 
 export const AhorrosCategoryLabels: CategoryOption[] = [

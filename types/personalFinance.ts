@@ -18,6 +18,7 @@ export type GastosCategory =
   | "mercado_pago"
   | "btc"
   | "eth"
+  | "ahorro"
   | "otros";
 
 export type AhorrosCategory =

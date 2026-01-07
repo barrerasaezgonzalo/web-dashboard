@@ -17,6 +17,7 @@ import { useUser } from "@/context/UserContext";
 import PersonalFinance from "@/components/PersonalFinance/PersonalFinance";
 import { Pending } from "@/components/PersonalFinance/Pending";
 import { PersonalFinanceProvider } from "@/context/PersonalFinanceContext";
+import { Goals } from "@/components/Goals/Goals";
 
 const Task = dynamic(() => import("@/components/Task/Task"), {
   ssr: false,
@@ -80,29 +81,28 @@ export const App: React.FC = () => {
           <News />
         </NewsProvider>
       </ErrorBoundary>
+      <ErrorBoundary>
+        <Goals />
+      </ErrorBoundary>
     </div>
   );
 
   const column2 = (
     <div className={columnStyle}>
-      <PersonalFinanceProvider>
-        <ErrorBoundary>
-          <Movements />
-        </ErrorBoundary>
-      </PersonalFinanceProvider>
+      <ErrorBoundary>
+        <Movements />
+      </ErrorBoundary>
     </div>
   );
 
   const column3 = (
     <div className={columnStyle}>
-      <PersonalFinanceProvider>
-        <ErrorBoundary>
-          <PersonalFinance />
-        </ErrorBoundary>
-        <ErrorBoundary>
-          <Pending />
-        </ErrorBoundary>
-      </PersonalFinanceProvider>
+      <ErrorBoundary>
+        <PersonalFinance />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <Pending />
+      </ErrorBoundary>
     </div>
   );
 

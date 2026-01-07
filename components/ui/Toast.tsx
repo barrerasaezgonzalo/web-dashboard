@@ -1,4 +1,5 @@
 import type { ToastProps } from "@/types/";
+import { Info } from "lucide-react";
 import { memo, useEffect, useRef } from "react";
 
 export const ToastConponet: React.FC<ToastProps> = ({
@@ -24,7 +25,7 @@ export const ToastConponet: React.FC<ToastProps> = ({
         role={onCancel ? "alertdialog" : "alert"}
         aria-modal="true"
         tabIndex={-1} // para poder focusear
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-500 text-white p-6 rounded shadow-lg z-50"
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#3E4661] text-white p-12 rounded-xl shadow-lg z-50"
         aria-labelledby="toast-heading"
         aria-describedby="toast-description"
       >
@@ -33,34 +34,29 @@ export const ToastConponet: React.FC<ToastProps> = ({
           Confirmación
         </h2>
         {/* Mensaje principal */}
-        <p id="toast-description">{message}</p>
+        <p id="toast-description" className="mb-6 flex gap-2">
+          <Info size={25} />
+          {message}
+        </p>
 
         {/* Botones */}
-        <div className="flex justify-end gap-2 mt-4">
-          {onCancel ? (
-            <>
-              <button
-                className="bg-white text-black px-3 py-1 rounded hover:bg-gray-200"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onConfirm();
-                }}
-              >
-                Sí
-              </button>
-              <button
-                className="bg-white text-gray-700 px-3 py-1 rounded hover:bg-gray-200"
-                onClick={onCancel}
-              >
-                No
-              </button>
-            </>
-          ) : (
+        <div className="flex flex-row-reverse gap-6">
+          <button
+            className="flex-1 bg-black text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-800 transition-colors active:scale-95"
+            onClick={(e) => {
+              e.stopPropagation();
+              onConfirm();
+            }}
+          >
+            {onCancel ? "Confirmar" : "Entendido"}
+          </button>
+
+          {onCancel && (
             <button
-              className="bg-white text-black px-3 py-1 rounded hover:bg-gray-200"
-              onClick={onConfirm}
+              className="flex-1 bg-gray-50 text-gray-500 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-100 transition-colors"
+              onClick={onCancel}
             >
-              OK
+              Cancelar
             </button>
           )}
         </div>

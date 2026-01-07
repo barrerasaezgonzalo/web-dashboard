@@ -218,7 +218,10 @@ export const getLastMonths = (count = 6): string[] => {
   return months;
 };
 
-export const getPendingAndVariableExpenses = (movements: PersonalFinance[]) => {
+export const getPendingAndVariableExpenses = (
+  movements: PersonalFinance[],
+  showAll: boolean,
+) => {
   const now = new Date();
   const currentMonth = (now.getMonth() + 1).toString().padStart(2, "0");
   const currentYear = now.getFullYear().toString();
@@ -246,9 +249,8 @@ export const getPendingAndVariableExpenses = (movements: PersonalFinance[]) => {
       isPaid,
     };
   }).filter((item) => {
-    if (!item.fijo) return true;
-
-    return !item.isPaid;
+    if (showAll) return true;
+    return item.fijo === true && item.isPaid === false;
   });
 };
 

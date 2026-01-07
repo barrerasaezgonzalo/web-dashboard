@@ -2,14 +2,16 @@ import { PersonalFinanceContext } from "@/context/PersonalFinanceContext";
 import { useMovements } from "@/hooks/useMovements";
 import { getPendingAndVariableExpenses } from "@/utils";
 import { CreditCard, PiggyBank, CheckCircle2 } from "lucide-react";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { MovementModal } from "./MovementModal";
 import { specialCategoryRules } from "@/constants";
 import { getTooltipClass } from "@/app/styles/labelStyles";
 
 export const Pending = () => {
   const { movements } = useContext(PersonalFinanceContext)!;
-  const pendingItems = getPendingAndVariableExpenses(movements);
+  const [showAll, setShowAll] = useState(false);
+
+  const pendingItems = getPendingAndVariableExpenses(movements, showAll);
 
   const {
     handleOpenAddModal,
@@ -33,10 +35,15 @@ export const Pending = () => {
           <div className="mb-6">
             <h2 className="text-xl font-bold border-b pb-4 flex items-center gap-2">
               <PiggyBank size={25} className="text-indigo-600" />
-              Gastos del Mes
+              Gastos Pendientes
             </h2>
           </div>
-
+          <button
+            onClick={() => setShowAll(!showAll)}
+            className="mt-2 flex items-center justify-center gap-2 w-full py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-dashed border-blue-200"
+          >
+            {showAll ? "Ver solo pendientes" : "Ver todos los gastos"}
+          </button>
           <div className="flex flex-col w-full gap-1">
             {pendingItems.length > 0 ? (
               pendingItems.map((item) => (
@@ -84,7 +91,7 @@ export const Pending = () => {
             ) : (
               <div className="text-center py-10 text-gray-400">
                 <CheckCircle2 className="mx-auto mb-2 opacity-20" size={40} />
-                <p>No tienes pagos fijos pendientes</p>
+                <p>No tienes pagos pendientes</p>
               </div>
             )}
           </div>
