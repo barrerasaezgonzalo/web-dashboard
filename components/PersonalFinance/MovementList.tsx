@@ -34,7 +34,7 @@ export const MovementList: React.FC<MovementListProps> = ({
         visibleItems.map((item) => (
           <div
             key={item.id}
-            className="flex items-center justify-between bg-gray-50 p-3 rounded-lg shadow-sm hover:shadow-md transition-shadow"
+            className="flex items-center justify-between bg-gray-100 p-3 rounded-lg shadow-sm hover:shadow-md transition-shadow"
           >
             <div className="w-1/3 flex flex-col">
               <span className="font-medium text-gray-800">

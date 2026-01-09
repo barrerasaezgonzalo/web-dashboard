@@ -1,6 +1,7 @@
 import { Note, NotesListProps } from "@/types/";
 import { Trash } from "lucide-react";
 import { useState } from "react";
+import { usePrivacyMode } from "@/hooks/usePrivacyMode";
 
 export const NotesList: React.FC<NotesListProps> = ({
   openList,
@@ -9,6 +10,7 @@ export const NotesList: React.FC<NotesListProps> = ({
   handleClickNote,
 }) => {
   const [search, setSearch] = useState("");
+  const { isPrivate } = usePrivacyMode();
 
   return (
     <>
@@ -32,7 +34,7 @@ export const NotesList: React.FC<NotesListProps> = ({
                 className="flex justify-between items-center p-2 border-b hover:bg-amber-200 cursor-pointer"
               >
                 <span
-                  className="truncate flex-1"
+                  className={`truncate flex-1 ${isPrivate ? "privacy-blur" : ""} `}
                   onClick={() => handleClickNote(n)}
                 >
                   {n.content}

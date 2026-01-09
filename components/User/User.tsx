@@ -5,11 +5,11 @@ import { useTasks } from "@/hooks/useTasks";
 import { useUser } from "@/context/UserContext";
 import { useData } from "@/hooks/useData";
 import { useState, useEffect } from "react";
+import { Rocket } from "lucide-react";
 
 export const User = () => {
   const { userName } = useUser();
   const { tasks } = useTasks();
-  const taskSide = tasks.length;
   const pending = tasks.filter(
     (task) =>
       !task.in_dev && task.date && getDaysRemainingUntil(task.date) >= 0,
@@ -17,6 +17,7 @@ export const User = () => {
   const overdueTasks = tasks.filter(
     (task) => !task.in_dev && task.date && getDaysRemainingUntil(task.date) < 0,
   ).length;
+  const in_dev = tasks.filter((task) => task.in_dev).length;
   const { wheater } = useData();
   const [fecha, setFecha] = useState("Cargando...");
   const [hora, setHora] = useState("Cargando...");
@@ -42,10 +43,10 @@ export const User = () => {
         </h1>
         <p className="text-md flex gap-3 mt-1">
           <span className="flex gap-1 text-white">
-            <b className="text-white">{taskSide}</b> Tareas
+            <b className="text-amber-500 ">{pending}</b> Pendientes
           </span>
           <span className="flex gap-1 text-white">
-            <b className="text-amber-500 ">{pending}</b> Pendientes
+            <b className="text-blue-100 ">{in_dev}</b> En Curso
           </span>
           <span className="flex items-center gap-1  text-white">
             <b className="text-red-500">{overdueTasks}</b> Atrasadas

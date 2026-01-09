@@ -3,13 +3,7 @@ import {
   GastosCategoryLabels,
   IngresosCategoryLabels,
 } from "./constants";
-import {
-  CategoryOption,
-  MovementType,
-  ParsedData,
-  PersonalFinance,
-  PromptData,
-} from "./types/";
+import { CategoryOption, MovementType, PersonalFinance } from "./types/";
 
 export const formatCLP = (valor: number | string) => {
   return new Intl.NumberFormat("es-CL", {
@@ -39,26 +33,6 @@ export const getGreeting = () => {
   return "Buenas noches";
 };
 
-export function parsePromptResponse(raw: string): ParsedData {
-  let cleaned = raw
-    .replace(/^\s*```+\s*/, "")
-    .replace(/\s*```+\s*$/, "")
-    .trim();
-
-  if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
-    cleaned = cleaned.slice(1, -1).replace(/\\"/g, '"').replace(/\\n/g, "\n");
-  }
-
-  const startIndex = cleaned.indexOf("{");
-  const endIndex = cleaned.lastIndexOf("}");
-  if (startIndex === -1 || endIndex === -1)
-    throw new Error("JSON no encontrado");
-
-  const jsonString = cleaned.slice(startIndex, endIndex + 1);
-
-  return JSON.parse(jsonString);
-}
-
 export function formatFechaHora(date: Date) {
   const fecha = date.toLocaleDateString("es-CL", {
     day: "numeric",
@@ -73,15 +47,6 @@ export function formatFechaHora(date: Date) {
     hour12: false,
   });
   return { fecha, hora };
-}
-
-export function formatPromptOutput(data: PromptData) {
-  return `Título: ${data.title.trim()}
-  Objetivo: ${data.objective.trim()}
-  Instrucciones: ${data.instructions.trim()}
-  Contexto: ${data.context.trim()}
-  Ejemplos: ${data.examples.map((e) => e.trim()).join(", ")}
-  Resultado esperado: ${data.expected_output.trim()}`;
 }
 
 export function formatDateToDMY(date: string): string {

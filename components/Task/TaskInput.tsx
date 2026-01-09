@@ -31,7 +31,7 @@ export const TaskInputComponent: React.FC<TaskInputProps> = ({
           type="text"
           placeholder="Agregar nueva tarea"
           disabled={isLoading}
-          className="placeholder-black flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:bg-gray-100"
+          className="placeholder-black flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:bg-gray-100 bg-white"
         />
         <input
           id="task-date"
@@ -40,7 +40,7 @@ export const TaskInputComponent: React.FC<TaskInputProps> = ({
           type="date"
           onKeyDown={handleKeyDown}
           disabled={isLoading}
-          className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:bg-gray-100"
+          className="flex-1 p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-400 disabled:bg-gray-100 bg-white"
         />
       </div>
       <button

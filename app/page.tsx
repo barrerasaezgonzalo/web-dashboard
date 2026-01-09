@@ -4,20 +4,15 @@ import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { Notes } from "@/components/Notes/Notes";
-import { Prompt } from "@/components/Prompt/Prompt";
 import { User } from "@/components/User/User";
 import { BackGround } from "@/components/ui/BackGround";
-import { PerformanceProvider } from "@/context/PerformanceContext";
-import { WebVitals } from "@/components/WebVitals/WebVitals";
 import { TasksProvider } from "@/context/TasksContext";
-import { PerformancePanel } from "@/components/PerformancePanel/PerformancePanel";
 import { NewsProvider } from "@/context/NewsContext";
 import { supabase } from "@/lib/supabaseClient";
 import { useUser } from "@/context/UserContext";
 import PersonalFinance from "@/components/PersonalFinance/PersonalFinance";
 import { Pending } from "@/components/PersonalFinance/Pending";
 import { PersonalFinanceProvider } from "@/context/PersonalFinanceContext";
-import { Goals } from "@/components/Goals/Goals";
 
 const Task = dynamic(() => import("@/components/Task/Task"), {
   ssr: false,
@@ -35,7 +30,7 @@ const Movements = dynamic(
 );
 
 export const App: React.FC = () => {
-  const columnStyle = "flex flex-col gap-4";
+  const columnStyle = "flex flex-col gap-4 w-full";
   const { userId, loading } = useUser();
 
   const loginWithGoogle = async () => {
@@ -74,21 +69,18 @@ export const App: React.FC = () => {
         <User />
       </ErrorBoundary>
       <ErrorBoundary>
-        <Notes />
-      </ErrorBoundary>
-      <ErrorBoundary>
         <NewsProvider>
           <News />
         </NewsProvider>
-      </ErrorBoundary>
-      <ErrorBoundary>
-        <Goals />
       </ErrorBoundary>
     </div>
   );
 
   const column2 = (
     <div className={columnStyle}>
+      <ErrorBoundary>
+        <Notes />
+      </ErrorBoundary>
       <ErrorBoundary>
         <Movements />
       </ErrorBoundary>
@@ -110,9 +102,6 @@ export const App: React.FC = () => {
     <div className={columnStyle}>
       <ErrorBoundary>
         <Task />
-      </ErrorBoundary>
-      <ErrorBoundary>
-        <Prompt />
       </ErrorBoundary>
     </div>
   );
@@ -144,16 +133,6 @@ export const App: React.FC = () => {
           </TasksProvider>
         </ErrorBoundary>
       </div>
-
-      {/* Footer */}
-      <ErrorBoundary>
-        <PerformanceProvider>
-          <div id="main-content">
-            <WebVitals />
-            <PerformancePanel />
-          </div>
-        </PerformanceProvider>
-      </ErrorBoundary>
     </div>
   );
 };
