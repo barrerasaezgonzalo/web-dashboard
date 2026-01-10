@@ -240,3 +240,9 @@ export const canAccessBrowserStorage = (win: unknown): boolean => {
 export const getBrowserWindow = () => {
   return typeof window !== "undefined" ? window : undefined;
 };
+
+export const stripHtml = (html: string) => {
+  const div = document.createElement("div");
+  div.innerHTML = html;
+  return div.textContent || div.innerText || "";
+};

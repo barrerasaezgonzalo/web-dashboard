@@ -83,6 +83,7 @@ export const useNotes = () => {
 
       setNotes((prev) => prev.filter((n) => n.id !== id));
       setNote((prev) => (prev?.id === id ? null : prev));
+      createNote();
     },
     [userId],
   );
@@ -90,11 +91,14 @@ export const useNotes = () => {
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       const value = e.target.value;
-      if (!note?.id) return;
-      setNote({ ...note, content: value });
-      saveNote(value, note.id);
+
+      setNote((prev) => {
+        if (!prev) return prev;
+        saveNote(value, prev.id);
+        return { ...prev, content: value };
+      });
     },
-    [note, saveNote],
+    [saveNote],
   );
 
   useEffect(() => {
