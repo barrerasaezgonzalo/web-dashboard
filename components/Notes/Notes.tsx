@@ -16,7 +16,6 @@ export const NotesComponent: React.FC = () => {
   const { toast, openToast, closeToast } = useToast();
   const [isMinimized, setIsMinimized] = useState(false);
   const { isPrivate } = usePrivacyMode();
-  const [previewMode, setPreviewMode] = useState(true);
 
   const handleAddNote = () => {
     openToast({
@@ -53,12 +52,6 @@ export const NotesComponent: React.FC = () => {
               >
                 <List size={20} />
               </button>
-              <button
-                onClick={() => setPreviewMode((v) => !v)}
-                className="p-1 rounded hover:bg-amber-400"
-              >
-                {previewMode ? "</>" : "<abs>"}
-              </button>
             </>
           )}
           <button
@@ -83,22 +76,13 @@ export const NotesComponent: React.FC = () => {
               </button>
             </div>
           ) : (
-            <>
-              {!previewMode ? (
-                <textarea
-                  value={note?.content || ""}
-                  onChange={handleChange}
-                  rows={12}
-                  placeholder="Escribe tu nota..."
-                  className={`w-full p-2 outline-none bg-amber-100 ${isPrivate ? "privacy-blur" : ""} `}
-                />
-              ) : (
-                <div
-                  className={`preview-content w-full min-h-[300px] p-2 bg-amber-300 rounded overflow-auto ${isPrivate ? "privacy-blur" : ""}`}
-                  dangerouslySetInnerHTML={{ __html: note?.content || "" }}
-                />
-              )}
-            </>
+            <textarea
+              value={note?.content || ""}
+              onChange={handleChange}
+              rows={12}
+              placeholder="Escribe tu nota..."
+              className={`w-full p-2 outline-none bg-amber-100 ${isPrivate ? "privacy-blur" : ""} `}
+            />
           )}
         </>
       )}
