@@ -169,20 +169,6 @@ const isSameMonth = (dateStr: string, targetMonth: string) => {
   return `${month}-${year}` === targetMonth;
 };
 
-export const getLastMonths = (count = 6): string[] => {
-  const months: string[] = [];
-  const now = new Date();
-
-  for (let i = count - 1; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const month = (d.getMonth() + 1).toString().padStart(2, "0");
-    const year = d.getFullYear();
-    months.push(`${month}-${year}`);
-  }
-
-  return months;
-};
-
 export const getPendingAndVariableExpenses = (
   movements: PersonalFinance[],
   showAll: boolean,
@@ -231,18 +217,4 @@ export const getSpecialValue = (
     return rules[key](financial);
   }
   return defaultValue;
-};
-
-export const canAccessBrowserStorage = (win: unknown): boolean => {
-  return typeof win !== "undefined";
-};
-
-export const getBrowserWindow = () => {
-  return typeof window !== "undefined" ? window : undefined;
-};
-
-export const stripHtml = (html: string) => {
-  const div = document.createElement("div");
-  div.innerHTML = html;
-  return div.textContent || div.innerText || "";
 };

@@ -5,7 +5,7 @@ import { Activity, ChevronDown, ChevronUp } from "lucide-react";
 import { PersonalFinanceContext } from "@/context/PersonalFinanceContext";
 import { useMovements } from "@/hooks/useMovements";
 
-const PersonalFinance = () => {
+export const PersonalFinance = () => {
   const [isMinimized, setIsMinimized] = useState(false);
   const { movements } = useMovements();
   const { isPrivate } = usePrivacyMode();
@@ -93,8 +93,9 @@ const PersonalFinance = () => {
               </div>
             ) : (
               <div className="p-2">
-                <h3 className="font-bold">Ahorro Dorada Bajo</h3>
-                <p>Aún no puedes invertir.</p>
+                <h3 className="font-normal">
+                  Ahorro Dorada Bajo, aún no puedes invertir!
+                </h3>
                 <div
                   className={`mt-2 space-y-1 ${isPrivate ? "privacy-blur" : ""}`}
                 >
@@ -113,5 +114,3 @@ const PersonalFinance = () => {
     </div>
   );
 };
-
-export default PersonalFinance;

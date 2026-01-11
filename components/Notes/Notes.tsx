@@ -34,8 +34,7 @@ export const NotesComponent: React.FC = () => {
     >
       <div className="flex justify-between items-center mb-4 border-b pb-2">
         <h2 className="text-xl flex gap-2 font-bold">
-          <StickyNote size={25} /> Notas Rápidas{" "}
-          <span className="text-sm pt-2">HTML</span>
+          <StickyNote size={25} /> Notas Rápidas
         </h2>
         <div className="flex gap-2">
           {!isMinimized && (

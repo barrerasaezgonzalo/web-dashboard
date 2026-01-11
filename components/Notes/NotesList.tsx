@@ -1,5 +1,4 @@
 import { Note, NotesListProps } from "@/types/";
-import { stripHtml } from "@/utils";
 import { Trash } from "lucide-react";
 import { useState } from "react";
 
@@ -36,7 +35,7 @@ export const NotesList: React.FC<NotesListProps> = ({
                   className="truncate flex-1"
                   onClick={() => handleClickNote(n)}
                 >
-                  {stripHtml(n.content)}
+                  {n.content}
                 </span>
                 <button
                   onClick={() => handleDeleteNote(n)}

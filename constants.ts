@@ -1,4 +1,4 @@
-import { CategoryOption, Feed } from "./types/";
+import { CategoryOption } from "./types/";
 
 export const IngresosCategoryLabels: CategoryOption[] = [
   { id: "sueldo", label: "Sueldo", fijo: false },
@@ -48,12 +48,6 @@ export const modalTitles = {
   ahorros: "Agregar Ahorro",
 };
 
-export const feeds: { label: string; value: Feed }[] = [
-  { label: "BioBio", value: "biobio" },
-  { label: "La Tercera", value: "latercera" },
-  { label: "GNews", value: "gnews" },
-];
-
 export const specialCategoryRules: Record<string, (financial: any) => number> =
   {
     "gastos-fa": (financial) => financial.current.utm * 8.1,
@@ -66,3 +60,5 @@ export const specialCategoryRules: Record<string, (financial: any) => number> =
     "gastos-btc": () => 50000,
     "gastos-eth": () => 50000,
   };
+
+export const diasSemana = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];

@@ -7,19 +7,14 @@ import { Notes } from "@/components/Notes/Notes";
 import { User } from "@/components/User/User";
 import { BackGround } from "@/components/ui/BackGround";
 import { TasksProvider } from "@/context/TasksContext";
-import { NewsProvider } from "@/context/NewsContext";
 import { supabase } from "@/lib/supabaseClient";
 import { useUser } from "@/context/UserContext";
-import PersonalFinance from "@/components/PersonalFinance/PersonalFinance";
+import { PersonalFinance } from "@/components/PersonalFinance/PersonalFinance";
 import { Pending } from "@/components/PersonalFinance/Pending";
 import { PersonalFinanceProvider } from "@/context/PersonalFinanceContext";
+import { Calendar } from "@/components/Calendar/Calendar";
 
 const Task = dynamic(() => import("@/components/Task/Task"), {
-  ssr: false,
-  loading: () => <Skeleton rows={5} height={40} />,
-});
-
-const News = dynamic(() => import("@/components/News/News"), {
   ssr: false,
   loading: () => <Skeleton rows={5} height={40} />,
 });
@@ -69,18 +64,16 @@ export const App: React.FC = () => {
         <User />
       </ErrorBoundary>
       <ErrorBoundary>
-        <NewsProvider>
-          <News />
-        </NewsProvider>
+        <Notes />
+      </ErrorBoundary>
+      <ErrorBoundary>
+        <Calendar />
       </ErrorBoundary>
     </div>
   );
 
   const column2 = (
     <div className={columnStyle}>
-      <ErrorBoundary>
-        <Notes />
-      </ErrorBoundary>
       <ErrorBoundary>
         <Movements />
       </ErrorBoundary>
