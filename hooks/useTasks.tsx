@@ -29,7 +29,7 @@ export const useTasks = () => {
       setDate("");
       showToast(`Tarea "${task.title}" agregada correctamente`);
     } catch (error: unknown) {
-      console.error(error);
+      console.log(error);
       showToast("La tarea no se pudo agregar. Intenta nuevamente");
     } finally {
       setIsLoading(false);

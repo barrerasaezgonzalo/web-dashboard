@@ -1,4 +1,3 @@
-// pages/api/tasks.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { createClient } from "@supabase/supabase-js";
 import { Task } from "@/types/";
@@ -9,24 +8,33 @@ export default async function handler(
     Task[] | Task | { error: string } | { success: boolean }
   >,
 ) {
+  const authHeader = req.headers["authorization"] || req.headers.authorization;
   const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!, // Llave maestra
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
   );
 
-  const { id, userId, title, date, in_dev } = req.body;
-  const queryId = req.query.id as string;
+  if (!authHeader) {
+    return res.status(401).json({ error: "No autorizado. Falta token." });
+  }
+  const token = authHeader.replace("Bearer ", "");
+  const {
+    data: { user },
+    error,
+  } = await supabaseAdmin.auth.getUser(token);
+  if (error || !user) return res.status(401).json({ error: "Token inválido" });
+
+  const { id, title, date, in_dev } = req.body;
+  const userId = user.id;
 
   // GET: obtener tasks de un usuario
   if (req.method === "GET") {
-    const authData = req.query.authData as string;
-
-    if (!authData) return res.status(400).json({ error: "Falta authData" });
+    if (!userId) return res.status(400).json({ error: "Faltan datos" });
 
     const { data, error } = await supabaseAdmin
       .from("tasks")
       .select("*")
-      .eq("auth_data", authData)
+      .eq("auth_data", userId)
       .order("in_dev", { ascending: false })
       .order("date", { ascending: true });
 
@@ -72,16 +80,15 @@ export default async function handler(
 
   if (req.method === "DELETE") {
     const taskId = req.body.id || req.query.id;
-    const authData = req.query.authData as string;
 
-    if (!taskId || !authData) {
+    if (!taskId || !userId) {
       return res.status(400).json({ error: "Faltan IDs para borrar" });
     }
     const { error: deleteError, count } = await supabaseAdmin
       .from("tasks")
       .delete({ count: "exact" })
       .eq("id", taskId)
-      .eq("auth_data", authData);
+      .eq("auth_data", userId);
 
     if (deleteError) {
       return res.status(500).json({ error: deleteError.message });

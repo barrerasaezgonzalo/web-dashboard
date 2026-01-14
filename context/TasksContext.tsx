@@ -9,6 +9,7 @@ import React, {
   useCallback,
 } from "react";
 import { useUser } from "@/context/UserContext";
+import { authFetch } from "@/hooks/authFetch";
 
 export interface TaskContextType {
   tasks: Task[];
@@ -33,34 +34,30 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
   const [tasksLoading, setTasksLoading] = useState(false);
   const { userId } = useUser();
 
-  const getTasks = useCallback(
-    async (userId: string) => {
-      if (userId === null) {
-        console.warn("getTasks llamado sin userId");
-        return;
-      }
-      setTasksLoading(true);
-      try {
-        const response = await fetch(`/api/task/?authData=${userId}`);
-        const data = await response.json();
-        setTasks(data);
-      } catch (error) {
-        console.error("Error al obtener tareas:", error);
-        setTasks([]);
-      } finally {
-        setTasksLoading(false);
-      }
-    },
-    [userId],
-  );
+  const getTasks = useCallback(async () => {
+    if (userId === null) {
+      console.warn("getTasks llamado sin userId");
+      return;
+    }
+    setTasksLoading(true);
+    try {
+      const response = await authFetch(`/api/task`);
+      const data = await response.json();
+      setTasks(data);
+    } catch (error) {
+      console.error("Error al obtener tareas:", error);
+      setTasks([]);
+    } finally {
+      setTasksLoading(false);
+    }
+  }, [userId]);
 
   const addTask = async (title: string, date?: string): Promise<Task> => {
     try {
       setTasksLoading(true);
-      const response = await fetch("/api/task", {
+      const response = await authFetch("/api/task", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title, userId, date }),
+        body: JSON.stringify({ title, date }),
       });
       if (!response.ok) {
         const errData = await response.json();
@@ -69,10 +66,10 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
       const data = await response.json();
       const task: Task = data[0];
       setTasks((prev) => [...prev, task]);
-      if (userId) getTasks(userId);
+      getTasks();
       return task;
     } catch (error) {
-      console.error("Error al agregar tarea:", error);
+      console.log("Error al agregar tarea:", error);
       throw error;
     } finally {
       setTasksLoading(false);
@@ -82,19 +79,17 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
   const editTask = async (id: string, newTitle: string, newDate: string) => {
     try {
       setTasksLoading(true);
-      const response = await fetch("/api/task", {
+      const response = await authFetch("/api/task", {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           id,
           title: newTitle,
           date: newDate,
-          userId,
         }),
       });
       const updatedTask = await response.json();
       setTasks((prev) => prev.map((t) => (t.id === id ? updatedTask : t)));
-      if (userId) getTasks(userId);
+      getTasks();
     } catch (error) {
       console.error("Error al editar tarea:", error);
     } finally {
@@ -104,7 +99,7 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
 
   useEffect(() => {
     if (userId !== null) {
-      getTasks(userId);
+      getTasks();
     }
   }, [userId, getTasks]);
 
@@ -120,7 +115,7 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
 
     try {
       setTasksLoading(true);
-      const res = await fetch("/api/task", {
+      const res = await authFetch("/api/task", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id, in_dev: !taskBefore.in_dev, userId }),
@@ -128,7 +123,7 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
 
       if (!res.ok) throw new Error("Error actualizando task");
     } catch (error) {
-      console.error("Error en toggleTaskInDev:", error);
+      console.log("Error en toggleTaskInDev:", error);
       setTasks((prev) =>
         prev.map((task) =>
           task.id === id ? { ...task, in_dev: taskBefore.in_dev } : task,
@@ -142,7 +137,7 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
   const removeTask = async (id: string) => {
     try {
       setTasksLoading(true);
-      const res = await fetch(`/api/task?id=${id}&authData=${userId}`, {
+      const res = await authFetch(`/api/task?id=${id}`, {
         method: "DELETE",
       });
       if (!res.ok) {
