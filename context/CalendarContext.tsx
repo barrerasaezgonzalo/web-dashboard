@@ -71,11 +71,6 @@ export const CalendarProvider: React.FC<CalendarProviderProps> = ({
         events,
         getEvents,
         saveEvents,
-        // editTask,
-        // removeTask,
-        // toggleTaskInDev,
-        // tasksLoading,
-        // getTasks,
       }}
     >
       {children}

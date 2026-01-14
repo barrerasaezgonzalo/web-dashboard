@@ -173,13 +173,6 @@ export const EventModalComponent: React.FC<any> = ({
                     onChange={(e) => handleUpdate(idx, "notas", e.target.value)}
                     className="w-full bg-transparent text-slate-400 text-sm placeholder:text-slate-600 focus:outline-none resize-none h-10"
                   />
-                  {/* <select
-                    value={1}
-                    onChange={(e) => { }}
-                    className="w-full bg-transparent text-white font-semibold placeholder:text-slate-600 focus:outline-none text-lg"                  >
-                    <option value="none">No repetir</option>
-                    <option value="monthly">Mensual (mismo día de cada mes)</option>
-                  </select> */}
                 </div>
               </div>
             </div>

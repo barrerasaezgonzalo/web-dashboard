@@ -35,3 +35,8 @@
 .preview-content li {
   margin-bottom: 0.25rem;
 }
+
+.recurrente option {
+  background-color: #1a1a1a;
+  color: white;
+}

@@ -6,13 +6,11 @@ import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { Notes } from "@/components/Notes/Notes";
 import { User } from "@/components/User/User";
 import { BackGround } from "@/components/ui/BackGround";
-import { TasksProvider } from "@/context/TasksContext";
 import { supabase } from "@/lib/supabaseClient";
 import { useAuth } from "@/context/AuthContext";
 import { PersonalFinance } from "@/components/PersonalFinance/PersonalFinance";
 import { Pending } from "@/components/PersonalFinance/Pending";
-import { PersonalFinanceProvider } from "@/context/PersonalFinanceContext";
-import { CalendarProvider } from "@/context/CalendarContext";
+import { MainProvider } from "./MainProvider";
 
 const Task = dynamic(() => import("@/components/Task/Task"), {
   ssr: false,
@@ -124,18 +122,12 @@ export const App: React.FC = () => {
                   md:grid-cols-2 
                   lg:grid-cols-4"
       >
-        <ErrorBoundary>
-          <TasksProvider>
-            <PersonalFinanceProvider>
-              <CalendarProvider>
-                {column1}
-                {column2}
-                {column3}
-                {column4}
-              </CalendarProvider>
-            </PersonalFinanceProvider>
-          </TasksProvider>
-        </ErrorBoundary>
+        <MainProvider>
+          {column1}
+          {column2}
+          {column3}
+          {column4}
+        </MainProvider>
       </div>
     </div>
   );

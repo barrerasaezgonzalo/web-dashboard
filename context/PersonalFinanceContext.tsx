@@ -112,7 +112,7 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
       }
       const data = await response.json();
       const financial: PersonalFinance = data[0];
-      setMovements((prev) => [...prev, financial]);
+      setMovements((prev) => [financial, ...prev]);
     } catch (error) {
       console.error("Error al agregar personal financial:", error);
       throw error;
