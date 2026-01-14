@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { DataProvider } from "@/context/DataContext";
-import { UserProvider } from "@/context/UserContext";
+import { AuthProvider } from "@/context/AuthContext";
 
 export const metadata: Metadata = {
   title: "Dashboard App",
@@ -16,9 +16,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <UserProvider>
+        <AuthProvider>
           <DataProvider>{children}</DataProvider>
-        </UserProvider>
+        </AuthProvider>
       </body>
     </html>
   );

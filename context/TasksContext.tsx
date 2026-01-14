@@ -8,7 +8,7 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import { useUser } from "@/context/UserContext";
+import { useAuth } from "@/context/AuthContext";
 import { authFetch } from "@/hooks/authFetch";
 
 export interface TaskContextType {
@@ -32,7 +32,7 @@ interface TaskProviderProps {
 export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [tasksLoading, setTasksLoading] = useState(false);
-  const { userId } = useUser();
+  const { userId } = useAuth();
 
   const getTasks = useCallback(async () => {
     if (userId === null) {

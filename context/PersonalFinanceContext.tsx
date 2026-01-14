@@ -15,7 +15,7 @@ import type {
   PersonalFinanceContextType,
   PersonalFinanceMovement,
 } from "@/types/";
-import { useUser } from "./UserContext";
+import { useAuth } from "./AuthContext";
 export const PersonalFinanceContext =
   createContext<PersonalFinanceContextType | null>(null);
 
@@ -34,7 +34,7 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
     saldo: 0,
   });
   const [loading, setLoading] = useState(false);
-  const { userId } = useUser();
+  const { userId } = useAuth();
   const [financial, setFinancial] = useState<any>({
     current: { utm: 0 },
   });

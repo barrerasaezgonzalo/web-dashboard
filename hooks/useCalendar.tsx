@@ -1,10 +1,10 @@
-import { useUser } from "@/context/UserContext";
+import { useAuth } from "@/context/AuthContext";
 import { CalendarEvent, CalendarModalConfig } from "@/types";
 import { format } from "date-fns";
 import { useCallback, useEffect, useState } from "react";
 
 export const useCalendar = (mesActual: Date) => {
-  const { userId } = useUser();
+  const { userId } = useAuth();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [modalConfig, setModalConfig] = useState<CalendarModalConfig | null>(
     null,

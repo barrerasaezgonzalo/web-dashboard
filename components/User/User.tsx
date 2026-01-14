@@ -2,12 +2,13 @@
 
 import { formatFechaHora, getDaysRemainingUntil, getGreeting } from "@/utils";
 import { useTasks } from "@/hooks/useTasks";
-import { useUser } from "@/context/UserContext";
-import { useData } from "@/hooks/useData";
+import { useAuth } from "@/context/AuthContext";
+
+// import { useData } from "@/hooks/useData";
 import { useState, useEffect } from "react";
 
 export const User = () => {
-  const { userName } = useUser();
+  const { userName } = useAuth();
   const { tasks } = useTasks();
   const pending = tasks.filter(
     (task) =>
@@ -17,7 +18,7 @@ export const User = () => {
     (task) => !task.in_dev && task.date && getDaysRemainingUntil(task.date) < 0,
   ).length;
   const in_dev = tasks.filter((task) => task.in_dev).length;
-  const { wheater } = useData();
+  // const { wheater } = useData();
   const [fecha, setFecha] = useState("Cargando...");
   const [hora, setHora] = useState("Cargando...");
 
@@ -53,7 +54,7 @@ export const User = () => {
         </p>
       </div>
       <div className="w-full">
-        <span className="text-4xl text-white">{wheater?.temperatura}</span>
+        {/* <span className="text-4xl text-white">{wheater?.temperatura}</span> */}
         <div className="flex flex-col items-end">
           <span className="text-lg  text-white leading-none">{hora}</span>
           <span className="text-lg text-white ">{fecha}</span>

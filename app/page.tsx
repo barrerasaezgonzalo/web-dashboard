@@ -8,7 +8,7 @@ import { User } from "@/components/User/User";
 import { BackGround } from "@/components/ui/BackGround";
 import { TasksProvider } from "@/context/TasksContext";
 import { supabase } from "@/lib/supabaseClient";
-import { useUser } from "@/context/UserContext";
+import { useAuth } from "@/context/AuthContext";
 import { PersonalFinance } from "@/components/PersonalFinance/PersonalFinance";
 import { Pending } from "@/components/PersonalFinance/Pending";
 import { PersonalFinanceProvider } from "@/context/PersonalFinanceContext";
@@ -26,7 +26,7 @@ const Movements = dynamic(
 
 export const App: React.FC = () => {
   const columnStyle = "flex flex-col gap-4 w-full";
-  const { userId, loading } = useUser();
+  const { userId, loading } = useAuth();
 
   const loginWithGoogle = async () => {
     const { error } = await supabase.auth.signInWithOAuth({

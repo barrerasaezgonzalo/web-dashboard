@@ -1,9 +1,9 @@
-import { useUser } from "@/context/UserContext";
+import { useAuth } from "@/context/AuthContext";
 import { Note } from "@/types/";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 export const useNotes = () => {
-  const { userId } = useUser();
+  const { userId } = useAuth();
 
   const [notes, setNotes] = useState<Note[]>([]);
   const [note, setNote] = useState<Note | null>(null);
