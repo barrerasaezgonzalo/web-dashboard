@@ -12,6 +12,7 @@ import { useAuth } from "@/context/AuthContext";
 import { PersonalFinance } from "@/components/PersonalFinance/PersonalFinance";
 import { Pending } from "@/components/PersonalFinance/Pending";
 import { PersonalFinanceProvider } from "@/context/PersonalFinanceContext";
+import { CalendarProvider } from "@/context/CalendarContext";
 
 const Task = dynamic(() => import("@/components/Task/Task"), {
   ssr: false,
@@ -126,10 +127,12 @@ export const App: React.FC = () => {
         <ErrorBoundary>
           <TasksProvider>
             <PersonalFinanceProvider>
-              {column1}
-              {column2}
-              {column3}
-              {column4}
+              <CalendarProvider>
+                {column1}
+                {column2}
+                {column3}
+                {column4}
+              </CalendarProvider>
             </PersonalFinanceProvider>
           </TasksProvider>
         </ErrorBoundary>

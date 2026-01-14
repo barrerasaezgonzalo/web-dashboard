@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { WheaterResponse } from "@/types/";
 
-export const useData = () => {
+export const useWheater = () => {
   const [wheater, setWheather] = useState<WheaterResponse | null>(null);
 
   const fetchWeather = useCallback(async () => {
