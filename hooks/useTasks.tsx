@@ -63,7 +63,8 @@ export const useTasks = () => {
     }
   };
 
-  const handleTaskToggle = (taskId: string) => context.toggleTaskInDev(taskId);
+  const handleTaskToggle = async (taskId: string) =>
+    context.toggleTaskInDev(taskId);
 
   const handleRemove = async (taskId: string) => {
     try {
@@ -73,6 +74,7 @@ export const useTasks = () => {
       setTitle("");
       setDate("");
     } catch (error) {
+      console.log("No se pudo eliminar la tarea. Intenta nuevamente");
       showToast("No se pudo eliminar la tarea. Intenta nuevamente");
     }
   };

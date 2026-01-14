@@ -62,3 +62,5 @@ export const specialCategoryRules: Record<string, (financial: any) => number> =
   };
 
 export const diasSemana = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
+
+export const movementListSize = 5;

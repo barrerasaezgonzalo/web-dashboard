@@ -57,17 +57,16 @@ export const App: React.FC = () => {
     );
   }
 
-  // Columnas
   const column1 = (
     <div className={columnStyle}>
       <ErrorBoundary>
         <User />
       </ErrorBoundary>
       <ErrorBoundary>
-        <Notes />
+        <Calendar />
       </ErrorBoundary>
       <ErrorBoundary>
-        <Calendar />
+        <Notes />
       </ErrorBoundary>
     </div>
   );
@@ -111,18 +110,12 @@ export const App: React.FC = () => {
       >
         <ErrorBoundary>
           <TasksProvider>
-            {/* Column 1 */}
-            {column1}
-
-            {/* Columnas 2 y 3 con el mismo PersonalFinanceProvider */}
-
             <PersonalFinanceProvider>
+              {column1}
               {column2}
               {column3}
               {column4}
             </PersonalFinanceProvider>
-
-            {/* Column 4 */}
           </TasksProvider>
         </ErrorBoundary>
       </div>

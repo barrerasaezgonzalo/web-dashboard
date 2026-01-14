@@ -16,7 +16,7 @@ export interface TaskContextType {
   getTasks: (id: string) => Promise<void>;
   addTask: (title: string, date?: string) => Promise<Task>;
   toggleTaskInDev: (id: string) => void;
-  removeTask: (id: string) => void;
+  removeTask: (id: string) => Promise<void>;
   editTask: (id: string, newTitle: string, newDate: string) => void;
 }
 
@@ -142,11 +142,17 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
   const removeTask = async (id: string) => {
     try {
       setTasksLoading(true);
-      const res = await fetch(`/api/task?id=${id}`, { method: "DELETE" });
-      if (!res.ok) throw new Error("Error eliminando tarea");
+      const res = await fetch(`/api/task?id=${id}&authData=${userId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw errorData;
+      }
       setTasks((prev) => prev.filter((t) => t.id !== id));
     } catch (error) {
-      console.error("Error al eliminar tarea:", error);
+      console.log("Error Interno:", error);
+      throw error;
     } finally {
       setTasksLoading(false);
     }

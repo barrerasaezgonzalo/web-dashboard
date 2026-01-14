@@ -1,3 +1,4 @@
+import { movementListSize } from "@/constants";
 import { MovementListProps } from "@/types/";
 import { formatCLP, formatDateToDMY, getCategoryLabel } from "@/utils";
 import { ChevronDown, SquarePen, Trash } from "lucide-react";
@@ -13,15 +14,15 @@ export const MovementList: React.FC<MovementListProps> = ({
   setErrors,
   handleDeleteMovement,
 }) => {
-  const [limit, setLimit] = useState(10);
+  const [limit, setLimit] = useState(movementListSize);
 
   useEffect(() => {
-    setLimit(10);
+    setLimit(movementListSize);
   }, [filtrados.length]);
 
   const visibleItems = filtrados.slice(0, limit);
   const handleLoadMore = () => {
-    setLimit((prev) => prev + 10);
+    setLimit((prev) => prev + movementListSize);
   };
 
   return (

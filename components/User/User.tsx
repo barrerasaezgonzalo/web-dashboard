@@ -5,7 +5,6 @@ import { useTasks } from "@/hooks/useTasks";
 import { useUser } from "@/context/UserContext";
 import { useData } from "@/hooks/useData";
 import { useState, useEffect } from "react";
-import { Rocket } from "lucide-react";
 
 export const User = () => {
   const { userName } = useUser();

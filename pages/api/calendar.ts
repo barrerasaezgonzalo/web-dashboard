@@ -47,7 +47,7 @@ export default async function handler(
           auth_data: effectiveUserId,
           fecha: fecha,
           titulo: ev.titulo,
-          summary: ev.descripcion || "",
+          notas: ev.descripcion || "",
           hora: ev.hora,
         }));
 

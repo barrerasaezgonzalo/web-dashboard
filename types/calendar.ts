@@ -2,7 +2,7 @@ export interface CalendarEvent {
   id?: string;
   fecha: string; // "YYYY-MM-DD"
   titulo: string;
-  descripcion?: string;
+  notas?: string;
   auth_data?: string;
 }
 

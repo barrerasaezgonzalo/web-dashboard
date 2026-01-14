@@ -61,7 +61,7 @@ export const EventModalComponent: React.FC<any> = ({
     }
     setLocalEvents([
       ...localEvents,
-      { titulo: "", descripcion: "", hora: "09", minutos: "00" },
+      { titulo: "", notas: "", hora: "09", minutos: "00" },
     ]);
   };
 
@@ -169,10 +169,8 @@ export const EventModalComponent: React.FC<any> = ({
                   )}
                   <textarea
                     placeholder="Detalles adicionales (opcional)"
-                    value={ev.summary || ""}
-                    onChange={(e) =>
-                      handleUpdate(idx, "descripcion", e.target.value)
-                    }
+                    value={ev.notas}
+                    onChange={(e) => handleUpdate(idx, "notas", e.target.value)}
                     className="w-full bg-transparent text-slate-400 text-sm placeholder:text-slate-600 focus:outline-none resize-none h-10"
                   />
                 </div>
