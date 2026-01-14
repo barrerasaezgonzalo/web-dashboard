@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { DataProvider } from "@/context/DataContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { CalendarProvider } from "@/context/CalendarContext";
 
 export const metadata: Metadata = {
   title: "Dashboard App",
@@ -17,7 +18,9 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
         <AuthProvider>
-          <DataProvider>{children}</DataProvider>
+          <DataProvider>
+            <CalendarProvider>{children}</CalendarProvider>
+          </DataProvider>
         </AuthProvider>
       </body>
     </html>

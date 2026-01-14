@@ -3,13 +3,35 @@
 import { formatFechaHora, getDaysRemainingUntil, getGreeting } from "@/utils";
 import { useTasks } from "@/hooks/useTasks";
 import { useAuth } from "@/context/AuthContext";
-
-// import { useData } from "@/hooks/useData";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { usePrivacyMode } from "@/hooks/usePrivacyMode";
+import { Eye, EyeOff, LogOut, CalendarDays, Thermometer } from "lucide-react";
+import { Toast } from "../ui/Toast";
+import { useToast } from "@/hooks/useToast";
+import { CalendarContext } from "@/context/CalendarContext";
+import { format } from "date-fns";
 
 export const User = () => {
-  const { userName } = useAuth();
+  const { userName, signOut } = useAuth();
+  const { isPrivate, setIsPrivate } = usePrivacyMode();
   const { tasks } = useTasks();
+  const { toast, openToast, closeToast } = useToast();
+  const [fecha, setFecha] = useState("Cargando...");
+  const [hora, setHora] = useState("Cargando...");
+  const { events } = useContext(CalendarContext)!;
+  const hoyStr = format(new Date(), "yyyy-MM-dd");
+  const eventosHoy = events.filter((ev) => ev.fecha === hoyStr).length;
+  // Simulación de temperatura
+  const temperaturaSimulada = "20°C";
+
+  const handleLogout = () => {
+    openToast({
+      message: "¿Estás seguro que deseas desconectarte?",
+      onConfirm: () => signOut(),
+      onCancel: closeToast,
+    });
+  };
+
   const pending = tasks.filter(
     (task) =>
       !task.in_dev && task.date && getDaysRemainingUntil(task.date) >= 0,
@@ -18,9 +40,11 @@ export const User = () => {
     (task) => !task.in_dev && task.date && getDaysRemainingUntil(task.date) < 0,
   ).length;
   const in_dev = tasks.filter((task) => task.in_dev).length;
-  // const { wheater } = useData();
-  const [fecha, setFecha] = useState("Cargando...");
-  const [hora, setHora] = useState("Cargando...");
+  const statsConfig = [
+    { label: "Pendientes", value: pending, color: "text-amber-500" },
+    { label: "En Curso", value: in_dev, color: "text-blue-300" },
+    { label: "Atrasadas", value: overdueTasks, color: "text-red-500" },
+  ];
 
   useEffect(() => {
     function actualizar() {
@@ -29,37 +53,121 @@ export const User = () => {
       setFecha(fecha);
       setHora(hora);
     }
-
     actualizar();
     const intervalo = setInterval(actualizar, 1000);
     return () => clearInterval(intervalo);
   }, []);
 
+  const handlePrivacyClick = () => {
+    const event = new KeyboardEvent("keydown", {
+      key: "h",
+      code: "KeyH",
+      bubbles: true,
+      cancelable: true,
+    });
+    window.dispatchEvent(event);
+  };
+
   return (
-    <div className="flex flex-col bg-[#4D677E] p-4 rounded gap-4">
-      <div className="w-full">
-        <h1 className="text-2xl text-white">
-          {getGreeting()}, {userName?.split(" ")[0]}!{" "}
-        </h1>
-        <p className="text-md flex gap-3 mt-1">
-          <span className="flex gap-1 text-white">
-            <b className="text-amber-500 ">{pending}</b> Pendientes
-          </span>
-          <span className="flex gap-1 text-white">
-            <b className="text-blue-100 ">{in_dev}</b> En Curso
-          </span>
-          <span className="flex items-center gap-1  text-white">
-            <b className="text-red-500">{overdueTasks}</b> Atrasadas
-          </span>
-        </p>
+    <div className="relative flex flex-col bg-[#4D677E] p-5 rounded-lg shadow-lg gap-6 text-white">
+      {/* Botones de acción */}
+      <div className="absolute top-3 right-3 flex gap-2">
+        <button
+          onClick={handlePrivacyClick}
+          className="p-2 hover:bg-white/20 rounded-full transition-all"
+        >
+          {isPrivate ? (
+            <Eye size={18} className="text-amber-400" />
+          ) : (
+            <EyeOff size={18} className="opacity-60" />
+          )}
+        </button>
+        <button
+          onClick={handleLogout}
+          className="p-2 hover:bg-red-500/30 rounded-full transition-all"
+        >
+          <LogOut size={18} className="text-red-300" />
+        </button>
       </div>
-      <div className="w-full">
-        {/* <span className="text-4xl text-white">{wheater?.temperatura}</span> */}
-        <div className="flex flex-col items-end">
-          <span className="text-lg  text-white leading-none">{hora}</span>
-          <span className="text-lg text-white ">{fecha}</span>
+
+      {/* Saludo y Reloj + Clima */}
+      <div className="flex justify-between items-start">
+        <div>
+          <h1 className="text-3xl font-light tracking-tight">
+            {getGreeting()},{" "}
+            <span className="font-bold">
+              {isPrivate ? "Gonzalo" : userName?.split(" ")[0]}
+            </span>
+            !
+          </h1>
+          <div className="flex items-center gap-4 mt-2">
+            <div className="flex flex-col opacity-80 border-r border-white/20 pr-4">
+              <span className="text-sm font-medium">{fecha}</span>
+              <span className="text-2xl font-mono font-bold tracking-widest">
+                {hora}
+              </span>
+            </div>
+            {/* Simulación de Temperatura */}
+            <div className="flex items-center gap-1 text-amber-300">
+              <Thermometer size={25} />
+              <span className="text-4xl font-semibold">
+                {temperaturaSimulada}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* Stats de Tareas */}
+      <div className="grid grid-cols-3 gap-2 bg-black/10 p-3 rounded-md">
+        {statsConfig.map((stat, index) => (
+          <div
+            key={stat.label}
+            className={`flex flex-col items-center ${
+              index !== statsConfig.length - 1 ? "border-r border-white/10" : ""
+            }`}
+          >
+            <span className="text-xs uppercase opacity-60">{stat.label}</span>
+            <b className={`text-xl ${stat.color}`}>
+              {isPrivate ? "—" : stat.value}
+            </b>
+          </div>
+        ))}
+      </div>
+
+      {/* Placeholder Eventos */}
+      <div className="border-t border-white/10 pt-4">
+        {eventosHoy === 0 ? (
+          <div className="flex items-center gap-2 mb-2 text-white/70">
+            <CalendarDays size={18} />
+            <h3 className="text-sm font-bold uppercase tracking-wider">
+              No hay eventos programados para hoy.
+            </h3>
+          </div>
+        ) : (
+          <div className="text-sm font-bold uppercase tracking-wider">
+            {eventosHoy} {eventosHoy === 1 ? "Evento" : "Eventos"} del día
+          </div>
+        )}
+      </div>
+
+      {toast && (
+        <Toast
+          message={toast.message}
+          onConfirm={() => {
+            toast.onConfirm?.();
+            closeToast();
+          }}
+          onCancel={
+            toast.onCancel
+              ? () => {
+                  toast.onCancel?.();
+                  closeToast();
+                }
+              : undefined
+          }
+        />
+      )}
     </div>
   );
 };

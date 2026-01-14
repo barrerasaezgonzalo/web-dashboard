@@ -12,7 +12,6 @@ import { useAuth } from "@/context/AuthContext";
 import { PersonalFinance } from "@/components/PersonalFinance/PersonalFinance";
 import { Pending } from "@/components/PersonalFinance/Pending";
 import { PersonalFinanceProvider } from "@/context/PersonalFinanceContext";
-import { Calendar } from "@/components/Calendar/Calendar";
 
 const Task = dynamic(() => import("@/components/Task/Task"), {
   ssr: false,
@@ -22,6 +21,13 @@ const Task = dynamic(() => import("@/components/Task/Task"), {
 const Movements = dynamic(
   () => import("@/components/PersonalFinance/Movements"),
   { ssr: false, loading: () => <Skeleton rows={5} height={40} /> },
+);
+
+const Calendar = dynamic(
+  () => import("@/components/Calendar/Calendar").then((mod) => mod.Calendar),
+  {
+    ssr: false,
+  },
 );
 
 export const App: React.FC = () => {
@@ -45,14 +51,23 @@ export const App: React.FC = () => {
 
   if (!userId) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen">
-        <p>Por favor, inicia sesión</p>
-        <button
-          className="bg-blue-500 text-white px-4 py-2 rounded mt-2"
-          onClick={loginWithGoogle}
-        >
-          Login con Google
-        </button>
+      <div className="flex flex-col items-center justify-center h-screen bg-slate-900 text-white">
+        <div className="bg-slate-800 p-8 rounded-xl shadow-2xl border border-slate-700 flex flex-col items-center">
+          <h1 className="text-3xl font-bold mb-6 text-blue-400">
+            Bienvenido al Dashboard
+          </h1>
+          <p className="text-slate-400 mb-8 text-center">
+            Organiza tus tareas, finanzas y calendario <br /> en un solo lugar.
+          </p>
+
+          <button
+            onClick={loginWithGoogle}
+            className="flex items-center gap-3 bg-white text-black px-6 py-3 rounded-lg font-semibold hover:bg-slate-200 transition-colors"
+          >
+            {/* Aquí podrías poner un iconito de Google */}
+            Continuar con Google
+          </button>
+        </div>
       </div>
     );
   }
