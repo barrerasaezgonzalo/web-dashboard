@@ -24,6 +24,7 @@ export const CalendarProvider: React.FC<CalendarProviderProps> = ({
   children,
 }) => {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const { userId } = useAuth();
   const getEvents = useCallback(async (mesActual: Date) => {
     try {
       const dateStr = format(mesActual, "yyyy-MM-dd");
@@ -36,12 +37,12 @@ export const CalendarProvider: React.FC<CalendarProviderProps> = ({
     }
   }, []);
 
-  // Dentro del Provider
   const saveEvents = async (fecha: string, eventos: any[]) => {
     try {
       await authFetch("/api/calendar", {
         method: "POST",
         body: JSON.stringify({
+          userId,
           fecha,
           events: eventos.map((ev) => ({
             ...ev,
@@ -49,7 +50,6 @@ export const CalendarProvider: React.FC<CalendarProviderProps> = ({
           })),
         }),
       });
-      // Después de guardar, refrescamos la lista
       await getEvents(new Date(fecha));
     } catch (error) {
       console.error("Error al guardar en Provider:", error);

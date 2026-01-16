@@ -22,10 +22,14 @@ export default async function handler(
     data: { user },
     error,
   } = await supabaseAdmin.auth.getUser(token);
-  if (error || !user) return res.status(401).json({ error: "Token inválido" });
+  if (error || !user) {
+    console.log("Error Auth:", error?.message);
+    return res.status(401).json({ error: "Token inválido o sesión expirada" });
+  }
+
+  const userId = user.id;
 
   const { id, title, date, in_dev } = req.body;
-  const userId = user.id;
 
   // GET: obtener tasks de un usuario
   if (req.method === "GET") {
