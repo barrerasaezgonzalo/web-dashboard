@@ -18,8 +18,8 @@ export const useTasks = () => {
   const [, setIsLoading] = useState(false);
 
   const handleAdd = async (title: string, date: string) => {
-    if (!title.trim() || !date.trim()) {
-      showToast(`Recuerda ingresar todos los campos`);
+    if (!title.trim()) {
+      showToast(`Título es requerido`);
       return;
     }
     try {
@@ -38,8 +38,8 @@ export const useTasks = () => {
 
   const handleSave = async (id: string, title: string, date: string) => {
     try {
-      if (!title.trim() || !date.trim()) {
-        showToast(`Recuerda ingresar todos los campos`);
+      if (!title.trim()) {
+        showToast(`Título es requerido`);
         return;
       }
       setIsLoading(true);

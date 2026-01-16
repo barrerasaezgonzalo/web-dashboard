@@ -18,7 +18,11 @@ export interface TaskContextType {
   addTask: (title: string, date?: string) => Promise<Task>;
   toggleTaskInDev: (id: string) => void;
   removeTask: (id: string) => Promise<void>;
-  editTask: (id: string, newTitle: string, newDate: string) => void;
+  editTask: (
+    id: string,
+    newTitle: string,
+    newDate?: string | undefined | null,
+  ) => void;
 }
 
 export const TasksContext = createContext<TaskContextType | undefined>(
@@ -57,7 +61,7 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
       setTasksLoading(true);
       const response = await authFetch("/api/task", {
         method: "POST",
-        body: JSON.stringify({ title, date }),
+        body: JSON.stringify({ title, date: date || null }),
       });
       if (!response.ok) {
         const errData = await response.json();
@@ -76,7 +80,11 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
     }
   };
 
-  const editTask = async (id: string, newTitle: string, newDate: string) => {
+  const editTask = async (
+    id: string,
+    newTitle: string,
+    newDate?: string | undefined | null,
+  ) => {
     try {
       setTasksLoading(true);
       const response = await authFetch("/api/task", {
@@ -84,7 +92,7 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
         body: JSON.stringify({
           id,
           title: newTitle,
-          date: newDate,
+          date: newDate || null,
         }),
       });
       const updatedTask = await response.json();

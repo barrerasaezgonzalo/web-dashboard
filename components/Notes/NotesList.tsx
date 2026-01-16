@@ -1,6 +1,6 @@
 import { Note, NotesListProps } from "@/types/";
 import { Trash } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const NotesList: React.FC<NotesListProps> = ({
   openList,
@@ -9,11 +9,26 @@ export const NotesList: React.FC<NotesListProps> = ({
   handleClickNote,
 }) => {
   const [search, setSearch] = useState("");
+  const elementoRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (openList) {
+      if (elementoRef.current) {
+        elementoRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }
+    }
+  }, [openList]);
 
   return (
     <>
       {openList && (
-        <div className="mt-4 p-2 bg-amber-100 rounded shadow max-h-64 overflow-auto">
+        <div
+          className="mt-4 p-2 bg-amber-100 rounded shadow max-h-64 overflow-auto"
+          ref={elementoRef}
+        >
           <input
             type="text"
             placeholder="Buscar notas..."

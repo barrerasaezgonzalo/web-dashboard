@@ -1,13 +1,7 @@
 "use client";
 
 import { CalendarEvent } from "@/types/";
-import React, {
-  createContext,
-  useState,
-  ReactNode,
-  useEffect,
-  useCallback,
-} from "react";
+import React, { createContext, useState, ReactNode, useCallback } from "react";
 import { authFetch } from "@/hooks/authFetch";
 import { useAuth } from "./AuthContext";
 import { format } from "date-fns";
@@ -30,7 +24,6 @@ export const CalendarProvider: React.FC<CalendarProviderProps> = ({
   children,
 }) => {
   const [events, setEvents] = useState<CalendarEvent[]>([]);
-  const { userId } = useAuth();
   const getEvents = useCallback(async (mesActual: Date) => {
     try {
       const dateStr = format(mesActual, "yyyy-MM-dd");
@@ -49,7 +42,6 @@ export const CalendarProvider: React.FC<CalendarProviderProps> = ({
       await authFetch("/api/calendar", {
         method: "POST",
         body: JSON.stringify({
-          userId,
           fecha,
           events: eventos.map((ev) => ({
             ...ev,

@@ -16,7 +16,7 @@ export interface TaskItemProps {
 export interface TaskInputProps {
   title: string;
   setTitle: (v: string) => void;
-  date: string;
+  date?: string;
   setDate: (date: string) => void;
   handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
   inputRef: React.Ref<HTMLInputElement>;

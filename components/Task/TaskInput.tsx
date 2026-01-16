@@ -35,7 +35,7 @@ export const TaskInputComponent: React.FC<TaskInputProps> = ({
         />
         <input
           id="task-date"
-          value={date}
+          value={date ?? ""}
           onChange={(e) => setDate(e.target.value)}
           type="date"
           onKeyDown={handleKeyDown}

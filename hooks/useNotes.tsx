@@ -1,6 +1,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { Note } from "@/types/";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { authFetch } from "./authFetch";
 
 export const useNotes = () => {
   const { userId } = useAuth();
@@ -13,12 +14,12 @@ export const useNotes = () => {
   const fetchNotes = useCallback(async () => {
     if (!userId) return;
     try {
-      const res = await fetch(`/api/note?authData=${userId}`);
+      const res = await authFetch(`/api/note`);
       const data: Note[] = await res.json();
 
       for (const n of data) {
         if (n.content.trim() === "") {
-          await fetch(`/api/note?noteId=${n.id}&authData=${userId}`, {
+          await authFetch(`/api/note?noteId=${n.id}`, {
             method: "DELETE",
           });
         }
@@ -38,9 +39,8 @@ export const useNotes = () => {
       if (saveTimeout.current) clearTimeout(saveTimeout.current);
 
       saveTimeout.current = setTimeout(async () => {
-        await fetch(`/api/note?authData=${userId}`, {
+        await authFetch(`/api/note`, {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ content, noteId }),
         });
 
@@ -55,9 +55,8 @@ export const useNotes = () => {
   const createNote = useCallback(async () => {
     if (!userId) return;
 
-    const res = await fetch(`/api/note?authData=${userId}`, {
+    const res = await authFetch(`/api/note`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ content: "" }),
     });
 
@@ -77,7 +76,7 @@ export const useNotes = () => {
 
   const deleteNote = useCallback(
     async (id: string) => {
-      await fetch(`/api/note?noteId=${id}&authData=${userId}`, {
+      await authFetch(`/api/note?noteId=${id}`, {
         method: "DELETE",
       });
 

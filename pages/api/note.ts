@@ -1,23 +1,33 @@
 // pages/api/note.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { supabase } from "@/lib/supabaseClient";
+import { createClient } from "@supabase/supabase-js";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse,
 ) {
+  const authHeader = req.headers["authorization"] || req.headers.authorization;
+  const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+
+  if (!authHeader) {
+    return res.status(401).json({ error: "No autorizado. Falta token." });
+  }
+  const token = authHeader.replace("Bearer ", "");
+  const {
+    data: { user },
+    error,
+  } = await supabaseAdmin.auth.getUser(token);
+  if (error || !user) return res.status(401).json({ error: "Token inválido" });
+
   const { body, query, method } = req;
-
-  // Para DELETE viene en query
-  const { authData } = query;
   const { content, noteId } = body || {};
-  let { userId } = method === "DELETE" ? query : body;
+  const userId = user.id;
 
-  // Si authData es un array (Next.js lo hace cuando hay multiples params), tomamos el primero
-  const effectiveUserId =
-    userId || (Array.isArray(authData) ? authData[0] : authData);
-
-  if (!effectiveUserId) {
+  if (!userId) {
     return res.status(401).json({ error: "No autorizado" });
   }
 
@@ -27,7 +37,7 @@ export default async function handler(
       const { data, error } = await supabase
         .from("notes")
         .select("*")
-        .eq("auth_data", effectiveUserId)
+        .eq("auth_data", userId)
         .order("updated_at", { ascending: false });
 
       if (error) return res.status(500).json({ error: error.message });
@@ -39,7 +49,7 @@ export default async function handler(
       // crear nueva nota en blanco o con contenido
       const { data, error } = await supabase
         .from("notes")
-        .insert([{ content: content || "", auth_data: effectiveUserId }])
+        .insert([{ content: content || "", auth_data: userId }])
         .select()
         .single();
 
@@ -56,7 +66,7 @@ export default async function handler(
         .from("notes")
         .update({ content })
         .eq("id", noteId)
-        .eq("auth_data", effectiveUserId)
+        .eq("auth_data", userId)
         .select()
         .single();
 
@@ -66,15 +76,15 @@ export default async function handler(
     }
 
     if (method === "DELETE") {
-      let { authData, noteId } = query;
-      if (!noteId || !authData)
+      let { noteId } = query;
+      if (!noteId || !userId)
         return res.status(400).json({ error: "id y authData son requeridos" });
 
       const { data, error } = await supabase
         .from("notes")
         .delete()
         .eq("id", noteId)
-        .eq("auth_data", authData);
+        .eq("auth_data", userId);
 
       if (error) return res.status(500).json({ error: error.message });
 
