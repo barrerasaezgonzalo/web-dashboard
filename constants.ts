@@ -64,3 +64,10 @@ export const specialCategoryRules: Record<string, (financial: any) => number> =
 export const diasSemana = ["Lun", "Mar", "Mié", "Jue", "Vie", "Sáb", "Dom"];
 
 export const movementListSize = 5;
+
+export const horas = Array.from({ length: 24 }, (_, i) =>
+  i.toString().padStart(2, "0"),
+);
+export const minutos = Array.from({ length: 60 }, (_, i) =>
+  i.toString().padStart(2, "0"),
+);

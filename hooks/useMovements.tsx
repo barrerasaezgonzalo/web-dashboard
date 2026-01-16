@@ -32,7 +32,7 @@ export const useMovements = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { movements } = useContext(PersonalFinanceContext)!;
   const { addMovement, updateMovement, deleteMovement } = usePersonalFinance();
-  const { toast, openToast, closeToast } = useToast();
+  const { openToast, closeToast } = useToast();
   const { isPrivate } = usePrivacyMode();
 
   const filtrados: PersonalFinance[] = movements.filter((item) => {
@@ -142,6 +142,9 @@ export const useMovements = () => {
 
     addMovement(newMovement);
     resetModal();
+    openToast({
+      message: "Movimiento agregado con éxito",
+    });
   };
 
   const handleUpdateMovement = () => {
@@ -183,6 +186,9 @@ export const useMovements = () => {
 
     updateMovement(updatedMovement);
     resetModal();
+    openToast({
+      message: "Movimiento actualizado con éxito",
+    });
   };
 
   const handleDeleteMovement = (id: string) => {
@@ -191,6 +197,11 @@ export const useMovements = () => {
       onConfirm: () => {
         deleteMovement(id);
         closeToast();
+        setTimeout(() => {
+          openToast({
+            message: "Movimiento eliminado con éxito",
+          });
+        }, 100);
       },
       onCancel: closeToast,
     });
@@ -217,7 +228,6 @@ export const useMovements = () => {
     selectedType,
     selectedMonth,
     isPrivate,
-    toast,
     setCategory,
     setValue,
     setSelectedType,

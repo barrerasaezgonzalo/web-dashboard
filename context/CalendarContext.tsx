@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarEvent } from "@/types/";
+import { CalendarEvent, CalendarModalConfig } from "@/types/";
 import React, { createContext, useState, ReactNode, useCallback } from "react";
 import { authFetch } from "@/hooks/authFetch";
 import { useAuth } from "./AuthContext";
@@ -10,6 +10,8 @@ export interface CalendarContextType {
   events: CalendarEvent[];
   getEvents: (m: Date) => void;
   saveEvents: (fecha: string, eventos: any[]) => Promise<void>;
+  modalConfig: CalendarModalConfig | null;
+  handleShowModal: (dia: Date) => void;
 }
 
 export const CalendarContext = createContext<CalendarContextType | undefined>(
@@ -23,8 +25,12 @@ interface CalendarProviderProps {
 export const CalendarProvider: React.FC<CalendarProviderProps> = ({
   children,
 }) => {
+  const [modalConfig, setModalConfig] = useState<CalendarModalConfig | null>(
+    null,
+  );
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const { userId } = useAuth();
+
   const getEvents = useCallback(async (mesActual: Date) => {
     try {
       const dateStr = format(mesActual, "yyyy-MM-dd");
@@ -45,7 +51,8 @@ export const CalendarProvider: React.FC<CalendarProviderProps> = ({
           userId,
           fecha,
           events: eventos.map((ev) => ({
-            ...ev,
+            titulo: ev.titulo,
+            notas: ev.notas || "",
             hora: `${ev.hora}:${ev.minutos}:00`,
           })),
         }),
@@ -57,12 +64,29 @@ export const CalendarProvider: React.FC<CalendarProviderProps> = ({
     }
   };
 
+  const handleShowModal = useCallback(
+    (dia: Date) => {
+      setModalConfig({
+        date: dia,
+        onConfirm: async (eventos) => {
+          await saveEvents(format(dia, "yyyy-MM-dd"), eventos);
+          setModalConfig(null);
+          getEvents(new Date());
+        },
+        onCancel: () => setModalConfig(null),
+      });
+    },
+    [saveEvents, getEvents],
+  );
+
   return (
     <CalendarContext.Provider
       value={{
         events,
         getEvents,
         saveEvents,
+        modalConfig,
+        handleShowModal,
       }}
     >
       {children}

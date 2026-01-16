@@ -10,19 +10,20 @@ import { Toast } from "../ui/Toast";
 import { useToast } from "@/hooks/useToast";
 import { CalendarContext } from "@/context/CalendarContext";
 import { format } from "date-fns";
+import { useWheater } from "@/hooks/useWheater";
 
 export const User = () => {
   const { userName, signOut } = useAuth();
-  const { isPrivate, setIsPrivate } = usePrivacyMode();
+  const { isPrivate } = usePrivacyMode();
   const { tasks } = useTasks();
-  const { toast, openToast, closeToast } = useToast();
+  const { openToast, closeToast } = useToast();
   const [fecha, setFecha] = useState("Cargando...");
   const [hora, setHora] = useState("Cargando...");
-  const { events } = useContext(CalendarContext)!;
+  const { events, handleShowModal } = useContext(CalendarContext)!;
+
   const hoyStr = format(new Date(), "yyyy-MM-dd");
   const eventosHoy = events.filter((ev) => ev.fecha === hoyStr).length;
-  // Simulación de temperatura
-  const temperaturaSimulada = "20°C";
+  const { wheater } = useWheater();
 
   const handleLogout = () => {
     openToast({
@@ -32,10 +33,7 @@ export const User = () => {
     });
   };
 
-  const pending = tasks.filter(
-    (task) =>
-      !task.in_dev && task.date && getDaysRemainingUntil(task.date) >= 0,
-  ).length;
+  const pending = tasks.filter((task) => !task.in_dev).length;
   const overdueTasks = tasks.filter(
     (task) => !task.in_dev && task.date && getDaysRemainingUntil(task.date) < 0,
   ).length;
@@ -107,11 +105,10 @@ export const User = () => {
                 {hora}
               </span>
             </div>
-            {/* Simulación de Temperatura */}
             <div className="flex items-center gap-1 text-amber-300">
               <Thermometer size={25} />
               <span className="text-4xl font-semibold">
-                {temperaturaSimulada}
+                {wheater?.temperatura}
               </span>
             </div>
           </div>
@@ -145,29 +142,14 @@ export const User = () => {
             </h3>
           </div>
         ) : (
-          <div className="text-sm font-bold uppercase tracking-wider">
+          <div
+            className="text-sm font-bold uppercase tracking-wider cursor-pointer"
+            onClick={() => handleShowModal(new Date())}
+          >
             {eventosHoy} {eventosHoy === 1 ? "Evento" : "Eventos"} del día
           </div>
         )}
       </div>
-
-      {toast && (
-        <Toast
-          message={toast.message}
-          onConfirm={() => {
-            toast.onConfirm?.();
-            closeToast();
-          }}
-          onCancel={
-            toast.onCancel
-              ? () => {
-                  toast.onCancel?.();
-                  closeToast();
-                }
-              : undefined
-          }
-        />
-      )}
     </div>
   );
 };

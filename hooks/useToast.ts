@@ -1,31 +1,9 @@
-import { useState, useCallback } from "react";
-import type { ToastConfig } from "@/types/";
+"use client";
+import { useContext } from "react";
+import { ToastContext } from "@/context/ToastProvider";
 
-export function useToast() {
-  const [toast, setToast] = useState<ToastConfig | null>(null);
-
-  const openToast = useCallback((config: ToastConfig) => {
-    setToast(config);
-  }, []);
-
-  const closeToast = useCallback(() => {
-    setToast(null);
-  }, []);
-
-  const showToast = useCallback(
-    (message: string) => {
-      openToast({
-        message,
-        onConfirm: closeToast,
-      });
-    },
-    [openToast, closeToast],
-  );
-
-  return {
-    toast,
-    openToast,
-    closeToast,
-    showToast,
-  };
-}
+export const useToast = () => {
+  const context = useContext(ToastContext);
+  if (!context) throw new Error("useToast debe usarse dentro de ToastProvider");
+  return context;
+};

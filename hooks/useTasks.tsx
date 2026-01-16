@@ -10,7 +10,7 @@ export const useTasks = () => {
     throw new Error("useTasks debe ser usado dentro de un TasksProvider");
   }
 
-  const { toast, openToast, closeToast, showToast } = useToast();
+  const { openToast, closeToast } = useToast();
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [editingTaskId, setEditingTaskId] = useState("");
@@ -18,19 +18,26 @@ export const useTasks = () => {
   const [, setIsLoading] = useState(false);
 
   const handleAdd = async (title: string, date: string) => {
-    if (!title.trim()) {
-      showToast(`Título es requerido`);
+    if (!title.trim() || title.trim().length < 5) {
+      openToast({
+        message: "Título debe ser al menos 5 letras",
+      });
       return;
     }
+
     try {
       setIsLoading(true);
       const task = await context.addTask(title, date);
       setTitle("");
       setDate("");
-      showToast(`Tarea "${task.title}" agregada correctamente`);
+      openToast({
+        message: `Tarea "${task.title}" agregada correctamente`,
+      });
     } catch (error: unknown) {
       console.log(error);
-      showToast("La tarea no se pudo agregar. Intenta nuevamente");
+      openToast({
+        message: "La tarea no se pudo agregar. Intenta nuevamente",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -38,8 +45,10 @@ export const useTasks = () => {
 
   const handleSave = async (id: string, title: string, date: string) => {
     try {
-      if (!title.trim()) {
-        showToast(`Título es requerido`);
+      if (!title.trim() || title.trim().length < 5) {
+        openToast({
+          message: "Título debe ser al menos 5 letras",
+        });
         return;
       }
       setIsLoading(true);
@@ -47,7 +56,9 @@ export const useTasks = () => {
       setEditingTaskId("");
       setTitle("");
       setDate("");
-      showToast("La tarea fue guardada correctamente");
+      openToast({
+        message: "La tarea fue guardada correctamente",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -69,13 +80,17 @@ export const useTasks = () => {
   const handleRemove = async (taskId: string) => {
     try {
       await context.removeTask(taskId);
-      showToast("Tarea eliminada correctamente");
+      openToast({
+        message: "Tarea eliminada correctamente",
+      });
       setEditingTaskId("");
       setTitle("");
       setDate("");
     } catch (error) {
       console.log("No se pudo eliminar la tarea. Intenta nuevamente");
-      showToast("No se pudo eliminar la tarea. Intenta nuevamente");
+      openToast({
+        message: "No se pudo eliminar la tarea. Intenta nuevamente",
+      });
     }
   };
 
@@ -96,10 +111,8 @@ export const useTasks = () => {
 
   return {
     ...context,
-    toast,
     openToast,
     closeToast,
-    showToast,
     title,
     setTitle,
     date,

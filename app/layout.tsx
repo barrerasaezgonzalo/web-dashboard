@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext";
-import { CalendarProvider } from "@/context/CalendarContext";
 
 export const metadata: Metadata = {
   title: "Dashboard App",

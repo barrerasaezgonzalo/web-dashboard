@@ -1,39 +1,16 @@
-import { CalendarModalConfig } from "@/types";
-import { format } from "date-fns";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { CalendarContext } from "@/context/CalendarContext";
 
-export const useCalendar = (mesActual: Date) => {
-  const { events, getEvents, saveEvents } = useContext(CalendarContext)!;
+export const useCalendar = (mesActual?: Date) => {
+  const context = useContext(CalendarContext);
+  if (!context)
+    throw new Error("useCalendar must be used within a CalendarProvider");
 
-  const [modalConfig, setModalConfig] = useState<CalendarModalConfig | null>(
-    null,
-  );
-
-  const handleShowModal = useCallback(
-    (dia: Date) => {
-      setModalConfig({
-        date: dia,
-        onConfirm: async (eventosDesdeElModal: any[]) => {
-          const fechaDB = format(dia, "yyyy-MM-dd");
-          await saveEvents(fechaDB, eventosDesdeElModal);
-          setModalConfig(null);
-          getEvents(mesActual);
-        },
-        onCancel: () => setModalConfig(null),
-      });
-    },
-    [saveEvents],
-  );
+  const { events, modalConfig, handleShowModal, getEvents } = context;
 
   useEffect(() => {
-    getEvents(mesActual);
-  }, [getEvents, mesActual]);
+    if (mesActual) getEvents(mesActual);
+  }, [mesActual, getEvents]);
 
-  return {
-    events,
-    modalConfig,
-    handleShowModal,
-    closeModal: () => setModalConfig(null),
-  };
+  return { events, modalConfig, handleShowModal };
 };

@@ -4,7 +4,6 @@ import { useState } from "react"; // 1. Importar useState
 import { ChevronUp, ChevronDown, Logs } from "lucide-react"; // 2. Importar iconos
 import { MovementFooter } from "./MovementFooter";
 import { specialCategoryRules } from "@/constants";
-import { Toast } from "../ui/Toast";
 import { useMovements } from "@/hooks/useMovements";
 import { MovementModal } from "./MovementModal";
 import { MovementFilters } from "./MovementFilters";
@@ -22,7 +21,6 @@ export default function Movements() {
     selectedType,
     selectedMonth,
     isPrivate,
-    toast,
     setCategory,
     setValue,
     setSelectedType,
@@ -107,14 +105,6 @@ export default function Movements() {
           onSave={editingItem ? handleUpdateMovement : handleAddMovement}
           onChangeCategory={setCategory}
           onChangeValue={setValue}
-        />
-      )}
-
-      {toast && (
-        <Toast
-          message={toast.message}
-          onConfirm={toast.onConfirm}
-          onCancel={toast.onCancel}
         />
       )}
     </div>

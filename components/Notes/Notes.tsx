@@ -5,7 +5,6 @@ import { StickyNote, Plus, List, ChevronDown, ChevronUp } from "lucide-react";
 import { useToast } from "@/hooks/useToast";
 import { useNotes } from "@/hooks/useNotes";
 import { NotesList } from "./NotesList";
-import { Toast } from "../ui/Toast";
 import { Note } from "@/types/";
 import { usePrivacyMode } from "@/hooks/usePrivacyMode";
 
@@ -13,7 +12,7 @@ export const NotesComponent: React.FC = () => {
   const { note, setNote, notes, deleteNote, createNote, handleChange } =
     useNotes();
   const [openList, setOpenList] = useState(false);
-  const { toast, openToast, closeToast } = useToast();
+  const { openToast, closeToast } = useToast();
   const [isMinimized, setIsMinimized] = useState(false);
   const { isPrivate } = usePrivacyMode();
 
@@ -106,14 +105,6 @@ export const NotesComponent: React.FC = () => {
             setNote(n);
             setOpenList(false);
           }}
-        />
-      )}
-
-      {toast && (
-        <Toast
-          message={toast.message}
-          onConfirm={toast.onConfirm}
-          onCancel={toast.onCancel}
         />
       )}
     </div>

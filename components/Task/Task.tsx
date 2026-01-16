@@ -3,7 +3,6 @@
 import { TaskInput } from "./TaskInput";
 import { TaskItem } from "./TaskItem";
 import { ChevronDown, ChevronUp, ListChecks } from "lucide-react";
-import { Toast } from "../ui/Toast";
 import { useTasks } from "@/hooks/useTasks";
 import { useState } from "react";
 
@@ -11,8 +10,6 @@ const Tasks: React.FC = () => {
   const {
     tasks,
     tasksLoading,
-    toast,
-    closeToast,
     title,
     setTitle,
     date,
@@ -37,25 +34,6 @@ const Tasks: React.FC = () => {
       role="region"
       aria-labelledby="tasks-heading"
     >
-      {/* Toast */}
-      {toast && (
-        <Toast
-          message={toast.message}
-          onConfirm={() => {
-            toast.onConfirm?.();
-            closeToast();
-          }}
-          onCancel={
-            toast.onCancel
-              ? () => {
-                  toast.onCancel?.();
-                  closeToast();
-                }
-              : undefined
-          }
-        />
-      )}
-
       {/* Título */}
       <div
         className={`flex justify-between items-center border-b ${!isMinimized && "mb-4"} pb-2`}
