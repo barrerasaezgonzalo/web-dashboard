@@ -1,4 +1,3 @@
-// contexts/PersonalFinanceContext.tsx
 import {
   createContext,
   ReactNode,
@@ -18,6 +17,7 @@ import type {
   PersonalFinanceMovement,
 } from "@/types/";
 import { useAuth } from "./AuthContext";
+import { usePrivacyMode } from "@/hooks/usePrivacyMode";
 export const PersonalFinanceContext =
   createContext<PersonalFinanceContextType | null>(null);
 
@@ -28,8 +28,10 @@ interface PersonalFinanceProps {
 export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
   children,
 }) => {
+  const { isPrivate } = usePrivacyMode();
+
   const [movements, setMovements] = useState<PersonalFinance[]>([]);
-  const [summary, setSummary] = useState({
+  const [summary] = useState({
     ingresos: 0,
     gastos: 0,
     ahorros: 0,
@@ -56,29 +58,11 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
     getFinancial();
   }, []);
 
-  // Calcula el summary cada vez que movements cambia
-  useEffect(() => {
-    const ingresos = movements
-      .filter((m) => m.type === "ingresos")
-      .reduce((acc, m) => acc + m.value, 0);
-    const gastos = movements
-      .filter((m) => m.type === "gastos")
-      .reduce((acc, m) => acc + m.value, 0);
-    const ahorros = movements
-      .filter((m) => m.type === "ahorros")
-      .reduce((acc, m) => acc + m.value, 0);
-    const saldo = ingresos - gastos;
-
-    setSummary({ ingresos, gastos, ahorros, saldo });
-  }, [movements]);
-
   const getMovements = useCallback(async (): Promise<void> => {
     if (!userId) return;
     setLoading(true);
     try {
-      const response = await authFetch(
-        `/api/personalFinances?authData=${userId}`,
-      );
+      const response = await authFetch(`/api/personalFinances`);
       const dataFromApi = await response.json();
       const financials: PersonalFinance[] = dataFromApi.map((item: any) => {
         switch (item.type) {
@@ -105,14 +89,11 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
     if (!userId) return;
     setLoading(true);
     try {
-      const response = await authFetch(
-        `/api/personalFinances?authData=${userId}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ newMovement }),
-        },
-      );
+      const response = await authFetch(`/api/personalFinances`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ newMovement }),
+      });
       if (!response.ok) {
         const errData = await response.json();
         throw new Error(errData.message || "Error al agregar personal finance");
@@ -132,14 +113,11 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
     updatedMovement: PersonalFinanceMovement,
   ): Promise<void> => {
     try {
-      const response = await authFetch(
-        `/api/personalFinances?authData=${userId}`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ updatedMovement }),
-        },
-      );
+      const response = await authFetch(`/api/personalFinances`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ updatedMovement }),
+      });
       const updatedArray = await response.json();
       const updated = updatedArray[0];
       setMovements((prev) =>
@@ -154,7 +132,7 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
   const deleteMovement = async (id: string) => {
     setMovements((prev) => prev.filter((t) => t.id !== id));
     try {
-      await authFetch(`/api/personalFinances?id=${id}&authData=${userId}`, {
+      await authFetch(`/api/personalFinances?id=${id}`, {
         method: "DELETE",
       });
     } catch (error) {
@@ -177,6 +155,7 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
         updateMovement,
         deleteMovement,
         financial,
+        isPrivate,
       }}
     >
       {children}

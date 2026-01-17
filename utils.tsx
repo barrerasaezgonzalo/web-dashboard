@@ -100,12 +100,13 @@ export const generateMonthOptions = () => {
   const options = [];
   const start = new Date(2025, 10);
   const today = new Date();
-  let current = start;
+  let current = new Date(start);
 
   while (current <= today) {
     const month = current.getMonth() + 1;
     const year = current.getFullYear();
-    const value = `${String(month).padStart(2, "0")}-${year}`;
+
+    const value = `${year}-${String(month).padStart(2, "0")}`;
 
     options.push(
       <option key={value} value={value}>
@@ -116,7 +117,7 @@ export const generateMonthOptions = () => {
     current.setMonth(current.getMonth() + 1);
   }
 
-  return options;
+  return options.reverse();
 };
 
 export const getCategoryLabels = (type: MovementType): CategoryOption[] => {

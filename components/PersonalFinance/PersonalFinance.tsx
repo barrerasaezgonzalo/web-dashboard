@@ -1,18 +1,20 @@
-import { useContext, useState } from "react";
+"use client";
+
+import { useState } from "react";
 import { formatCLP } from "@/utils";
-import { usePrivacyMode } from "@/hooks/usePrivacyMode";
 import { Activity, ChevronDown, ChevronUp } from "lucide-react";
-import { PersonalFinanceContext } from "@/context/PersonalFinanceContext";
 import { useMovements } from "@/hooks/useMovements";
 
 export const PersonalFinance = () => {
   const [isMinimized, setIsMinimized] = useState(false);
   const [bancoValue, setBancoValue] = useState<number | "">("");
-  const { movements } = useMovements();
-  const { isPrivate } = usePrivacyMode();
-  const { summary } = useContext(PersonalFinanceContext)!;
+
+  const { summary, isPrivate, canInvest, totalDorada, faltaDorada } =
+    useMovements();
+
   const { ingresos, gastos, ahorros, saldo } = summary;
   const diferencia = bancoValue !== "" ? Number(bancoValue) - saldo : 0;
+
   const summaryCards = [
     { label: "Ingresos", value: ingresos, color: "bg-green-400" },
     { label: "Gastos", value: gastos, color: "bg-red-400" },
@@ -20,36 +22,9 @@ export const PersonalFinance = () => {
     { label: "Saldo", value: saldo, color: "bg-indigo-400" },
   ];
 
-  const checkInversionDorada = (movements: any[]) => {
-    const VALOR_BASE = 2800000;
-    const FACTOR = 6;
-    const minimoDorada = VALOR_BASE * FACTOR;
-
-    const totalAhorroDorada = movements
-      .filter((m) => m.type === "ahorros" && m.category === "dorada_be")
-      .reduce((acc, curr) => {
-        const monto = Number(curr.value);
-        return acc + (isNaN(monto) ? 0 : monto);
-      }, 0);
-
-    const canInvest = totalAhorroDorada >= minimoDorada;
-    const falta = minimoDorada - totalAhorroDorada;
-
-    return {
-      canInvest,
-      total: totalAhorroDorada,
-      falta: falta > 0 ? falta : 0,
-      minimo: minimoDorada,
-    };
-  };
-
-  const { total, canInvest, falta } = checkInversionDorada(movements);
-
   return (
     <div
-      className={`bg-white text-black p-4 rounded shadow transition-all duration-300 ${
-        isMinimized ? "min-h-0" : "min-h-[200px]"
-      } overflow-x-auto`}
+      className={`bg-white text-black p-4 rounded shadow transition-all duration-300 ${isMinimized ? "min-h-0" : "min-h-[200px]"} overflow-x-auto`}
     >
       <div
         className={`flex justify-between items-center border-b ${!isMinimized && "mb-4"} pb-2`}
@@ -60,7 +35,7 @@ export const PersonalFinance = () => {
         </h2>
         <button
           onClick={() => setIsMinimized(!isMinimized)}
-          className="p-1 hover:bg-blue-100 rounded transition-colors"
+          className="p-1 hover:bg-blue-100 rounded"
         >
           {isMinimized ? <ChevronDown size={20} /> : <ChevronUp size={20} />}
         </button>
@@ -83,6 +58,7 @@ export const PersonalFinance = () => {
               </div>
             ))}
           </div>
+
           <div className="mt-6 p-3 bg-gray-50 rounded-lg border border-dashed border-gray-300">
             <h4 className="text-sm font-bold text-gray-600 mb-2 flex justify-between">
               Conciliación Bancaria
@@ -101,15 +77,17 @@ export const PersonalFinance = () => {
                   Saldo en Banco
                 </label>
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   placeholder="Ej: 500000"
                   className="w-full p-2 border rounded text-sm outline-none focus:ring-1 focus:ring-blue-400"
                   value={bancoValue}
-                  onChange={(e) =>
-                    setBancoValue(
-                      e.target.value === "" ? "" : Number(e.target.value),
-                    )
-                  }
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "" || /^\d+$/.test(val)) {
+                      setBancoValue(val === "" ? "" : Number(val));
+                    }
+                  }}
                 />
               </div>
               <div className="flex-1 text-right">
@@ -118,13 +96,7 @@ export const PersonalFinance = () => {
                 </label>
                 <div className="flex items-center justify-end gap-1">
                   <p
-                    className={`text-lg font-bold ${
-                      diferencia === 0
-                        ? "text-gray-400"
-                        : diferencia < 0
-                          ? "text-red-600"
-                          : "text-green-600"
-                    } ${isPrivate ? "privacy-blur" : ""}`}
+                    className={`text-lg font-bold ${isPrivate ? "privacy-blur" : ""} ${diferencia === 0 ? "text-gray-400" : diferencia < 0 ? "text-red-600" : "text-green-600"}`}
                   >
                     {diferencia > 0 && "+"}
                     {formatCLP(diferencia)}
@@ -140,29 +112,32 @@ export const PersonalFinance = () => {
               </p>
             )}
           </div>
+
           <div className="pt-4 text-md">
             {canInvest ? (
               <div className="p-2">
-                <p>Ahora Puedes invertir.</p>
+                <p className="font-bold text-green-600">
+                  ¡Ahora puedes invertir!
+                </p>
                 <p
-                  className={`text-md mt-2 ${isPrivate ? "privacy-blur" : ""} `}
+                  className={`text-md mt-2 ${isPrivate ? "privacy-blur" : ""}`}
                 >
-                  Ahorros Dorada: {formatCLP(total)}
+                  Ahorros Dorada: {formatCLP(totalDorada)}
                 </p>
               </div>
             ) : (
-              <div className="p-2">
-                <h3 className="font-normal">
-                  Ahorro Dorada Bajo, aún no puedes invertir!
+              <div className="p-2 border-t mt-2">
+                <h3 className="font-normal text-gray-600">
+                  Ahorro Dorada bajo el mínimo de inversión.
                 </h3>
                 <div
                   className={`mt-2 space-y-1 ${isPrivate ? "privacy-blur" : ""}`}
                 >
                   <p>
-                    <strong>Tienes:</strong> {formatCLP(total)}
+                    <strong>Actual:</strong> {formatCLP(totalDorada)}
                   </p>
                   <p className="text-red-600">
-                    <strong>Falta:</strong> {formatCLP(falta)}
+                    <strong>Falta:</strong> {formatCLP(faltaDorada)}
                   </p>
                 </div>
               </div>

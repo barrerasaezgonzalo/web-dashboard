@@ -1,4 +1,3 @@
-// pages/api/personalFinances.ts
 import type { NextApiRequest, NextApiResponse } from "next";
 import { supabase } from "@/lib/supabaseClient";
 import { PersonalFinanceMovement } from "@/types/";
@@ -13,8 +12,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse>,
 ) {
-  const { authData, id } = req.query;
-
+  const { id } = req.query;
   const authHeader = req.headers["authorization"] || req.headers.authorization;
   const supabaseAdmin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

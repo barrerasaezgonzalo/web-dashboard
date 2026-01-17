@@ -72,18 +72,15 @@ export interface MovementModalProps {
 export interface MovementListProps {
   filtrados: PersonalFinance[];
   isPrivate: boolean;
-  setEditingItem: (id: string) => void;
-  setCategory: (category: string) => void;
-  setValue: (value: string) => void;
-  setModalType: (value: MovementType) => void;
-  setErrors: (id: MovementErrors) => void;
-  handleDeleteMovement: (id: string) => void;
+  onEdit: (item: PersonalFinance) => void;
+  onDelete: (id: string) => void;
 }
 
 export type PersonalFinanceContextType = {
   movements: PersonalFinance[];
   summary: Summary;
   loading: boolean;
+  isPrivate: boolean;
   getMovements: () => Promise<void>;
   addMovement: (m: PersonalFinance) => Promise<void>;
   updateMovement: (updated: PersonalFinance) => Promise<void>;
@@ -91,10 +88,6 @@ export type PersonalFinanceContextType = {
   financial: Financial;
 };
 
-type MovementErrors = {
-  category?: string;
-  value?: string;
-};
 export type PersonalFinanceMovement = {
   id: string;
   type: MovementType;
@@ -120,4 +113,14 @@ export interface Financial {
   current: {
     utm: number;
   };
+}
+
+export interface Movement {
+  id: string;
+  user_id: string;
+  type: "ahorros" | "gastos";
+  category: string;
+  value: number;
+  date: string; // ISO format
+  created_at?: string;
 }

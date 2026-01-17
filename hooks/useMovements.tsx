@@ -1,246 +1,190 @@
-// hooks/useMovements.ts
-import { useState, useRef, useEffect, useContext } from "react";
-import {
-  PersonalFinance,
-  MovementType,
-  AhorrosCategory,
-  GastosCategory,
-  IngresosCategory,
-} from "@/types/";
+import { useState, useMemo, useCallback, useContext } from "react";
 import { PersonalFinanceContext } from "@/context/PersonalFinanceContext";
-import { usePersonalFinance } from "@/hooks/usePersonalFinance";
+import { PersonalFinance, MovementType } from "@/types";
 import { useToast } from "@/hooks/useToast";
-import { usePrivacyMode } from "@/hooks/usePrivacyMode";
-
-type Errors = {
-  category?: string;
-  value?: string;
-};
 
 export const useMovements = () => {
-  const [modalType, setModalType] = useState<MovementType | null>(null);
-  const [category, setCategory] = useState<string>("");
-  const [value, setValue] = useState<string>("");
-  const [editingItem, setEditingItem] = useState("");
-  const [errors, setErrors] = useState<Errors>({});
-  const [selectedMonth, setSelectedMonth] = useState(() => {
-    const today = new Date();
-    return `${String(today.getMonth() + 1).padStart(2, "0")}-${today.getFullYear()}`;
-  });
-  const [selectedType, setSelectedType] =
-    useState<PersonalFinance["type"]>("gastos");
-  const inputRef = useRef<HTMLInputElement>(null);
-  const { movements } = useContext(PersonalFinanceContext)!;
-  const { addMovement, updateMovement, deleteMovement } = usePersonalFinance();
+  const context = useContext(PersonalFinanceContext);
+  if (!context) throw new Error("useMovements must be used within provider");
+
   const { openToast, closeToast } = useToast();
-  const { isPrivate } = usePrivacyMode();
+  const [modalType, setModalType] = useState<MovementType | null>(null);
+  const [category, setCategory] = useState("");
+  const [value, setValue] = useState("");
+  const [editingItem, setEditingItem] = useState<string | null>(null);
+  const [errors, setErrors] = useState<{ category?: string; value?: string }>(
+    {},
+  );
+  const [selectedType, setSelectedType] = useState<MovementType>("gastos");
+  const [selectedMonth, setSelectedMonth] = useState(
+    new Date().toISOString().slice(0, 7),
+  );
 
-  const filtrados: PersonalFinance[] = movements.filter((item) => {
-    const [year, month] = item.date.split("-");
-    return item.type === selectedType && `${month}-${year}` === selectedMonth;
-  });
+  const filtrados = useMemo(() => {
+    return context.movements.filter((m) => {
+      const matchesType = m.type === selectedType;
+      const matchesMonth = m.date.startsWith(selectedMonth);
+      return matchesType && matchesMonth;
+    });
+  }, [context.movements, selectedType, selectedMonth]);
 
-  const total = filtrados.reduce((acc, curr) => acc + curr.value, 0);
+  const total = useMemo(() => {
+    return filtrados.reduce((acc, curr) => acc + curr.value, 0);
+  }, [filtrados]);
 
-  useEffect(() => {
-    if (modalType && inputRef.current) {
-      inputRef.current.focus();
-    }
-  }, [modalType]);
-
-  const checkInversionDorada = (movements: any[]) => {
-    const VALOR_BASE = 2800000;
-    const FACTOR = 6;
-    const minimoDorada = VALOR_BASE * FACTOR; // 16.800.000
-
-    // 1. Sumamos todos los movimientos de tipo 'ahorro'
-    const totalAhorro = movements
-      .filter((m) => m.type === "ahorro")
-      .reduce((acc, curr) => acc + curr.amount, 0);
-
-    // 2. Evaluamos la condición
-    if (totalAhorro >= minimoDorada) {
-      return {
-        canInvest: true,
-        message: `Ahorro Dorada Normal: Puedes invertir.`,
-        ahorros: totalAhorro,
-        falta: 0,
-      };
-    } else {
-      return {
-        canInvest: false,
-        message: `Ahorro Dorada Bajo: No puedes invertir.`,
-        ahorros: totalAhorro,
-        falta: minimoDorada - totalAhorro,
-      };
-    }
-  };
-
-  const validateForm = (): boolean => {
-    const formattedErrors: Errors = {};
-
-    if (!category || typeof category !== "string" || !category.trim()) {
-      formattedErrors.value = "Selecciona una categoría válida";
-    }
-
-    const numericValue = Number(value);
-    if (value === undefined || value === null || value === "") {
-      formattedErrors.value = "Debes ingresar un valor";
-    } else if (isNaN(numericValue) || numericValue <= 0) {
-      formattedErrors.value = "El valor debe ser un número positivo";
-    }
-
-    setErrors(formattedErrors);
-    return Object.keys(formattedErrors).length === 0;
-  };
-
-  const resetModal = () => {
+  const resetModal = useCallback(() => {
     setModalType(null);
-    setEditingItem("");
     setCategory("");
     setValue("");
+    setEditingItem(null);
     setErrors({});
-  };
+  }, []);
 
-  const handleAddMovement = () => {
-    if (!validateForm() || !modalType) return;
+  const validateFields = () => {
+    const newErrors: { category?: string; value?: string } = {};
 
-    let finalValue = Number(value);
+    if (!category) newErrors.category = "Categoría es requerida";
 
-    let newMovement: PersonalFinance;
-    switch (modalType) {
-      case "ingresos":
-        newMovement = {
-          id: Date.now().toString(),
-          type: "ingresos",
-          category: category as IngresosCategory,
-          value: finalValue,
-          date: new Date().toISOString().split("T")[0],
-        };
-        break;
-      case "gastos":
-        newMovement = {
-          id: Date.now().toString(),
-          type: "gastos",
-          category: category as GastosCategory,
-          value: finalValue,
-          date: new Date().toISOString().split("T")[0],
-        };
-        break;
-      case "ahorros":
-        newMovement = {
-          id: Date.now().toString(),
-          type: "ahorros",
-          category: category as AhorrosCategory,
-          value: finalValue,
-          date: new Date().toISOString().split("T")[0],
-        };
-        break;
-      default:
-        return;
+    const numericValue = Number(value);
+    if (!value || isNaN(numericValue) || numericValue <= 0) {
+      newErrors.value = "Ingresa un número válido mayor que cero";
     }
 
-    addMovement(newMovement);
-    resetModal();
-    openToast({
-      message: "Movimiento agregado con éxito",
-    });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const handleUpdateMovement = () => {
-    if (!validateForm() || !editingItem || !modalType) return;
-    let finalValue = Number(value);
+  const handleOpenAddModal = useCallback(() => {
+    setModalType(selectedType);
+  }, [selectedType]);
 
-    let updatedMovement: PersonalFinance;
-    switch (modalType) {
-      case "ingresos":
-        updatedMovement = {
-          id: editingItem,
-          type: "ingresos",
-          category: category as IngresosCategory,
-          value: finalValue,
-          date: new Date().toISOString().split("T")[0],
-        };
-        break;
-      case "gastos":
-        updatedMovement = {
-          id: editingItem,
-          type: "gastos",
-          category: category as GastosCategory,
-          value: finalValue,
-          date: new Date().toISOString().split("T")[0],
-        };
-        break;
-      case "ahorros":
-        updatedMovement = {
-          id: editingItem,
-          type: "ahorros",
-          category: category as AhorrosCategory,
-          value: finalValue,
-          date: new Date().toISOString().split("T")[0],
-        };
-        break;
-      default:
-        return;
+  const handleEditClick = useCallback((item: PersonalFinance) => {
+    setEditingItem(item.id);
+    setCategory(item.category);
+    setValue(item.value.toString());
+    setModalType(item.type);
+    setErrors({});
+  }, []);
+
+  const handleAddMovement = async () => {
+    if (!validateFields()) return;
+    try {
+      const day = new Date().getDate().toString().padStart(2, "0");
+      const newMovement = {
+        type: modalType,
+        category,
+        value: Number(value),
+        date: `${selectedMonth}-${day}`,
+      } as PersonalFinance;
+
+      await context.addMovement(newMovement);
+      resetModal();
+      openToast({ message: "Movimiento agregado correctamente" });
+    } catch (error) {
+      openToast({ message: "Error al agregar el movimiento" });
     }
+  };
 
-    updateMovement(updatedMovement);
-    resetModal();
-    openToast({
-      message: "Movimiento actualizado con éxito",
-    });
+  const handleUpdateMovement = async () => {
+    if (!editingItem || !validateFields()) return;
+    try {
+      const updated = {
+        id: editingItem,
+        type: modalType,
+        category,
+        value: Number(value),
+        date: filtrados.find((f) => f.id === editingItem)?.date,
+      } as PersonalFinance;
+
+      await context.updateMovement(updated);
+      resetModal();
+      openToast({ message: "Movimiento actualizado" });
+    } catch (error) {
+      openToast({ message: "Error al actualizar" });
+    }
   };
 
   const handleDeleteMovement = (id: string) => {
     openToast({
-      message: "¿Estás seguro que deseas eliminar el movimiento?",
+      message: "¿Eliminar este movimiento?",
       onConfirm: () => {
-        deleteMovement(id);
+        context.deleteMovement(id);
         closeToast();
-        setTimeout(() => {
-          openToast({
-            message: "Movimiento eliminado con éxito",
-          });
-        }, 100);
       },
       onCancel: closeToast,
     });
   };
 
-  const handleOpenAddModal = (category?: string) => {
-    setModalType(selectedType);
-    setEditingItem("");
-    setValue("");
-    setCategory(category ? category : "");
-    setErrors({});
-  };
+  const checkInversionDorada = useMemo(() => {
+    const VALOR_BASE = 2800000;
+    const FACTOR = 6;
+    const minimoDorada = VALOR_BASE * FACTOR;
+
+    const totalAhorroDorada = context.movements
+      .filter((m) => m.type === "ahorros" && m.category === "dorada_be")
+      .reduce((acc, curr) => acc + (Number(curr.value) || 0), 0);
+
+    const canInvest = totalAhorroDorada >= minimoDorada;
+    const falta = minimoDorada - totalAhorroDorada;
+
+    return {
+      canInvest,
+      totalDorada: totalAhorroDorada,
+      faltaDorada: falta > 0 ? falta : 0,
+      minimoDorada,
+    };
+  }, [context.movements]);
+
+  const summary = useMemo(() => {
+    const movementsDelMes = context.movements.filter((m) =>
+      m.date.startsWith(selectedMonth),
+    );
+
+    const ingresos = movementsDelMes
+      .filter((m) => m.type === "ingresos")
+      .reduce((acc, m) => acc + m.value, 0);
+
+    const gastos = movementsDelMes
+      .filter((m) => m.type === "gastos")
+      .reduce((acc, m) => acc + m.value, 0);
+
+    const ahorrosTotal = context.movements
+      .filter((m) => m.type === "ahorros")
+      .reduce((acc, m) => acc + m.value, 0);
+
+    return {
+      ingresos,
+      gastos,
+      ahorros: ahorrosTotal,
+      saldo: ingresos - gastos,
+    };
+  }, [context.movements, selectedMonth]);
 
   return {
-    movements,
+    ...context,
+    summary,
     modalType,
     category,
     value,
     editingItem,
     errors,
-    inputRef,
     filtrados,
     total,
     selectedType,
     selectedMonth,
-    isPrivate,
     setCategory,
     setValue,
     setSelectedType,
     setSelectedMonth,
-    setModalType,
     setEditingItem,
+    setModalType,
     setErrors,
     handleOpenAddModal,
     handleAddMovement,
     handleUpdateMovement,
     handleDeleteMovement,
+    handleEditClick,
     resetModal,
-    validateForm,
-    checkInversionDorada,
+    ...checkInversionDorada,
   };
 };

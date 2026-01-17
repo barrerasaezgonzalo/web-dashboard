@@ -1,13 +1,14 @@
-"use client"; // Asegúrate de tener esto arriba
+"use client";
 
-import { useState } from "react"; // 1. Importar useState
-import { ChevronUp, ChevronDown, Logs } from "lucide-react"; // 2. Importar iconos
+import { useState } from "react";
+import { ChevronUp, ChevronDown, Logs } from "lucide-react";
 import { MovementFooter } from "./MovementFooter";
 import { specialCategoryRules } from "@/constants";
 import { useMovements } from "@/hooks/useMovements";
 import { MovementModal } from "./MovementModal";
 import { MovementFilters } from "./MovementFilters";
 import { MovementList } from "./MovementList";
+import { usePrivacyMode } from "@/hooks/usePrivacyMode";
 
 export default function Movements() {
   const {
@@ -20,24 +21,23 @@ export default function Movements() {
     total,
     selectedType,
     selectedMonth,
-    isPrivate,
     setCategory,
     setValue,
     setSelectedType,
     setSelectedMonth,
-    setEditingItem,
-    setModalType,
-    setErrors,
     handleOpenAddModal,
     handleAddMovement,
     handleUpdateMovement,
     handleDeleteMovement,
+    handleEditClick,
     resetModal,
   } = useMovements();
+
   const [isMinimized, setIsMinimized] = useState(false);
+  const { isPrivate } = usePrivacyMode();
 
   return (
-    <div className="bg-white rounded from-blue-50 to-indigo-100 p-6 transition-all">
+    <div className="bg-white rounded p-6 transition-all">
       <div className="max-w-4xl mx-auto">
         <div
           className={`flex flex-wrap items-center justify-between ${!isMinimized && "pb-4"} gap-3`}
@@ -75,12 +75,8 @@ export default function Movements() {
             <MovementList
               filtrados={filtrados}
               isPrivate={isPrivate}
-              setEditingItem={setEditingItem}
-              setCategory={setCategory}
-              setValue={setValue}
-              setModalType={setModalType}
-              setErrors={setErrors}
-              handleDeleteMovement={handleDeleteMovement}
+              onEdit={handleEditClick}
+              onDelete={handleDeleteMovement}
             />
 
             <MovementFooter
@@ -100,7 +96,7 @@ export default function Movements() {
           errors={errors}
           specialCategoryRules={specialCategoryRules}
           selectedType={selectedType}
-          editingItem={editingItem}
+          editingItem={editingItem || ""}
           onClose={resetModal}
           onSave={editingItem ? handleUpdateMovement : handleAddMovement}
           onChangeCategory={setCategory}
