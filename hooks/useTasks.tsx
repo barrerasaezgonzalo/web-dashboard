@@ -5,128 +5,91 @@ import { Task } from "@/types/";
 
 export const useTasks = () => {
   const context = useContext(TasksContext);
-
   if (!context) {
-    throw new Error("useTasks debe ser usado dentro de un TasksProvider");
+    return { tasks: [], tasksLoading: false } as any;
   }
 
   const { openToast, closeToast } = useToast();
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [editingTaskId, setEditingTaskId] = useState("");
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const [, setIsLoading] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleAdd = async (title: string, date: string) => {
-    if (!title.trim() || title.trim().length < 5) {
-      openToast({
-        message: "Título debe ser al menos 5 letras",
-      });
+  const resetForm = () => {
+    setTitle("");
+    setDate("");
+    setEditingTaskId("");
+  };
+
+  const handleAdd = async () => {
+    if (title.trim().length < 5) {
+      openToast({ message: "Titulo debe tener al menos 5 Letras" });
       return;
     }
-
     try {
-      setIsLoading(true);
-      const task = await context.addTask(title, date);
-      setTitle("");
-      setDate("");
-      openToast({
-        message: `Tarea "${task.title}" agregada correctamente`,
-      });
-    } catch (error: unknown) {
-      console.log(error);
-      openToast({
-        message: "La tarea no se pudo agregar. Intenta nuevamente",
-      });
-    } finally {
-      setIsLoading(false);
+      await context.addTask(title, date);
+      resetForm();
+      openToast({ message: `Tarea "${title}" agregada correctamente` });
+    } catch (error) {
+      openToast({ message: "Error agregando task" });
     }
   };
 
-  const handleSave = async (id: string, title: string, date: string) => {
+  const handleSave = async () => {
+    if (title.trim().length < 5) {
+      openToast({ message: "Titulo debe tener al menos 5 Letras" });
+      return;
+    }
     try {
-      if (!title.trim() || title.trim().length < 5) {
-        openToast({
-          message: "Título debe ser al menos 5 letras",
-        });
-        return;
-      }
-      setIsLoading(true);
-      context.editTask(id, title, date);
-      setEditingTaskId("");
-      setTitle("");
-      setDate("");
-      openToast({
-        message: "La tarea fue guardada correctamente",
-      });
-    } finally {
-      setIsLoading(false);
+      await context.editTask(editingTaskId, title, date);
+      resetForm();
+      openToast({ message: `Tarea actualizada agregada correctamente` });
+    } catch (error) {
+      openToast({ message: "Error guardando task" });
     }
   };
 
   const handleEdit = (task: Task) => {
-    if (!task) return;
     setEditingTaskId(task.id);
     setTitle(task.title);
-    setDate(task.date);
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
-  };
-
-  const handleTaskToggle = async (taskId: string) =>
-    context.toggleTaskInDev(taskId);
-
-  const handleRemove = async (taskId: string) => {
-    try {
-      await context.removeTask(taskId);
-      openToast({
-        message: "Tarea eliminada correctamente",
-      });
-      setEditingTaskId("");
-      setTitle("");
-      setDate("");
-    } catch (error) {
-      console.log("No se pudo eliminar la tarea. Intenta nuevamente");
-      openToast({
-        message: "No se pudo eliminar la tarea. Intenta nuevamente",
-      });
-    }
+    setDate(task.date || "");
+    inputRef.current?.focus();
   };
 
   const handleDelete = (taskId: string) => {
     openToast({
-      message: "¿Estás seguro que deseas eliminar la tarea?",
-      onConfirm: () => handleRemove(taskId),
+      message: "¿Estas seguro que deseas eliminar esta tarea?",
+      onConfirm: async () => {
+        await context.removeTask(taskId);
+        closeToast();
+        setTimeout(() => {
+          openToast({
+            message: "Tarea eliminada correctamente",
+          });
+        }, 100);
+      },
       onCancel: closeToast,
     });
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
-      if (editingTaskId) handleSave(editingTaskId, title, date);
-      else handleAdd(title, date);
+      editingTaskId ? handleSave() : handleAdd();
     }
   };
 
   return {
     ...context,
-    openToast,
-    closeToast,
     title,
     setTitle,
     date,
     setDate,
     editingTaskId,
-    setEditingTaskId,
     inputRef,
-    setIsLoading,
+    handleAdd,
+    handleSave,
     handleEdit,
     handleDelete,
-    handleSave,
-    handleAdd,
-    handleTaskToggle,
-    handleRemove,
     handleKeyDown,
   };
 };

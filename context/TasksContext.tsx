@@ -39,42 +39,33 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
   const { userId } = useAuth();
 
   const getTasks = useCallback(async () => {
-    if (userId === null) {
-      console.warn("getTasks llamado sin userId");
-      return;
-    }
+    if (!userId) return;
     setTasksLoading(true);
     try {
       const response = await authFetch(`/api/task`);
       const data = await response.json();
-      setTasks(data);
+
+      // Safety check: Ensure data is an array
+      setTasks(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Error al obtener tareas:", error);
-      setTasks([]);
+      console.error("Fetch error:", error);
+      setTasks([]); // Fallback to empty array on error
     } finally {
       setTasksLoading(false);
     }
   }, [userId]);
 
-  const addTask = async (title: string, date?: string): Promise<Task> => {
+  const addTask = async (title: string, date?: string) => {
+    setTasksLoading(true);
     try {
-      setTasksLoading(true);
       const response = await authFetch("/api/task", {
         method: "POST",
         body: JSON.stringify({ title, date: date || null }),
       });
-      if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.message || "Error al agregar tarea");
-      }
       const data = await response.json();
-      const task: Task = data[0];
-      setTasks((prev) => [...prev, task]);
-      getTasks();
-      return task;
-    } catch (error) {
-      console.log("Error al agregar tarea:", error);
-      throw error;
+      const newEntry = data[0];
+      setTasks((prev) => [...prev, newEntry]);
+      return newEntry;
     } finally {
       setTasksLoading(false);
     }
@@ -83,93 +74,66 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
   const editTask = async (
     id: string,
     newTitle: string,
-    newDate?: string | undefined | null,
+    newDate?: string | null,
   ) => {
+    setTasksLoading(true);
     try {
-      setTasksLoading(true);
       const response = await authFetch("/api/task", {
         method: "PATCH",
-        body: JSON.stringify({
-          id,
-          title: newTitle,
-          date: newDate || null,
-        }),
+        body: JSON.stringify({ id, title: newTitle, date: newDate || null }),
       });
-      const updatedTask = await response.json();
-      setTasks((prev) => prev.map((t) => (t.id === id ? updatedTask : t)));
-      getTasks();
-    } catch (error) {
-      console.error("Error al editar tarea:", error);
-    } finally {
-      setTasksLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (userId !== null) {
-      getTasks();
-    }
-  }, [userId, getTasks]);
-
-  const toggleTaskInDev = async (id: string) => {
-    const taskBefore = tasks.find((t) => t.id === id);
-    if (!taskBefore) return;
-
-    setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id ? { ...task, in_dev: !task.in_dev } : task,
-      ),
-    );
-
-    try {
-      setTasksLoading(true);
-      const res = await authFetch("/api/task", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, in_dev: !taskBefore.in_dev, userId }),
-      });
-
-      if (!res.ok) throw new Error("Error actualizando task");
-    } catch (error) {
-      console.log("Error en toggleTaskInDev:", error);
-      setTasks((prev) =>
-        prev.map((task) =>
-          task.id === id ? { ...task, in_dev: taskBefore.in_dev } : task,
-        ),
-      );
+      const updated = await response.json();
+      setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)));
     } finally {
       setTasksLoading(false);
     }
   };
 
   const removeTask = async (id: string) => {
+    setTasksLoading(true);
     try {
-      setTasksLoading(true);
-      const res = await authFetch(`/api/task?id=${id}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) {
-        const errorData = await res.json();
-        throw errorData;
-      }
+      await authFetch(`/api/task?id=${id}`, { method: "DELETE" });
       setTasks((prev) => prev.filter((t) => t.id !== id));
-    } catch (error) {
-      console.log("Error Interno:", error);
-      throw error;
     } finally {
       setTasksLoading(false);
     }
   };
 
+  const toggleTaskInDev = async (id: string) => {
+    const task = tasks.find((t) => t.id === id);
+    if (!task) return;
+
+    const nextStatus = !task.in_dev;
+
+    setTasks((prev) =>
+      prev.map((t) => (t.id === id ? { ...t, in_dev: nextStatus } : t)),
+    );
+
+    try {
+      await authFetch("/api/task", {
+        method: "PATCH",
+        body: JSON.stringify({ id, in_dev: nextStatus, userId }),
+      });
+    } catch (error) {
+      setTasks((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, in_dev: task.in_dev } : t)),
+      );
+    }
+  };
+
+  useEffect(() => {
+    if (userId) getTasks();
+  }, [userId, getTasks]);
+
   return (
     <TasksContext.Provider
       value={{
         tasks,
+        tasksLoading,
         addTask,
         editTask,
         removeTask,
         toggleTaskInDev,
-        tasksLoading,
         getTasks,
       }}
     >

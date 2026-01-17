@@ -5,6 +5,7 @@ import { TaskItem } from "./TaskItem";
 import { ChevronDown, ChevronUp, ListChecks } from "lucide-react";
 import { useTasks } from "@/hooks/useTasks";
 import { useState } from "react";
+import { Task } from "@/types";
 
 const Tasks: React.FC = () => {
   const {
@@ -68,7 +69,7 @@ const Tasks: React.FC = () => {
 
           {/* Lista de tareas */}
           <ul role="list" className="mt-4">
-            {tasks.map((task) => (
+            {tasks.map((task: Task) => (
               <TaskItem
                 key={task.id}
                 task={task}

@@ -6,11 +6,11 @@ import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect, useContext } from "react";
 import { usePrivacyMode } from "@/hooks/usePrivacyMode";
 import { Eye, EyeOff, LogOut, CalendarDays, Thermometer } from "lucide-react";
-import { Toast } from "../ui/Toast";
 import { useToast } from "@/hooks/useToast";
 import { CalendarContext } from "@/context/CalendarContext";
 import { format } from "date-fns";
 import { useWheater } from "@/hooks/useWheater";
+import { Task } from "@/types";
 
 export const User = () => {
   const { userName, signOut } = useAuth();
@@ -33,11 +33,12 @@ export const User = () => {
     });
   };
 
-  const pending = tasks.filter((task) => !task.in_dev).length;
+  const pending = tasks.filter((task: Task) => !task.in_dev).length;
   const overdueTasks = tasks.filter(
-    (task) => !task.in_dev && task.date && getDaysRemainingUntil(task.date) < 0,
+    (task: Task) =>
+      !task.in_dev && task.date && getDaysRemainingUntil(task.date) < 0,
   ).length;
-  const in_dev = tasks.filter((task) => task.in_dev).length;
+  const in_dev = tasks.filter((task: Task) => task.in_dev).length;
   const statsConfig = [
     { label: "Pendientes", value: pending, color: "text-amber-500" },
     { label: "En Curso", value: in_dev, color: "text-blue-300" },
