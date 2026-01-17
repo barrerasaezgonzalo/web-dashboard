@@ -50,7 +50,7 @@ export default function Movements() {
 
             <button
               onClick={() => setIsMinimized(!isMinimized)}
-              className="p-1 hover:bg-gray-100 rounded transition-colors"
+              className="p-1 hover:bg-gray-100 rounded transition-colors cursor-pointer"
             >
               {isMinimized ? (
                 <ChevronDown size={24} />

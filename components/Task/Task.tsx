@@ -29,7 +29,7 @@ const Tasks: React.FC = () => {
 
   return (
     <div
-      className={`bg-blue-100 text-black p-4 rounded shadow transition-all duration-300 ${
+      className={`bg-white text-black p-4 rounded shadow transition-all duration-300 ${
         isMinimized ? "min-h-0" : "min-h-[200px]"
       } overflow-x-auto`}
       role="region"
@@ -62,8 +62,8 @@ const Tasks: React.FC = () => {
             inputRef={inputRef}
             handleKeyDown={handleKeyDown}
             editingTaskId={editingTaskId}
-            handleAdd={() => handleAdd(title, date)}
-            handleSave={() => handleSave(editingTaskId, title, date)}
+            handleAdd={handleAdd}
+            handleSave={handleSave}
             isLoading={tasksLoading}
           />
 

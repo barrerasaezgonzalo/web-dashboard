@@ -39,7 +39,7 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
   });
   const [loading, setLoading] = useState(false);
   const { userId } = useAuth();
-  const [financial, setFinancial] = useState<any>({
+  const [financial, setFinancial] = useState<Financial>({
     current: { utm: 0 },
   });
 
@@ -64,18 +64,20 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
     try {
       const response = await authFetch(`/api/personalFinances`);
       const dataFromApi = await response.json();
-      const financials: PersonalFinance[] = dataFromApi.map((item: any) => {
-        switch (item.type) {
-          case "ingresos":
-            return { ...item, category: item.category as IngresosCategory };
-          case "gastos":
-            return { ...item, category: item.category as GastosCategory };
-          case "ahorros":
-            return { ...item, category: item.category as AhorrosCategory };
-          default:
-            throw new Error("Tipo inválido de movimiento");
-        }
-      });
+      const financials: PersonalFinance[] = dataFromApi.map(
+        (item: PersonalFinance) => {
+          switch (item.type) {
+            case "ingresos":
+              return { ...item, category: item.category as IngresosCategory };
+            case "gastos":
+              return { ...item, category: item.category as GastosCategory };
+            case "ahorros":
+              return { ...item, category: item.category as AhorrosCategory };
+            default:
+              throw new Error("Tipo inválido de movimiento");
+          }
+        },
+      );
       setMovements(financials);
     } catch (error) {
       console.error("Error al obtener las finanzas personales:", error);
@@ -112,6 +114,7 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
   const updateMovement = async (
     updatedMovement: PersonalFinanceMovement,
   ): Promise<void> => {
+    setLoading(true);
     try {
       const response = await authFetch(`/api/personalFinances`, {
         method: "PATCH",
@@ -126,6 +129,8 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
     } catch (error) {
       console.error("Error al editar personal financial:", error);
       throw error;
+    } finally {
+      setLoading(false);
     }
   };
 

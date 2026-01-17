@@ -18,7 +18,7 @@ export const NotesComponent: React.FC = () => {
 
   const handleAddNote = () => {
     openToast({
-      message: "¿Querés crear una nueva nota?",
+      message: "¿Quieres crear una nueva nota?",
       onConfirm: async () => {
         await createNote();
         closeToast();
@@ -39,14 +39,14 @@ export const NotesComponent: React.FC = () => {
           {!isMinimized && (
             <>
               <button
-                className="p-1 rounded hover:bg-amber-400"
+                className="p-1 rounded hover:bg-amber-400 cursor-pointer"
                 onClick={handleAddNote}
               >
                 <Plus size={20} />
               </button>
               <button
                 onClick={() => setOpenList((prev) => !prev)}
-                className="p-1 rounded hover:bg-amber-400"
+                className="p-1 rounded hover:bg-amber-400 cursor-pointer"
               >
                 <List size={20} />
               </button>
@@ -54,7 +54,7 @@ export const NotesComponent: React.FC = () => {
           )}
           <button
             onClick={() => setIsMinimized(!isMinimized)}
-            className="p-1 rounded hover:bg-amber-400"
+            className="p-1 rounded hover:bg-amber-400 cursor-pointer"
           >
             {isMinimized ? <ChevronDown size={20} /> : <ChevronUp size={20} />}
           </button>
@@ -71,7 +71,7 @@ export const NotesComponent: React.FC = () => {
         />
       )}
 
-      {notes.length > 0 && (
+      {notes.length > 0 && !isMinimized && (
         <NotesList
           openList={openList}
           notes={notes}

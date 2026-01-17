@@ -45,9 +45,15 @@ export default async function handler(
 
         if (error) throw error;
         return res.status(200).json(data || []);
-      } catch (error: any) {
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Internal Server Error";
+
         console.error("Error al obtener personal finances:", error);
-        return res.status(500).json({ error: error.message });
+
+        return res.status(500).json({
+          error: errorMessage,
+        });
       }
     }
 
@@ -71,9 +77,15 @@ export default async function handler(
 
         if (error) throw error;
         return res.status(201).json(data || []);
-      } catch (error: any) {
-        console.error("Error al crear personal finance:", error);
-        return res.status(500).json({ error: error.message });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Internal Server Error";
+
+        console.error("Error al obtener personal finances:", error);
+
+        return res.status(500).json({
+          error: errorMessage,
+        });
       }
     }
 
@@ -102,9 +114,15 @@ export default async function handler(
 
         if (error) throw error;
         return res.status(200).json(data || []);
-      } catch (error: any) {
-        console.error("Error al actualizar personal finance:", error);
-        return res.status(500).json({ error: error.message });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Internal Server Error";
+
+        console.error("Error al obtener personal finances:", error);
+
+        return res.status(500).json({
+          error: errorMessage,
+        });
       }
     }
 
@@ -122,9 +140,15 @@ export default async function handler(
 
         if (deleteError) throw deleteError;
         return res.status(200).json({ success: true });
-      } catch (error: any) {
-        console.error("Error al eliminar personal finance:", error);
-        return res.status(500).json({ error: error.message });
+      } catch (error: unknown) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Internal Server Error";
+
+        console.error("Error al obtener personal finances:", error);
+
+        return res.status(500).json({
+          error: errorMessage,
+        });
       }
     }
 

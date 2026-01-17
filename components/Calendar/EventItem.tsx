@@ -1,3 +1,4 @@
+import { EventItemProps } from "@/types";
 import { Trash } from "lucide-react";
 
 export const EventItem = ({
@@ -7,7 +8,7 @@ export const EventItem = ({
   minutos,
   onUpdate,
   onRemove,
-}: any) => (
+}: EventItemProps) => (
   <div className="group bg-slate-800/40 border border-slate-700 p-4 rounded-xl hover:border-blue-500/50 transition-all">
     <div className="flex items-start gap-4">
       <div className="flex flex-col gap-1">
@@ -15,19 +16,19 @@ export const EventItem = ({
           <select
             value={ev.hora}
             onChange={(e) => onUpdate(idx, "hora", e.target.value)}
-            className="bg-transparent text-sm font-bold focus:outline-none cursor-pointer"
+            className="bg-transparent text-sm font-bold focus:outline-none cursor-pointer w-10"
           >
             {horas.map((h: string) => (
-              <option className="text-black" key={h} value={h}>
+              <option className="bg-slate-800" key={h} value={h}>
                 {h}
               </option>
             ))}
           </select>
-          <span className="text-slate-500">:</span>
+          <span className="text-slate-500 px-1">:</span>
           <select
             value={ev.minutos}
             onChange={(e) => onUpdate(idx, "minutos", e.target.value)}
-            className="bg-transparent text-sm font-bold focus:outline-none cursor-pointer"
+            className="bg-transparent text-sm font-bold focus:outline-none cursor-pointer w-10"
           >
             {minutos.map((m: string) => (
               <option key={m} value={m} className="bg-slate-800">
@@ -50,13 +51,13 @@ export const EventItem = ({
           />
           <button
             onClick={() => onRemove(idx)}
-            className="text-slate-500 hover:text-red-400 transition-colors p-1"
+            className="text-slate-500 hover:text-red-400 transition-colors p-1 cursor-pointer"
           >
             <Trash size={20} />
           </button>
         </div>
         {!ev.titulo?.trim() && (
-          <p className="text-[10px] text-red-500 -mt-1">
+          <p className="text-[12px] text-red-500 -mt-1">
             Este campo es obligatorio
           </p>
         )}

@@ -3,7 +3,12 @@ import {
   GastosCategoryLabels,
   IngresosCategoryLabels,
 } from "./constants";
-import { CategoryOption, MovementType, PersonalFinance } from "./types/";
+import {
+  CategoryOption,
+  Financial,
+  MovementType,
+  PersonalFinance,
+} from "./types/";
 
 export const formatCLP = (valor: number | string) => {
   return new Intl.NumberFormat("es-CL", {
@@ -209,9 +214,9 @@ export const getPendingAndVariableExpenses = (
 export const getSpecialValue = (
   type: string,
   category: string,
-  financial: any,
+  financial: Financial,
   defaultValue: number,
-  rules: Record<string, (financial: any) => number>,
+  rules: Record<string, (financial: Financial) => number>,
 ) => {
   const key = `${type}-${category}`;
   if (rules[key]) {

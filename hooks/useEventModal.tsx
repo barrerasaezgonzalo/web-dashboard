@@ -1,19 +1,20 @@
 // hooks/useEventModal.ts
 import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/useToast";
+import { CalendarEvent } from "@/types";
 
 export const useEventModal = (
-  eventsToday: any[],
+  eventsToday: CalendarEvent[],
   date: string,
-  onConfirm: any,
+  onConfirm: (eventos: CalendarEvent[]) => Promise<void>,
 ) => {
   const [isSaving, setIsSaving] = useState(false);
-  const [localEvents, setLocalEvents] = useState<any[]>([]);
+  const [localEvents, setLocalEvents] = useState<CalendarEvent[]>([]);
   const initialEventsRef = useRef<string>("");
   const { openToast, closeToast } = useToast();
 
   useEffect(() => {
-    const formatted = (eventsToday || []).map((ev: any) => ({
+    const formatted = (eventsToday || []).map((ev: CalendarEvent) => ({
       ...ev,
       notas: ev.notas || "",
       hora: ev.hora?.split(":")[0] || "09",

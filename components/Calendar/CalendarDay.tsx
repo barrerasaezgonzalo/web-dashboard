@@ -1,3 +1,4 @@
+import { CalendarDayProps } from "@/types";
 import { format, isToday } from "date-fns";
 
 export const CalendarDay = ({
@@ -5,7 +6,7 @@ export const CalendarDay = ({
   esMesActual,
   tieneEvento,
   onClick,
-}: any) => {
+}: CalendarDayProps) => {
   return (
     <div
       className={`h-12 border-b border-r flex flex-col items-center justify-start p-1 cursor-pointer hover:bg-blue-100 transition-colors

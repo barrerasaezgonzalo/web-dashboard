@@ -4,6 +4,7 @@ import { useState } from "react";
 import { formatCLP } from "@/utils";
 import { Activity, ChevronDown, ChevronUp } from "lucide-react";
 import { useMovements } from "@/hooks/useMovements";
+import { FinancialPerformanceChart } from "./FinancialTrends";
 
 export const PersonalFinance = () => {
   const [isMinimized, setIsMinimized] = useState(false);
@@ -35,7 +36,7 @@ export const PersonalFinance = () => {
         </h2>
         <button
           onClick={() => setIsMinimized(!isMinimized)}
-          className="p-1 hover:bg-blue-100 rounded"
+          className="p-1 hover:bg-blue-100 rounded cursor-pointer"
         >
           {isMinimized ? <ChevronDown size={20} /> : <ChevronUp size={20} />}
         </button>
@@ -59,7 +60,7 @@ export const PersonalFinance = () => {
             ))}
           </div>
 
-          <div className="mt-6 p-3 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+          <div className="mt-6 p-3 bg-gray-50 rounded-lg shadow">
             <h4 className="text-sm font-bold text-gray-600 mb-2 flex justify-between">
               Conciliación Bancaria
               {bancoValue !== "" && (
@@ -90,6 +91,7 @@ export const PersonalFinance = () => {
                   }}
                 />
               </div>
+
               <div className="flex-1 text-right">
                 <label className="text-[10px] uppercase text-gray-500 font-bold">
                   Diferencia
@@ -105,9 +107,9 @@ export const PersonalFinance = () => {
               </div>
             </div>
             {diferencia !== 0 && bancoValue !== "" && (
-              <p className="text-[10px] mt-1 text-gray-400 italic">
+              <p className="text-[12px] mt-1 text-gray-400 italic">
                 {diferencia < 0
-                  ? "Te falta ingresar un gasto o comisión."
+                  ? "Te falta ingresar gastos a ahorro."
                   : "Tienes más dinero en el banco que en la app."}
               </p>
             )}
@@ -116,27 +118,27 @@ export const PersonalFinance = () => {
           <div className="pt-4 text-md">
             {canInvest ? (
               <div className="p-2">
-                <p className="font-bold text-green-600">
+                <p className="text-sm font-bold text-green-600">
                   ¡Ahora puedes invertir!
                 </p>
                 <p
-                  className={`text-md mt-2 ${isPrivate ? "privacy-blur" : ""}`}
+                  className={`text-sm font-bold ${isPrivate ? "privacy-blur" : ""}`}
                 >
                   Ahorros Dorada: {formatCLP(totalDorada)}
                 </p>
               </div>
             ) : (
-              <div className="p-2 border-t mt-2">
-                <h3 className="font-normal text-gray-600">
+              <div className="p-2 ">
+                <h3 className="text-sm font-bold text-gray-600 ">
                   Ahorro Dorada bajo el mínimo de inversión.
                 </h3>
                 <div
-                  className={`mt-2 space-y-1 ${isPrivate ? "privacy-blur" : ""}`}
+                  className={`text-sm font-bold text-gray-600  ${isPrivate ? "privacy-blur" : ""}`}
                 >
                   <p>
                     <strong>Actual:</strong> {formatCLP(totalDorada)}
                   </p>
-                  <p className="text-red-600">
+                  <p className="text-red-400">
                     <strong>Falta:</strong> {formatCLP(faltaDorada)}
                   </p>
                 </div>
@@ -144,6 +146,11 @@ export const PersonalFinance = () => {
             )}
           </div>
         </>
+      )}
+      {!isMinimized && (
+        <section>
+          <FinancialPerformanceChart />
+        </section>
       )}
     </div>
   );

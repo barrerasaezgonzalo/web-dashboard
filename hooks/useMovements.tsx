@@ -58,6 +58,12 @@ export const useMovements = () => {
     setModalType(selectedType);
   }, [selectedType]);
 
+  const handleOpenPendingPayment = useCallback((categoryId: string) => {
+    setModalType("gastos");
+    setCategory(categoryId);
+    setValue("");
+  }, []);
+
   const handleEditClick = useCallback((item: PersonalFinance) => {
     setEditingItem(item.id);
     setCategory(item.category);
@@ -186,5 +192,6 @@ export const useMovements = () => {
     handleEditClick,
     resetModal,
     ...checkInversionDorada,
+    handleOpenPendingPayment,
   };
 };

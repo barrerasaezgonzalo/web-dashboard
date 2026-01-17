@@ -60,9 +60,9 @@ export interface MovementModalProps {
   category: string;
   value: string;
   errors: { category?: string; value?: string };
-  specialCategoryRules: Record<string, (financial: any) => number>;
+  specialCategoryRules: Record<string, (financial: Financial) => number>;
   selectedType: PersonalFinance["type"];
-  editingItem: string;
+  editingItem: string | null;
   onClose: () => void;
   onSave: () => void;
   onChangeCategory: (category: string) => void;
@@ -109,6 +109,10 @@ export type Summary = {
   saldo: number;
 };
 
+export interface monthlyDataSummary extends Omit<Summary, "saldo"> {
+  name: string;
+  saldo?: number;
+}
 export interface Financial {
   current: {
     utm: number;

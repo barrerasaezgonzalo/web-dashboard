@@ -3,6 +3,7 @@ import { modalTitles } from "@/constants";
 import { getCategoryLabels, getSpecialValue } from "@/utils";
 import { MovementModalProps } from "@/types/";
 import { usePersonalFinance } from "@/hooks/usePersonalFinance";
+import { PlusCircle, Wallet, X } from "lucide-react";
 
 export const MovementModal: React.FC<MovementModalProps> = ({
   modalType,
@@ -18,7 +19,7 @@ export const MovementModal: React.FC<MovementModalProps> = ({
   onChangeValue,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { financial } = usePersonalFinance();
+  const { financial, loading } = usePersonalFinance();
 
   useEffect(() => {
     if (modalType && inputRef.current) {
@@ -45,84 +46,134 @@ export const MovementModal: React.FC<MovementModalProps> = ({
   }, [category, modalType, financial]);
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6 relative">
-        <button
-          className="absolute top-3 right-4 cursor-pointer text-3xl text-gray-400 hover:text-gray-700 font-bold transition-colors"
-          onClick={onClose}
-        >
-          ×
-        </button>
+    <>
+      <div
+        className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-40"
+        onClick={onClose}
+      />
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-[#1e293b] text-slate-200 rounded-2xl shadow-2xl z-50 w-full max-w-md overflow-hidden border border-slate-700">
+        <div className="p-6 border-b border-slate-700 bg-slate-800/50 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-blue-500/20 p-2 rounded-lg text-blue-400">
+              {editingItem ? <Wallet size={24} /> : <PlusCircle size={24} />}
+            </div>
+            <div>
+              <h3 className="text-xl font-bold text-white">
+                {editingItem ? "Editar movimiento" : modalTitles[modalType]}
+              </h3>
+              <p className="text-xs text-slate-400">
+                Completa los datos del registro
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-slate-400 hover:text-white transition-colors cursor-pointer"
+          >
+            <X size={20} />
+          </button>
+        </div>
 
-        <h2 className="text-2xl font-bold mb-6 text-gray-800 border-b pb-3">
-          {editingItem ? "Editar movimiento" : modalTitles[modalType]}
-        </h2>
-
-        <div className="flex flex-col gap-4">
+        <div className="p-6 space-y-5">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-slate-400 mb-2">
               Categoría
             </label>
             <select
               value={category}
               onChange={(e) => onChangeCategory(e.target.value)}
-              className={`w-full border rounded-lg p-2.5 focus:outline-none focus:ring-2 transition-all ${
+              className={`w-full bg-slate-900 border rounded-xl p-3 text-white focus:outline-none focus:ring-2 transition-all appearance-none cursor-pointer ${
                 errors.category
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-300 focus:ring-blue-500"
+                  ? "border-red-500 focus:ring-red-500/50"
+                  : "border-slate-700 focus:ring-blue-500/50"
               }`}
             >
-              <option value="">Selecciona una categoría</option>
+              <option value="" className="bg-slate-900">
+                Selecciona una categoría
+              </option>
               {getCategoryLabels(selectedType).map(({ id, label }) => (
-                <option key={id} value={id}>
+                <option key={id} value={id} className="bg-slate-900">
                   {label}
                 </option>
               ))}
             </select>
             {errors.category && (
-              <p className="text-red-500 text-sm mt-1 font-semibold">
-                ⚠️ {errors.category}
+              <p className="text-red-400 text-xs mt-2 font-medium flex items-center gap-1">
+                {errors.category}
               </p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Valor
+            <label className="block text-sm font-medium text-slate-400 mb-2">
+              Valor (sin puntos ni comas)
             </label>
-            <input
-              type="text"
-              ref={inputRef}
-              placeholder="Ingresa el monto"
-              value={value}
-              onChange={(e) => onChangeValue(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  onSave();
+
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold z-10">
+                $
+              </span>
+              <input
+                type="text"
+                ref={inputRef}
+                placeholder="0"
+                value={value}
+                onChange={(e) =>
+                  onChangeValue(e.target.value.replace(/\D/g, ""))
                 }
-              }}
-              className={`w-full border rounded-lg p-2.5 focus:outline-none focus:ring-2 transition-all ${
-                errors.value
-                  ? "border-red-500 focus:ring-red-500"
-                  : "border-gray-300 focus:ring-blue-500"
-              }`}
-            />
+                onKeyDown={(e) => {
+                  if (e.key === "." || e.key === ",") e.preventDefault();
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    onSave();
+                  }
+                }}
+                className={`w-full bg-slate-900 border rounded-xl p-3 pl-8 text-white font-mono text-lg focus:outline-none focus:ring-2 transition-all ${
+                  errors.value
+                    ? "border-red-500 focus:ring-red-500/50"
+                    : "border-slate-700 focus:ring-blue-500/50"
+                }`}
+              />
+            </div>
+
+            {value && !errors.value && (
+              <p className="text-blue-400 text-xs mt-2 ml-1 font-medium italic">
+                Se guardará como:{" "}
+                {new Intl.NumberFormat("es-CL", {
+                  style: "currency",
+                  currency: "CLP",
+                }).format(Number(value))}
+              </p>
+            )}
+
             {errors.value && (
-              <p className="text-red-500 text-sm mt-1 font-semibold">
-                ⚠️ {errors.value}
+              <p className="text-red-400 text-xs mt-2 font-medium flex items-center gap-1">
+                {errors.value}
               </p>
             )}
           </div>
+        </div>
 
+        <div className="p-6 bg-slate-800/80 border-t border-slate-700 flex gap-4">
           <button
-            className="bg-blue-500 text-white py-2.5 rounded-lg hover:bg-blue-600 transition-colors font-medium cursor-pointer mt-2"
+            className="flex-1 cursor-pointer bg-slate-700 text-white px-4 py-3 rounded-xl font-bold hover:bg-slate-600 transition-all"
+            onClick={onClose}
+          >
+            Cancelar
+          </button>
+          <button
+            className={`flex-1  px-4 py-3 rounded-xl font-bold transition-all active:scale-95 
+              ${
+                loading
+                  ? "bg-slate-700 text-slate-400 cursor-not-allowed opacity-70"
+                  : "bg-blue-600 cursor-pointer text-white hover:bg-blue-500 shadow-lg shadow-blue-900/20"
+              }`}
             onClick={onSave}
           >
             {editingItem ? "Actualizar" : "Guardar"}
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 };

@@ -1,13 +1,44 @@
 export interface CalendarEvent {
-  id?: string;
-  fecha: string; // "YYYY-MM-DD"
   titulo: string;
+  hora: string;
+  minutos: string;
   notas?: string;
-  auth_data?: string;
+  fecha?: string; // solo cuando viene del backend
+}
+
+export interface EventItemProps {
+  ev: CalendarEvent;
+  idx: number;
+  horas: string[];
+  minutos: string[];
+  onUpdate: (index: number, field: keyof CalendarEvent, value: string) => void;
+  onRemove: (index: number) => void;
+}
+
+export interface CalendarDayProps {
+  dia: Date;
+  esMesActual: boolean;
+  tieneEvento: boolean;
+  onClick: () => void;
 }
 
 export interface CalendarModalConfig {
   date: Date;
-  onConfirm: (eventos: any[]) => Promise<void>;
+  onConfirm: (eventos: CalendarEvent[]) => Promise<void>;
   onCancel: () => void;
+}
+
+export interface EventModalComponentProps {
+  date: string;
+  eventsToday: CalendarEvent[];
+  onConfirm: (eventos: CalendarEvent[]) => Promise<void>;
+  onCancel: () => void;
+}
+
+export interface CalendarContextType {
+  events: CalendarEvent[];
+  getEvents: (mes: Date) => Promise<void>;
+  saveEvents: (fecha: string, eventos: CalendarEvent[]) => Promise<void>;
+  modalConfig: CalendarModalConfig | null;
+  handleShowModal: (dia: Date) => void;
 }

@@ -24,15 +24,13 @@ const Movements = dynamic(
   },
 );
 
-const Calendar = dynamic(
-  () => import("@/components/Calendar/Calendar").then((m) => m.Calendar),
-  {
-    ssr: false,
-  },
-);
+const Calendar = dynamic(() => import("@/components/Calendar/Calendar"), {
+  ssr: false,
+});
 
 export const App: React.FC = () => {
   const { userId, loading, signInWithGoogle } = useAuth();
+
   if (loading) return <LoadingScreen />;
   if (!userId) return <LoginScreen onLogin={signInWithGoogle} />;
 

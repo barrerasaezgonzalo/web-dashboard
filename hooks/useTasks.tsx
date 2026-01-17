@@ -1,12 +1,31 @@
+import React from "react";
+
 import { TasksContext } from "@/context/TasksContext";
 import { useContext, useState, useRef } from "react";
 import { useToast } from "@/hooks/useToast";
 import { Task } from "@/types/";
 
-export const useTasks = () => {
+export interface UseTasksReturn {
+  tasks: Task[];
+  tasksLoading: boolean;
+  title: string;
+  setTitle: (value: string) => void;
+  date: string;
+  setDate: (value: string) => void;
+  editingTaskId: string | null;
+  inputRef: React.MutableRefObject<HTMLInputElement | null>;
+  handleAdd: () => Promise<void>;
+  handleSave: () => Promise<void>;
+  handleEdit: (task: Task) => void;
+  handleDelete: (id: string) => void;
+  handleTaskToggle: (id: string) => Promise<void>;
+  handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+}
+
+export const useTasks = (): UseTasksReturn => {
   const context = useContext(TasksContext);
   if (!context) {
-    return { tasks: [], tasksLoading: false } as any;
+    throw new Error("useTasks debe usarse dentro de <TasksProvider>");
   }
 
   const { openToast, closeToast } = useToast();
@@ -78,6 +97,10 @@ export const useTasks = () => {
     }
   };
 
+  const handleTaskToggle = async (id: string) => {
+    await context.toggleTaskInDev(id);
+  };
+
   return {
     ...context,
     title,
@@ -91,5 +114,6 @@ export const useTasks = () => {
     handleEdit,
     handleDelete,
     handleKeyDown,
+    handleTaskToggle,
   };
 };

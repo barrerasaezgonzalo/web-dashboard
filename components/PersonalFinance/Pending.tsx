@@ -21,7 +21,7 @@ export const Pending = () => {
   const pendingItems = getPendingAndVariableExpenses(movements, showAll);
   const { isPrivate } = usePrivacyMode();
   const {
-    handleOpenAddModal,
+    handleOpenPendingPayment,
     modalType,
     category,
     value,
@@ -51,7 +51,7 @@ export const Pending = () => {
           </h2>
           <button
             onClick={() => setIsMinimized(!isMinimized)}
-            className="p-1 hover:bg-blue-100 rounded transition-colors"
+            className="p-1 hover:bg-blue-100 rounded transition-colors cursor-pointer"
           >
             {isMinimized ? <ChevronDown size={20} /> : <ChevronUp size={20} />}
           </button>
@@ -61,7 +61,7 @@ export const Pending = () => {
           <>
             <button
               onClick={() => setShowAll(!showAll)}
-              className="mt-2 flex items-center justify-center gap-2 w-full py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-dashed border-blue-200"
+              className="mt-2 flex items-center justify-center gap-2 w-full py-2 text-sm text-blue-600 border border-dashed border-blue-200 rounded-lg cursor-pointer"
             >
               {showAll ? "Ver solo pendientes" : "Ver todos los gastos"}
             </button>
@@ -70,7 +70,7 @@ export const Pending = () => {
                 pendingItems.map((item) => (
                   <div
                     key={item.id}
-                    className={`flex justify-between items-center border-b border-gray-100 py-3 px-2 hover:bg-indigo-50 transition-colors rounded-lg ${
+                    className={`flex justify-between items-center border-b border-gray-100 py-3 px-2 transition-colors rounded-lg ${
                       !item.fijo ? "bg-gray-50/50" : ""
                     }`}
                   >
@@ -90,13 +90,13 @@ export const Pending = () => {
                       )}
 
                       <div className="relative inline-block group">
-                        <CreditCard
-                          size={22}
-                          onClick={() => handleOpenAddModal(item.id)}
-                          className={`${
-                            item.isPaid ? "text-green-500" : "text-blue-500"
-                          } cursor-pointer hover:scale-110 transition-transform`}
-                        />
+                        {!showAll && (
+                          <CreditCard
+                            size={22}
+                            onClick={() => handleOpenPendingPayment(item.id)}
+                            className="text-green-500 cursor-pointer hover:scale-110 transition-transform"
+                          />
+                        )}
                         <div
                           className={getTooltipClass({
                             type: "default",

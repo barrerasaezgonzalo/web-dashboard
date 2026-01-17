@@ -36,7 +36,7 @@ export const ToastConponet: React.FC<ToastProps> = ({
 
         <div className="flex flex-row-reverse gap-6">
           <button
-            className="flex-1 bg-black text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-800 transition-colors active:scale-95"
+            className="flex-1 cursor-pointer bg-black text-white px-4 py-2.5 rounded-xl text-sm font-semibold hover:bg-gray-800 transition-colors active:scale-95"
             onClick={(e) => {
               e.stopPropagation();
               onConfirm();
@@ -47,7 +47,7 @@ export const ToastConponet: React.FC<ToastProps> = ({
 
           {onCancel && (
             <button
-              className="flex-1 bg-gray-50 text-gray-500 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-100 transition-colors"
+              className="flex-1 cursor-pointer bg-gray-50 text-gray-500 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-100 transition-colors"
               onClick={onCancel}
             >
               Cancelar

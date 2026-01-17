@@ -1,18 +1,14 @@
 "use client";
 
-import { CalendarEvent, CalendarModalConfig } from "@/types/";
+import {
+  CalendarEvent,
+  CalendarModalConfig,
+  CalendarContextType,
+} from "@/types/";
 import React, { createContext, useState, ReactNode, useCallback } from "react";
 import { authFetch } from "@/hooks/authFetch";
 import { useAuth } from "./AuthContext";
 import { format } from "date-fns";
-
-export interface CalendarContextType {
-  events: CalendarEvent[];
-  getEvents: (m: Date) => void;
-  saveEvents: (fecha: string, eventos: any[]) => Promise<void>;
-  modalConfig: CalendarModalConfig | null;
-  handleShowModal: (dia: Date) => void;
-}
 
 export const CalendarContext = createContext<CalendarContextType | undefined>(
   undefined,
@@ -43,7 +39,7 @@ export const CalendarProvider: React.FC<CalendarProviderProps> = ({
     }
   }, []);
 
-  const saveEvents = async (fecha: string, eventos: any[]) => {
+  const saveEvents = async (fecha: string, eventos: CalendarEvent[]) => {
     try {
       await authFetch("/api/calendar", {
         method: "POST",
@@ -68,7 +64,7 @@ export const CalendarProvider: React.FC<CalendarProviderProps> = ({
     (dia: Date) => {
       setModalConfig({
         date: dia,
-        onConfirm: async (eventos) => {
+        onConfirm: async (eventos: CalendarEvent[]) => {
           await saveEvents(format(dia, "yyyy-MM-dd"), eventos);
           setModalConfig(null);
           getEvents(new Date());

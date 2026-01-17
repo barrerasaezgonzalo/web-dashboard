@@ -1,4 +1,4 @@
-"use client"; // Marcamos este archivo como cliente
+"use client";
 
 import { createContext, useContext, useState, ReactNode } from "react";
 import { Toast } from "@/components/ui/Toast";
@@ -26,7 +26,6 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
   return (
     <ToastContext.Provider value={{ openToast, closeToast }}>
       {children}
-      {/* El componente visual se renderiza aquí, en el árbol del cliente */}
       {toast && (
         <Toast
           message={toast.message}

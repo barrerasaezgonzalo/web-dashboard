@@ -12,7 +12,7 @@ export const MovementFilters: React.FC<MovementFiltersProps> = ({
     <div className="flex gap-3 w-full justify-between">
       <div className="relative">
         <select
-          className="appearance-none border border-gray-300 rounded-lg p-2 pr-10 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="appearance-none border border-gray-300 rounded-lg p-2 pr-10 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
           value={selectedMonth}
           onChange={(e) => setSelectedMonth(e.target.value)}
         >
@@ -38,7 +38,7 @@ export const MovementFilters: React.FC<MovementFiltersProps> = ({
 
       <div className="relative">
         <select
-          className="appearance-none border border-gray-300 rounded-lg p-2 pr-10 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="appearance-none border border-gray-300 rounded-lg p-2 pr-10 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
           value={selectedType}
           onChange={(e) =>
             setSelectedType(e.target.value as PersonalFinance["type"])

@@ -1,10 +1,20 @@
+import React from "react";
+
+/* =========================
+   Modelo base
+========================= */
+
 export interface Task {
   id: string;
   title: string;
-  in_dev?: boolean;
+  date?: string | null;
+  in_dev: boolean;
   order?: number;
-  date: string;
 }
+
+/* =========================
+   Component Props
+========================= */
 
 export interface TaskItemProps {
   task: Task;
@@ -15,14 +25,14 @@ export interface TaskItemProps {
 
 export interface TaskInputProps {
   title: string;
-  setTitle: (v: string) => void;
-  date?: string;
-  setDate: (date: string) => void;
+  setTitle: (val: string) => void;
+  date: string;
+  setDate: (val: string) => void;
+  editingTaskId: string | null;
+  inputRef: React.MutableRefObject<HTMLInputElement | null>;
   handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
-  inputRef: React.Ref<HTMLInputElement>;
-  editingTaskId: string;
-  handleAdd: () => void;
-  handleSave: () => void;
+  handleAdd: () => Promise<void>;
+  handleSave: () => Promise<void>;
   isLoading: boolean;
 }
 
@@ -32,4 +42,22 @@ export interface TaskActionButtonProps {
   tooltipText: string;
   onClick?: () => void;
   inDev?: boolean;
+}
+
+/* =========================
+   Context
+========================= */
+
+export interface TaskContextType {
+  tasks: Task[];
+  tasksLoading: boolean;
+  getTasks: () => Promise<void>;
+  addTask: (title: string, date?: string) => Promise<Task>;
+  editTask: (
+    id: string,
+    newTitle: string,
+    newDate?: string | null,
+  ) => Promise<void>;
+  removeTask: (id: string) => Promise<void>;
+  toggleTaskInDev: (id: string) => Promise<void>;
 }

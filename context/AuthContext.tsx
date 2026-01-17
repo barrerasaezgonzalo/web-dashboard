@@ -86,8 +86,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         },
       });
       if (error) throw error;
-    } catch (error: any) {
-      console.error("Login error:", error.message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log("Login error:", error.message);
+      } else {
+        console.log("An unknown error occurred");
+      }
     }
   };
 

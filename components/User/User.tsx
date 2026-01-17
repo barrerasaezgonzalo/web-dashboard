@@ -69,7 +69,6 @@ export const User = () => {
 
   return (
     <div className="relative flex flex-col bg-[#4D677E] p-5 rounded-lg shadow-lg gap-6 text-white">
-      {/* Botones de acción */}
       <div className="absolute top-3 right-3 flex gap-2">
         <button
           onClick={handlePrivacyClick}
@@ -89,7 +88,6 @@ export const User = () => {
         </button>
       </div>
 
-      {/* Saludo y Reloj + Clima */}
       <div className="flex justify-between items-start">
         <div>
           <h1 className="text-3xl font-light tracking-tight">
@@ -116,7 +114,6 @@ export const User = () => {
         </div>
       </div>
 
-      {/* Stats de Tareas */}
       <div className="grid grid-cols-3 gap-2 bg-black/10 p-3 rounded-md">
         {statsConfig.map((stat, index) => (
           <div
@@ -133,7 +130,6 @@ export const User = () => {
         ))}
       </div>
 
-      {/* Placeholder Eventos */}
       <div className="border-t border-white/10 pt-4">
         {eventosHoy === 0 ? (
           <div className="flex items-center gap-2 mb-2 text-white/70">

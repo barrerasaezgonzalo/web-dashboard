@@ -1,4 +1,5 @@
 import { MovementFooterProps } from "@/types/";
+import { CirclePlus, Plus } from "lucide-react";
 import React from "react";
 
 export const MovementFooter: React.FC<MovementFooterProps> = ({
@@ -19,7 +20,7 @@ export const MovementFooter: React.FC<MovementFooterProps> = ({
         onClick={handleOpenAddModal}
         className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2 cursor-pointer"
       >
-        Agregar
+        <CirclePlus />
       </button>
     </div>
   );

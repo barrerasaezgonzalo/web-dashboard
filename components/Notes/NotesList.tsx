@@ -54,7 +54,7 @@ export const NotesList: React.FC<NotesListProps> = ({
               </span>
               <button
                 onClick={() => handleDeleteNote(n)}
-                className="p-1 rounded hover:bg-red-400"
+                className="p-1 rounded hover:text-red-400 cursor-pointer"
               >
                 <Trash size={16} />
               </button>

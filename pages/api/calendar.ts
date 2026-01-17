@@ -2,6 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { supabase } from "@/lib/supabaseClient";
 import { createClient } from "@supabase/supabase-js";
+import { CalendarEvent } from "@/types";
 
 export default async function handler(
   req: NextApiRequest,
@@ -52,7 +53,7 @@ export default async function handler(
       if (deleteError) throw deleteError;
 
       if (events && events.length > 0) {
-        const eventsToInsert = events.map((ev: any) => ({
+        const eventsToInsert = events.map((ev: CalendarEvent) => ({
           auth_data: userId,
           fecha: fecha,
           titulo: ev.titulo,
@@ -71,8 +72,8 @@ export default async function handler(
     }
 
     return res.status(405).json({ error: "Method not allowed" });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("API ERROR:", err);
-    return res.status(500).json({ error: err.message });
+    return res.status(500).json({ error: err });
   }
 }

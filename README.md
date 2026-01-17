@@ -1,100 +1,117 @@
-# Personal Dashboard
+# Full-Stack Enterprise Dashboard
 
-## Description
+A high-performance ecosystem integrating Financial Intelligence, Productivity Systems, and Real-time Cloud Infrastructure.
 
-This project is a **personal dashboard** built with **React 18 and Next.js 13**.  
-It is designed to be **highly interactive, efficient, accessible, and modular**, displaying **Google search, financial indicators, tasks, notes, news, AI-generated predictions, AI prompts, and more**.
+React 18 TypeScript Supabase Next.js
 
-The main goal is to showcase **React skills**, including performance optimization, complex state management, lazy loading, memoization, accessibility, API integrations, real-time database persistence, and maintainable code.
+## 💎 Advanced React Engineering
+
+## 🪝 Custom Hooks: The Business Logic Layer
+
+The application's "brain" is decentralized into specialized hooks, following the **Single Responsibility Principle**. This architecture ensures the UI remains declarative while the hooks handle side effects and state transitions.
+
+**`authFetch`**
+
+An orchestrated wrapper for the Supabase client that injects authentication headers and handles global error catching for secure API communication.
+
+**`useCalendar`**
+
+Encapsulates complex date-math, month-switching logic, and event mapping. It acts as the bridge between the UI grid and the persistent event store.
+
+**`useNotes`**
+
+Manages the lifecycle of user annotations, including cloud-syncing with Supabase and real-time filtering by category or priority.
+
+**`useTask`**
+
+Handles full CRUD operations for the To-Do ecosystem, managing optimistic UI updates for a seamless task-completion experience.
+
+**`usePrivacyMode`**
+
+A global toggle utility that manages the obfuscation state of financial figures across the entire dashboard via React Context.
+
+**`useToast`**
+
+A declarative notification system to provide immediate user feedback on actions like "Movement Saved" or "Auth Error".
+
+**`useAutoResize`**
+
+A utility hook for dynamic textareas and inputs that adapts the UI height in real-time based on content volume, preventing scrollbar clutter.
+
+**`useWeather`**
+
+Handles external API integration to fetch and cache local weather data, providing environmental context to the daily planner.
+
+## 📊 Core Modules & Functionality
+
+### 1\. Financial Intelligence Engine
+
+A robust system for tracking and analyzing personal wealth:
+
+- **Interactive Analytics**: Comparative bar charts powered by Recharts, transforming raw database movements into monthly performance insights.
+- **Privacy Obfuscation**: A global toggle that instantly masks sensitive financial figures across the UI, using React Context for synchronized state.
+- **Bulletproof Inputs**: Sanitized numeric fields using Regex-based filtering to block invalid characters (dots/commas) at the source.
+
+### 2\. Productivity Ecosystem (Notes , Calendar & Tasks)
+
+Beyond finance, the dashboard acts as a central hub for personal organization:
+
+- **Smart Notes**: A cloud-synced system with categorization and priority levels. Features auto-save functionality and a clean "Dark Slate" interface.
+- **Task Manager**: A specialized To-Do engine with status tracking (Pending/Completed) and real-time updates via PostgreSQL subscriptions.
+- **Unified Event Calendar**: A custom-built scheduling interface for managing time-sensitive events with precision time-slot controls.
+
+## 🌐 Backend & Cloud Architecture
+
+### Supabase + Google Auth + Vercel
+
+The platform is architected for security and scalability:
+
+- **Identity Management**: Secure **Google OAuth 2.0** integration for seamless, passwordless authentication.
+- **Row Level Security (RLS)**: Database-level policies ensuring total data isolation; users only access their own financial and personal records.
+- **PostgreSQL Realtime**: Leveraging Supabase's realtime engine to sync tasks and notes across multiple devices instantly.
+- **CI/CD Workflow**: Automated deployments via Vercel, optimized for the Next.js App Router and Edge environment.
+
+## 🛠 Engineering Skillset Table
+
+Category
+
+Technical Implementation
+
+**Type Safety**
+
+Strict TypeScript interfaces, Omit/Partial utility types, and Polymorphic components.
+
+**Data Viz**
+
+Complex SVG rendering with Recharts, optimized for mobile responsiveness.
+
+**UI/UX**
+
+Tailwind CSS custom design system with "Dark Slate" aesthetic and Lucide icons.
+
+**Business Logic**
+
+Custom algorithms for financial summary, savings rates, and expense categorization.
 
 ---
 
-## Technologies
+## PRO Quality Assurance & Testing Suite
 
-- **React 18 + Next.js 13 (App Router)**
-- **TypeScript** for strict and safe typing
-- **Supabase** for backend and real-time database
-- **Recharts** for data visualization
-- **next/dynamic** + **Skeleton components** for lazy loading and performance
-- **ErrorBoundary** for robust error handling
-- **Web Vitals & PerformanceObserver** for measuring LCP, FCP, TTFB, CLS
-- **Tailwind CSS** for responsive and accessible design
-- **Context API + Custom Hooks** for centralized state management
-- **Jest + React Testing Library** for unit and integration testing
-- **ARIA attributes** and semantic HTML for accessibility compliance
+The application architecture is built with **Testability** as a first-class citizen. I implemented a comprehensive testing strategy to ensure the stability of core business logic and UI components.
 
----
+#### 🧪 Unit & Integration Testing
 
-## Key Features
+Focused on validating complex financial calculations and data transformation hooks. Using **Jest** and **React Testing Library** to ensure that every state transition and numeric sanitization (Regex) behaves as expected.
 
-### Dashboard
+#### 🛡️ Component Contract Testing
 
-- **Responsive layout** with dynamic columns for different screen sizes.
-- Fixed background image using `next/image`.
-- Lazy loading of heavy components with placeholders (`Skeleton`).
-- Tracks render times and performance metrics for optimization.
+Verification of UI components under various props and edge cases. This guarantees that modals, inputs, and charts maintain their integrity even when data is missing or formatted incorrectly.
 
-### Advanced To-do
+- **Mocking Strategy:** Professional use of mocks for Supabase Auth and external API calls to isolate testing environments.
+- **Regression Safety:** Every refactor is backed by a suite that prevents breaking existing financial rules or productivity workflows.
 
-- Drag & drop tasks with persisted order in **Supabase**.
-- Automatic order update when adding or deleting tasks.
-- Optimized rendering using **React.memo**.
-- Checkbox and edit actions with **accessible labels**.
+### Engineered for Precision
 
-### Notes
+Next.js • TypeScript • Supabase • Recharts • Tailwind
 
-- Auto-resizing textarea for quick notes.
-- Debounced save with persistence in Supabase.
-- Correct handling of empty notes.
-- Fully **accessible labels** and keyboard navigation.
-
-### Financial Indicators
-
-- Real-time external data (USD, UTM, BTC, ETH).
-- Persists historical values in **Supabase** for trend analysis.
-- Displays numeric values with **trend indicators** (up/down arrows).
-- **Sparkline charts** for each indicator’s recent trend.
-- Semantic headings and ARIA attributes for screen readers.
-
-### News
-
-- Dynamic news list with array validation.
-- LocalStorage cache for improved UX.
-- Semantic HTML and ARIA labels for accessibility.
-
-### AI & Prompts
-
-- Integration with **GPT** for personalized prompts.
-- Real-time predictions and suggestions in the dashboard.
-- Generation of optimized prompts with accessible forms and labels.
-
-### Performance
-
-- Tracks render times per component for performance analysis.
-- **ErrorBoundary** captures errors for each component individually.
-- Memoization and render optimization applied throughout components.
-
----
-
-## Best Practices
-
-- Strict **TypeScript typing** for safety and maintainability.
-- **Lazy loading with Skeletons** for performance optimization.
-- **Memoization** and render optimization to avoid unnecessary re-renders.
-- Centralized state management using **Context API + custom hooks**.
-- Real-time persistence with **Supabase**.
-- Robust **error handling** with `ErrorBoundary`.
-- **Responsive design** and smooth user experience on all devices.
-- Full **accessibility compliance** with ARIA attributes, semantic HTML, and keyboard navigation.
-- Comprehensive **unit and integration testing** with Jest and React Testing Library.
-- Maintainable, modular code for long-term extensibility.
-
----
-
-## Testing & Quality
-
-- 100% **unit and integration coverage** for main features.
-- Coverage includes **state updates, fetches, callbacks, error handling, and conditional rendering**.
-- Performance and accessibility audited with **Lighthouse**.
-
-<img width="1920" height="1080" alt="screenshot" src="https://github.com/user-attachments/assets/ae70e4fe-3d1a-46c9-96a5-327b34ad5007" />
+SOFTWARE ENGINEER PROJECT - 2026

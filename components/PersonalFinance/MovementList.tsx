@@ -45,13 +45,13 @@ export const MovementList: React.FC<MovementListProps> = ({
 
             <div className="w-1/3 flex justify-end gap-2">
               <button
-                className="text-blue-500 hover:text-blue-700"
+                className="text-blue-500 hover:text-blue-700 cursor-pointer"
                 onClick={() => onEdit(item)}
               >
                 <SquarePen size={22} />
               </button>
               <button
-                className="text-red-500 hover:text-red-700"
+                className="text-red-400 hover:text-red-700 cursor-pointer"
                 onClick={() => onDelete(item.id)}
               >
                 <Trash size={22} />
@@ -64,7 +64,7 @@ export const MovementList: React.FC<MovementListProps> = ({
       {limit < filtrados.length && (
         <button
           onClick={() => setLimit((prev) => prev + movementListSize)}
-          className="mt-2 flex items-center justify-center gap-2 w-full py-2 text-sm text-blue-600 border border-dashed border-blue-200 rounded-lg"
+          className="mt-2 flex items-center justify-center gap-2 w-full py-2 text-sm text-blue-600 border border-dashed border-blue-200 rounded-lg cursor-pointer"
         >
           <ChevronDown size={18} />
           Mostrar más ({filtrados.length - limit} restantes)

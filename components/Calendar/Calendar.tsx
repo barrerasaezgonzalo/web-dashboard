@@ -24,7 +24,7 @@ import { useCalendar } from "@/hooks/useCalendar";
 import { diasSemana } from "@/constants";
 import { CalendarDay } from "./CalendarDay";
 
-export const Calendar = () => {
+const Calendar = () => {
   const [isMinimized, setIsMinimized] = useState(false);
   const [mesActual, setMesActual] = useState(new Date());
   const { events, modalConfig, handleShowModal } = useCalendar(mesActual);
@@ -52,7 +52,7 @@ export const Calendar = () => {
           </h2>
           <button
             onClick={() => setIsMinimized(!isMinimized)}
-            className="p-1 hover:bg-gray-100 rounded transition-colors"
+            className="p-1 hover:bg-gray-100 rounded transition-colors cursor-pointer"
           >
             {isMinimized ? <ChevronDown size={24} /> : <ChevronUp size={24} />}
           </button>
@@ -65,7 +65,7 @@ export const Calendar = () => {
           <div className="flex items-center justify-between px-6 py-4 bg-gray-50 border-b">
             <button
               onClick={() => setMesActual(subMonths(mesActual, 1))}
-              className="p-2 hover:bg-gray-200 rounded-full"
+              className="p-2 hover:bg-gray-200 rounded-full cursor-pointer"
             >
               <ChevronLeft size={25} />
             </button>
@@ -82,7 +82,7 @@ export const Calendar = () => {
             )}
             <button
               onClick={() => setMesActual(addMonths(mesActual, 1))}
-              className="p-2 hover:bg-gray-200 rounded-full"
+              className="p-2 hover:bg-gray-200 rounded-full cursor-pointer"
             >
               <ChevronRight size={25} />
             </button>
@@ -121,11 +121,10 @@ export const Calendar = () => {
         </>
       )}
 
-      {/* Renderizado Condicional del Modal */}
       {modalConfig && (
         <EventModal
           date={format(modalConfig.date, "dd/MM/yyyy")}
-          onConfirm={modalConfig.onConfirm}
+          onConfirm={modalConfig.onConfirm || (async () => {})}
           onCancel={modalConfig.onCancel}
           eventsToday={events.filter(
             (ev) => ev.fecha === format(modalConfig.date, "yyyy-MM-dd"),
@@ -135,3 +134,5 @@ export const Calendar = () => {
     </div>
   );
 };
+
+export default Calendar;

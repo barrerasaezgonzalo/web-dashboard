@@ -1,6 +1,6 @@
 "use client";
 
-import { Task } from "@/types/";
+import { Task, TaskContextType } from "@/types/";
 import React, {
   createContext,
   useState,
@@ -10,20 +10,6 @@ import React, {
 } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { authFetch } from "@/hooks/authFetch";
-
-export interface TaskContextType {
-  tasks: Task[];
-  tasksLoading: boolean;
-  getTasks: (id: string) => Promise<void>;
-  addTask: (title: string, date?: string) => Promise<Task>;
-  toggleTaskInDev: (id: string) => void;
-  removeTask: (id: string) => Promise<void>;
-  editTask: (
-    id: string,
-    newTitle: string,
-    newDate?: string | undefined | null,
-  ) => void;
-}
 
 export const TasksContext = createContext<TaskContextType | undefined>(
   undefined,
@@ -45,11 +31,10 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
       const response = await authFetch(`/api/task`);
       const data = await response.json();
 
-      // Safety check: Ensure data is an array
       setTasks(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Fetch error:", error);
-      setTasks([]); // Fallback to empty array on error
+      setTasks([]);
     } finally {
       setTasksLoading(false);
     }
