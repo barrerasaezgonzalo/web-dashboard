@@ -5,10 +5,8 @@ import { authFetch } from "./authFetch";
 
 export const useNotes = () => {
   const { userId } = useAuth();
-
   const [notes, setNotes] = useState<Note[]>([]);
   const [note, setNote] = useState<Note | null>(null);
-
   const saveTimeout = useRef<NodeJS.Timeout | null>(null);
 
   const fetchNotes = useCallback(async () => {
@@ -17,41 +15,59 @@ export const useNotes = () => {
       const res = await authFetch(`/api/note`);
       const data: Note[] = await res.json();
 
-      for (const n of data) {
-        if (n.content.trim() === "") {
-          await authFetch(`/api/note?noteId=${n.id}`, {
-            method: "DELETE",
-          });
-        }
-      }
+      const validNotes = data.filter((n) => n.content?.trim() !== "");
+      setNotes(validNotes);
 
-      const filtered = data.filter((n) => (n.content ?? "").trim() !== "");
-      setNotes(filtered);
-      setNote(filtered.length > 0 ? filtered[0] : null);
+      setNote(validNotes.length > 0 ? validNotes[0] : null);
     } catch (err) {
       console.error("Error fetching notes:", err);
     }
   }, [userId]);
 
-  const saveNote = useCallback(
-    (content: string, noteId: string) => {
-      if (!userId) return;
-      if (saveTimeout.current) clearTimeout(saveTimeout.current);
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      const value = e.target.value;
 
-      saveTimeout.current = setTimeout(async () => {
-        await authFetch(`/api/note`, {
-          method: "PUT",
-          body: JSON.stringify({ content, noteId }),
-        });
+      if (!note && value.trim() !== "") {
+        const tempId = "temp-" + Date.now();
+        const tempNote = { id: tempId, content: value, user_id: userId! };
+        setNote(tempNote);
 
-        setNotes((prev) =>
-          prev.map((n) => (n.id === noteId ? { ...n, content } : n)),
-        );
-      }, 500);
+        createInitialNote(value);
+        return;
+      }
+
+      if (note) {
+        setNote({ ...note, content: value });
+
+        if (saveTimeout.current) clearTimeout(saveTimeout.current);
+        saveTimeout.current = setTimeout(async () => {
+          if (!note.id.startsWith("temp-")) {
+            await authFetch(`/api/note`, {
+              method: "PUT",
+              body: JSON.stringify({ content: value, noteId: note.id }),
+            });
+            setNotes((prev) =>
+              prev.map((n) =>
+                n.id === note.id ? { ...n, content: value } : n,
+              ),
+            );
+          }
+        }, 500);
+      }
     },
-    [userId],
+    [note, userId],
   );
 
+  const createInitialNote = async (initialContent: string) => {
+    const res = await authFetch(`/api/note`, {
+      method: "POST",
+      body: JSON.stringify({ content: initialContent }),
+    });
+    const newNote = await res.json();
+    setNote(newNote);
+    setNotes((prev) => [newNote, ...prev]);
+  };
   const createNote = useCallback(async () => {
     if (!userId) return;
 
@@ -76,28 +92,36 @@ export const useNotes = () => {
 
   const deleteNote = useCallback(
     async (id: string) => {
-      await authFetch(`/api/note?noteId=${id}`, {
-        method: "DELETE",
+      const updatedNotes = notes.filter((n) => n.id !== id);
+      setNotes(updatedNotes);
+
+      if (note?.id === id) {
+        setNote(updatedNotes.length > 0 ? updatedNotes[0] : null);
+      }
+
+      authFetch(`/api/note?noteId=${id}`, { method: "DELETE" }).catch((err) => {
+        console.error("Error al borrar:", err);
       });
 
-      setNotes((prev) => prev.filter((n) => n.id !== id));
-      setNote((prev) => (prev?.id === id ? null : prev));
-      createNote();
+      if (updatedNotes.length === 0) {
+        createNote();
+      }
     },
-    [userId],
+    [notes, note, createNote],
   );
 
-  const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const value = e.target.value;
+  const selectNote = useCallback(
+    async (nextNote: Note) => {
+      if (note && note.content.trim() === "") {
+        const currentId = note.id;
+        authFetch(`/api/note?noteId=${currentId}`, { method: "DELETE" });
 
-      setNote((prev) => {
-        if (!prev) return prev;
-        saveNote(value, prev.id);
-        return { ...prev, content: value };
-      });
+        setNotes((prev) => prev.filter((n) => n.id !== currentId));
+      }
+
+      setNote(nextNote);
     },
-    [saveNote],
+    [note, userId],
   );
 
   useEffect(() => {
@@ -111,5 +135,6 @@ export const useNotes = () => {
     createNote,
     deleteNote,
     handleChange,
+    selectNote,
   };
 };

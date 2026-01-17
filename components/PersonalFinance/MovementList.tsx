@@ -62,7 +62,7 @@ export const MovementList: React.FC<MovementListProps> = ({
                 }}
               >
                 <SquarePen size={22} />
-              </button>
+              </button>{" "}
               <button
                 className="text-red-500 cursor-pointer hover:text-red-700 transition-colors"
                 onClick={() => handleDeleteMovement(item.id)}

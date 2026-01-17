@@ -6,6 +6,8 @@ import {
   useEffect,
   useState,
 } from "react";
+import { authFetch } from "@/hooks/authFetch";
+
 import type {
   Financial,
   AhorrosCategory,
@@ -41,7 +43,7 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
 
   const getFinancial = async () => {
     try {
-      const response = await fetch("/api/getUtm");
+      const response = await authFetch("/api/getUtm");
       const data: Financial = await response.json();
       const newCurrent = { utm: data.current.utm || financial.current.utm };
       const newFinancial: Financial = { current: newCurrent };
@@ -74,7 +76,9 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
     if (!userId) return;
     setLoading(true);
     try {
-      const response = await fetch(`/api/personalFinances?authData=${userId}`);
+      const response = await authFetch(
+        `/api/personalFinances?authData=${userId}`,
+      );
       const dataFromApi = await response.json();
       const financials: PersonalFinance[] = dataFromApi.map((item: any) => {
         switch (item.type) {
@@ -101,11 +105,14 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
     if (!userId) return;
     setLoading(true);
     try {
-      const response = await fetch(`/api/personalFinances?authData=${userId}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ newMovement }),
-      });
+      const response = await authFetch(
+        `/api/personalFinances?authData=${userId}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ newMovement }),
+        },
+      );
       if (!response.ok) {
         const errData = await response.json();
         throw new Error(errData.message || "Error al agregar personal finance");
@@ -125,11 +132,14 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
     updatedMovement: PersonalFinanceMovement,
   ): Promise<void> => {
     try {
-      const response = await fetch(`/api/personalFinances?authData=${userId}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ updatedMovement }),
-      });
+      const response = await authFetch(
+        `/api/personalFinances?authData=${userId}`,
+        {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ updatedMovement }),
+        },
+      );
       const updatedArray = await response.json();
       const updated = updatedArray[0];
       setMovements((prev) =>
@@ -144,7 +154,7 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
   const deleteMovement = async (id: string) => {
     setMovements((prev) => prev.filter((t) => t.id !== id));
     try {
-      await fetch(`/api/personalFinances?id=${id}&authData=${userId}`, {
+      await authFetch(`/api/personalFinances?id=${id}&authData=${userId}`, {
         method: "DELETE",
       });
     } catch (error) {

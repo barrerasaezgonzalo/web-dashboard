@@ -1,5 +1,5 @@
 // EventModal.tsx
-import { CalendarDays, Info, Trash, X } from "lucide-react";
+import { CalendarDays, Info, X } from "lucide-react";
 import { memo } from "react";
 import { useEventModal } from "@/hooks/useEventModal";
 import { EventItem } from "./EventItem";

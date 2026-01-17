@@ -13,6 +13,7 @@ interface AuthContextProps {
   userId: string | null;
   userName: string | null;
   loading: boolean;
+  signInWithGoogle: () => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -20,6 +21,7 @@ const AuthContext = createContext<AuthContextProps>({
   userId: null,
   loading: false,
   userName: "",
+  signInWithGoogle: async () => {},
   signOut: async () => {},
 });
 
@@ -72,8 +74,27 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => listener.subscription.unsubscribe();
   }, []);
 
+  const signInWithGoogle = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          queryParams: {
+            access_type: "offline",
+            prompt: "select_account",
+          },
+        },
+      });
+      if (error) throw error;
+    } catch (error: any) {
+      console.error("Login error:", error.message);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ userId, loading, userName, signOut }}>
+    <AuthContext.Provider
+      value={{ userId, loading, userName, signOut, signInWithGoogle }}
+    >
       {children}
     </AuthContext.Provider>
   );

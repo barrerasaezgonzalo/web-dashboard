@@ -2,6 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { supabase } from "@/lib/supabaseClient";
 import { PersonalFinanceMovement } from "@/types/";
+import { createClient } from "@supabase/supabase-js";
 
 type ApiResponse =
   | PersonalFinanceMovement[]
@@ -14,9 +15,26 @@ export default async function handler(
 ) {
   const { authData, id } = req.query;
 
-  if (!authData || typeof authData !== "string") {
-    return res.status(400).json({ error: "authData es requerido" });
+  const authHeader = req.headers["authorization"] || req.headers.authorization;
+  const supabaseAdmin = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+  );
+
+  if (!authHeader) {
+    return res.status(401).json({ error: "No autorizado. Falta token." });
   }
+  const token = authHeader.replace("Bearer ", "");
+  const {
+    data: { user },
+    error,
+  } = await supabaseAdmin.auth.getUser(token);
+  if (error || !user) {
+    console.log("Error Auth:", error?.message);
+    return res.status(401).json({ error: "Token inválido o sesión expirada" });
+  }
+
+  const userId = user.id;
 
   switch (req.method) {
     case "GET": {
@@ -24,7 +42,7 @@ export default async function handler(
         const { data, error } = await supabase
           .from("movements")
           .select("*")
-          .eq("auth_data", authData)
+          .eq("auth_data", userId)
           .order("date", { ascending: false });
 
         if (error) throw error;
@@ -50,7 +68,7 @@ export default async function handler(
       try {
         const { data, error } = await supabase
           .from("movements")
-          .insert([{ type, date, value, category, auth_data: authData }])
+          .insert([{ type, date, value, category, auth_data: userId }])
           .select();
 
         if (error) throw error;
@@ -80,7 +98,7 @@ export default async function handler(
         const { data, error } = await supabase
           .from("movements")
           .update(updates)
-          .eq("auth_data", authData)
+          .eq("auth_data", userId)
           .eq("id", movementId)
           .select();
 
@@ -101,7 +119,8 @@ export default async function handler(
         const { error: deleteError } = await supabase
           .from("movements")
           .delete()
-          .eq("id", id);
+          .eq("id", id)
+          .eq("auth_data", userId);
 
         if (deleteError) throw deleteError;
         return res.status(200).json({ success: true });

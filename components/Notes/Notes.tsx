@@ -9,7 +9,7 @@ import { Note } from "@/types/";
 import { usePrivacyMode } from "@/hooks/usePrivacyMode";
 
 export const NotesComponent: React.FC = () => {
-  const { note, setNote, notes, deleteNote, createNote, handleChange } =
+  const { note, selectNote, notes, deleteNote, createNote, handleChange } =
     useNotes();
   const [openList, setOpenList] = useState(false);
   const { openToast, closeToast } = useToast();
@@ -62,27 +62,13 @@ export const NotesComponent: React.FC = () => {
       </div>
 
       {!isMinimized && (
-        <>
-          {notes.length === 0 ? (
-            <div className="text-center py-10">
-              <p>No tienes notas todavía.</p>
-              <button
-                onClick={handleAddNote}
-                className="mt-4 px-4 py-2 bg-amber-400 rounded hover:bg-amber-500"
-              >
-                Crear primera nota
-              </button>
-            </div>
-          ) : (
-            <textarea
-              value={note?.content || ""}
-              onChange={handleChange}
-              rows={12}
-              placeholder="Escribe tu nota..."
-              className={`w-full p-2 outline-none bg-amber-100 ${isPrivate ? "privacy-blur" : ""} `}
-            />
-          )}
-        </>
+        <textarea
+          value={note?.content || ""}
+          onChange={handleChange}
+          rows={12}
+          placeholder="Empieza a escribir para crear una nota..."
+          className={`w-full p-2 outline-none bg-amber-100 ${isPrivate ? "privacy-blur" : ""}`}
+        />
       )}
 
       {notes.length > 0 && (
@@ -102,7 +88,7 @@ export const NotesComponent: React.FC = () => {
           }}
           openToast={openToast}
           handleClickNote={(n: Note) => {
-            setNote(n);
+            selectNote(n);
             setOpenList(false);
           }}
         />

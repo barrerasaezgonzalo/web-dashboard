@@ -22,6 +22,10 @@ export const NotesList: React.FC<NotesListProps> = ({
     }
   }, [openList]);
 
+  const filteredNotes = notes.filter((n) =>
+    n.content.toLowerCase().includes(search.toLowerCase()),
+  );
+
   return (
     <>
       {openList && (
@@ -37,29 +41,25 @@ export const NotesList: React.FC<NotesListProps> = ({
             className="w-full p-1 mb-2 rounded border focus:outline-none focus:ring focus:border-amber-300"
           />
 
-          {notes
-            .filter((n: Note) =>
-              n.content.toLowerCase().includes(search.toLowerCase()),
-            )
-            .map((n) => (
-              <div
-                key={n.id}
-                className="flex justify-between items-center p-2 border-b hover:bg-amber-200 cursor-pointer"
+          {filteredNotes.map((n) => (
+            <div
+              key={n.id}
+              className="flex justify-between items-center p-2 border-b hover:bg-amber-200 cursor-pointer"
+            >
+              <span
+                className="truncate flex-1"
+                onClick={() => handleClickNote(n)}
               >
-                <span
-                  className="truncate flex-1"
-                  onClick={() => handleClickNote(n)}
-                >
-                  {n.content}
-                </span>
-                <button
-                  onClick={() => handleDeleteNote(n)}
-                  className="p-1 rounded hover:bg-red-400"
-                >
-                  <Trash size={16} />
-                </button>
-              </div>
-            ))}
+                {n.content}
+              </span>
+              <button
+                onClick={() => handleDeleteNote(n)}
+                className="p-1 rounded hover:bg-red-400"
+              >
+                <Trash size={16} />
+              </button>
+            </div>
+          ))}
 
           {notes.filter((n) =>
             n.content.toLowerCase().includes(search.toLowerCase()),
