@@ -1,7 +1,7 @@
 "use client";
-
+import * as XLSX from "xlsx";
 import { useState } from "react";
-import { ChevronUp, ChevronDown, Logs, Plus } from "lucide-react";
+import { ChevronUp, ChevronDown, Logs, Plus, Download } from "lucide-react";
 import { MovementFooter } from "./MovementFooter";
 import { specialCategoryRules } from "@/constants";
 import { useMovements } from "@/hooks/useMovements";
@@ -21,6 +21,7 @@ export default function Movements() {
     total,
     selectedType,
     selectedMonth,
+    description,
     setCategory,
     setValue,
     setSelectedType,
@@ -31,10 +32,50 @@ export default function Movements() {
     handleDeleteMovement,
     handleEditClick,
     resetModal,
+    setDescription,
+    listaParaGráfico,
   } = useMovements();
 
   const [isMinimized, setIsMinimized] = useState(false);
   const { isPrivate } = usePrivacyMode();
+
+  const exportToExcel = (data: any[], periodName: string) => {
+    // 1. Mapear y formatear los datos
+    const rows = data.map((item) => {
+      // Convertir YYYY-MM-DD a DD/MM/YYYY
+      const [year, month, day] = item.date.split("-");
+      const fechaFormateada = `${day}/${month}/${year}`;
+
+      return {
+        FECHA: fechaFormateada,
+        TIPO: item.type.toUpperCase(),
+        CATEGORÍA:
+          item.category.charAt(0).toUpperCase() + item.category.slice(1),
+        DESCRIPCIÓN: item.description || "-",
+        MONTO: Number(item.value), // Enviarlo como número para que Excel pueda sumar
+      };
+    });
+
+    // 2. Crear la hoja
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+
+    // 3. Definir anchos de columna para que no se vea apretado (UX de Excel)
+    const columnWidths = [
+      { wch: 12 }, // Fecha
+      { wch: 10 }, // Tipo
+      { wch: 15 }, // Categoría
+      { wch: 30 }, // Descripción
+      { wch: 12 }, // Monto
+    ];
+    worksheet["!cols"] = columnWidths;
+
+    // 4. Crear el libro y descargar
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Finanzas");
+
+    // El nombre del archivo será algo como: Reporte_Enero_2026.xlsx
+    XLSX.writeFile(workbook, `Reporte_${periodName.replace(" ", "_")}.xlsx`);
+  };
 
   return (
     <div
@@ -51,11 +92,18 @@ export default function Movements() {
             </h2>
             <div className="flex items-center gap-1">
               <button
-                title="Nueva nota"
+                title="Nuevo Movimiento"
                 className="p-2 rounded hover:bg-blue-500 cursor-pointer transition-colors text-white"
                 onClick={handleOpenAddModal}
               >
                 <Plus size={20} />
+              </button>
+              <button
+                onClick={() => exportToExcel(filtrados, selectedMonth)}
+                className="p-2 rounded hover:bg-blue-500 cursor-pointer transition-colors text-white"
+                title="Exportar vista actual"
+              >
+                <Download size={20} />
               </button>
 
               <button
@@ -88,6 +136,7 @@ export default function Movements() {
               isPrivate={isPrivate}
               onEdit={handleEditClick}
               onDelete={handleDeleteMovement}
+              listaParaGráfico={listaParaGráfico}
             />
 
             <MovementFooter
@@ -103,6 +152,7 @@ export default function Movements() {
         <MovementModal
           modalType={modalType}
           category={category}
+          description={description}
           value={value}
           errors={errors}
           specialCategoryRules={specialCategoryRules}
@@ -112,6 +162,7 @@ export default function Movements() {
           onSave={editingItem ? handleUpdateMovement : handleAddMovement}
           onChangeCategory={setCategory}
           onChangeValue={setValue}
+          onChangeDescription={setDescription}
         />
       )}
     </div>

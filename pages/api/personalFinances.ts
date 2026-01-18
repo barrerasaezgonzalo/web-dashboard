@@ -62,7 +62,7 @@ export default async function handler(
       if (!newMovement) {
         return res.status(400).json({ error: "newMovement es requerido" });
       }
-      const { type, date, value, category } = newMovement;
+      const { type, date, value, category, description } = newMovement;
       if (!type || !date || !value || !category) {
         return res
           .status(400)
@@ -72,7 +72,9 @@ export default async function handler(
       try {
         const { data, error } = await supabase
           .from("movements")
-          .insert([{ type, date, value, category, auth_data: userId }])
+          .insert([
+            { type, date, value, category, description, auth_data: userId },
+          ])
           .select();
 
         if (error) throw error;
@@ -97,12 +99,20 @@ export default async function handler(
           .json({ error: "updatedMovement.id es requerido" });
       }
 
-      const { id: movementId, type, value, category, date } = updatedMovement;
+      const {
+        id: movementId,
+        type,
+        value,
+        category,
+        date,
+        description,
+      } = updatedMovement;
       const updates: Partial<PersonalFinanceMovement> = {};
       if (type !== undefined) updates.type = type;
       if (value !== undefined) updates.value = value;
       if (category !== undefined) updates.category = category;
       if (date !== undefined) updates.date = date;
+      if (description !== undefined) updates.description = description;
 
       try {
         const { data, error } = await supabase

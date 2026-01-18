@@ -35,6 +35,7 @@ export interface BaseMovement {
   id: string;
   date: string;
   value: number;
+  description?: string | undefined;
 }
 
 export type PersonalFinance =
@@ -58,6 +59,7 @@ export interface MovementFiltersProps {
 export interface MovementModalProps {
   modalType: MovementType;
   category: string;
+  description: string;
   value: string;
   errors: { category?: string; value?: string };
   specialCategoryRules: Record<string, (financial: Financial) => number>;
@@ -67,6 +69,7 @@ export interface MovementModalProps {
   onSave: () => void;
   onChangeCategory: (category: string) => void;
   onChangeValue: (value: string) => void;
+  onChangeDescription: (description: string) => void;
 }
 
 export interface MovementListProps {
@@ -94,6 +97,7 @@ export type PersonalFinanceMovement = {
   category: string;
   value: number;
   date: string;
+  description?: string;
 };
 
 export interface MovementFooterProps {

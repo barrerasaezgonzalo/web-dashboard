@@ -10,11 +10,14 @@ export const useMovements = () => {
   const { openToast, closeToast } = useToast();
   const [modalType, setModalType] = useState<MovementType | null>(null);
   const [category, setCategory] = useState("");
+  const [description, setDescription] = useState("");
   const [value, setValue] = useState("");
   const [editingItem, setEditingItem] = useState<string | null>(null);
-  const [errors, setErrors] = useState<{ category?: string; value?: string }>(
-    {},
-  );
+  const [errors, setErrors] = useState<{
+    category?: string;
+    value?: string;
+    description?: string;
+  }>({});
   const [selectedType, setSelectedType] = useState<MovementType>("gastos");
   const [selectedMonth, setSelectedMonth] = useState(
     new Date().toISOString().slice(0, 7),
@@ -36,6 +39,7 @@ export const useMovements = () => {
     setModalType(null);
     setCategory("");
     setValue("");
+    setDescription("");
     setEditingItem(null);
     setErrors({});
   }, []);
@@ -67,6 +71,7 @@ export const useMovements = () => {
   const handleEditClick = useCallback((item: PersonalFinance) => {
     setEditingItem(item.id);
     setCategory(item.category);
+    setDescription(item.description ?? "");
     setValue(item.value.toString());
     setModalType(item.type);
     setErrors({});
@@ -79,6 +84,7 @@ export const useMovements = () => {
       const newMovement = {
         type: modalType,
         category,
+        description,
         value: Number(value),
         date: `${selectedMonth}-${day}`,
       } as PersonalFinance;
@@ -98,6 +104,7 @@ export const useMovements = () => {
         id: editingItem,
         type: modalType,
         category,
+        description,
         value: Number(value),
         date: filtrados.find((f) => f.id === editingItem)?.date,
       } as PersonalFinance;
@@ -171,6 +178,7 @@ export const useMovements = () => {
     summary,
     modalType,
     category,
+    description,
     value,
     editingItem,
     errors,
@@ -179,6 +187,7 @@ export const useMovements = () => {
     selectedType,
     selectedMonth,
     setCategory,
+    setDescription,
     setValue,
     setSelectedType,
     setSelectedMonth,
@@ -193,5 +202,6 @@ export const useMovements = () => {
     resetModal,
     ...checkInversionDorada,
     handleOpenPendingPayment,
+    listaParaGráfico: context.movements,
   };
 };

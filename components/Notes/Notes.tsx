@@ -89,7 +89,7 @@ export const Notes: React.FC = () => {
             value={note?.content || ""}
             onChange={handleChange}
             placeholder="Empieza a escribir algo importante..."
-            className={`w-full h-full p-4 resize-none outline-none bg-transparent text-amber-950 placeholder-amber-700/50 leading-relaxed scrollbar-thin scrollbar-thumb-amber-400 ${isPrivate ? "privacy-blur" : ""}`}
+            className={`w-full h-full p-4 resize-none outline-none bg-transparent text-amber-950 placeholder-amber-700/50 leading-relaxed scrollbar-thin -mt-10! scrollbar-thumb-amber-400 ${isPrivate ? "privacy-blur" : ""}`}
           />
 
           <div className="absolute bottom-2 right-4 text-[10px] uppercase font-bold text-amber-700/60 tracking-widest">

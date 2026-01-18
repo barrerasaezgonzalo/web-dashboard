@@ -8,6 +8,7 @@ import { PlusCircle, Wallet, X } from "lucide-react";
 export const MovementModal: React.FC<MovementModalProps> = ({
   modalType,
   category,
+  description,
   value,
   errors,
   specialCategoryRules,
@@ -17,6 +18,7 @@ export const MovementModal: React.FC<MovementModalProps> = ({
   onSave,
   onChangeCategory,
   onChangeValue,
+  onChangeDescription,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { financial, loading } = usePersonalFinance();
@@ -151,6 +153,17 @@ export const MovementModal: React.FC<MovementModalProps> = ({
                 {errors.value}
               </p>
             )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-400 mb-2">
+              Descripcion (Opcional)
+            </label>
+            <textarea
+              value={description}
+              onChange={(e) => onChangeDescription(e.target.value)}
+              className={`w-full bg-slate-900 border rounded-xl p-3 text-white focus:outline-none focus:ring-2 transition-all appearance-none cursor-pointer border-slate-700 focus:ring-blue-500/50`}
+            />
           </div>
         </div>
 
