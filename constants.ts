@@ -10,7 +10,7 @@ export const GastosCategoryLabels: CategoryOption[] = [
   { id: "gastos_comunes", label: "Gastos Comunes", fijo: true },
   { id: "luz", label: "Luz", fijo: true },
   { id: "agua", label: "Agua", fijo: true },
-  { id: "fa", label: "FA (UTM)", fijo: true },
+  { id: "fa", label: "FA", fijo: true },
   { id: "celular", label: "Celular", fijo: true },
   { id: "internet", label: "Internet", fijo: true },
   { id: "apv", label: "APV", fijo: true },

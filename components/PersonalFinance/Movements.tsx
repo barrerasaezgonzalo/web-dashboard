@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronUp, ChevronDown, Logs } from "lucide-react";
+import { ChevronUp, ChevronDown, Logs, Plus } from "lucide-react";
 import { MovementFooter } from "./MovementFooter";
 import { specialCategoryRules } from "@/constants";
 import { useMovements } from "@/hooks/useMovements";
@@ -37,27 +37,38 @@ export default function Movements() {
   const { isPrivate } = usePrivacyMode();
 
   return (
-    <div className="bg-white rounded p-6 transition-all">
+    <div
+      className={`bg-[#1E293C] p-4 rounded shadow transition-all duration-300 ${isMinimized ? "min-h-0" : "min-h-[200px]"} overflow-x-auto  text-white`}
+    >
       <div className="max-w-4xl mx-auto">
         <div
           className={`flex flex-wrap items-center justify-between ${!isMinimized && "pb-4"} gap-3`}
         >
-          <div className="flex justify-between items-center w-full border-b pb-2">
+          <div className="flex justify-between items-center w-full border-b pb-2 text-white">
             <h2 className="text-xl font-bold flex gap-2 items-center">
               <Logs size={25} />
               Movimientos
             </h2>
+            <div className="flex items-center gap-1">
+              <button
+                title="Nueva nota"
+                className="p-2 rounded hover:bg-blue-500 cursor-pointer transition-colors text-white"
+                onClick={handleOpenAddModal}
+              >
+                <Plus size={20} />
+              </button>
 
-            <button
-              onClick={() => setIsMinimized(!isMinimized)}
-              className="p-1 hover:bg-gray-100 rounded transition-colors cursor-pointer"
-            >
-              {isMinimized ? (
-                <ChevronDown size={24} />
-              ) : (
-                <ChevronUp size={24} />
-              )}
-            </button>
+              <button
+                onClick={() => setIsMinimized(!isMinimized)}
+                className="p-1 hover:bg-blue-400 rounded transition-colors cursor-pointer"
+              >
+                {isMinimized ? (
+                  <ChevronDown size={24} />
+                ) : (
+                  <ChevronUp size={24} />
+                )}
+              </button>
+            </div>
           </div>
 
           {!isMinimized && (

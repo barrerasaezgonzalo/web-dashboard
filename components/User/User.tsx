@@ -1,16 +1,29 @@
 "use client";
 
-import { formatFechaHora, getDaysRemainingUntil, getGreeting } from "@/utils";
+import {
+  formatCLP,
+  formatFechaHora,
+  getDaysRemainingUntil,
+  getGreeting,
+} from "@/utils";
 import { useTasks } from "@/hooks/useTasks";
 import { useAuth } from "@/context/AuthContext";
 import { useState, useEffect, useContext } from "react";
 import { usePrivacyMode } from "@/hooks/usePrivacyMode";
-import { Eye, EyeOff, LogOut, CalendarDays, Thermometer } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  LogOut,
+  CalendarDays,
+  Thermometer,
+  PiggyBank,
+} from "lucide-react";
 import { useToast } from "@/hooks/useToast";
 import { CalendarContext } from "@/context/CalendarContext";
 import { format } from "date-fns";
 import { useWheater } from "@/hooks/useWheater";
 import { Task } from "@/types";
+import { useMovements } from "@/hooks/useMovements";
 
 export const User = () => {
   const { userName, signOut } = useAuth();
@@ -20,7 +33,7 @@ export const User = () => {
   const [fecha, setFecha] = useState("Cargando...");
   const [hora, setHora] = useState("Cargando...");
   const { events, handleShowModal } = useContext(CalendarContext)!;
-
+  const { canInvest, faltaDorada } = useMovements();
   const hoyStr = format(new Date(), "yyyy-MM-dd");
   const eventosHoy = events.filter((ev) => ev.fecha === hoyStr).length;
   const { wheater } = useWheater();
@@ -68,7 +81,7 @@ export const User = () => {
   };
 
   return (
-    <div className="relative flex flex-col bg-[#4D677E] p-5 rounded-lg shadow-lg gap-6 text-white">
+    <div className="relative flex flex-col bg-[#4D677E] p-5 rounded shadow-lg gap-6 text-white">
       <div className="absolute top-3 right-3 flex gap-2">
         <button
           onClick={handlePrivacyClick}
@@ -130,22 +143,35 @@ export const User = () => {
         ))}
       </div>
 
-      <div className="border-t border-white/10 pt-4">
+      <div className="border-t border-white/10 pt-2">
         {eventosHoy === 0 ? (
-          <div className="flex items-center gap-2 mb-2 text-white/70">
+          <div className="flex items-center gap-2 text-white/70">
             <CalendarDays size={18} />
-            <h3 className="text-sm font-bold uppercase tracking-wider">
+            <h3 className="text-sm tracking-wider">
               No hay eventos programados para hoy.
             </h3>
           </div>
         ) : (
           <div
-            className="text-sm font-bold uppercase tracking-wider cursor-pointer"
+            className="text-sm tracking-wider cursor-pointer"
             onClick={() => handleShowModal(new Date())}
           >
             {eventosHoy} {eventosHoy === 1 ? "Evento" : "Eventos"} del día
           </div>
         )}
+      </div>
+
+      <div className="border-t border-white/10 pt-2 -mt-4">
+        <div className="flex items-center gap-2  text-white/70">
+          <PiggyBank size={18} />
+          <h3
+            className={`text-sm tracking-wider ${isPrivate ? "privacy-blur" : ""} `}
+          >
+            {canInvest
+              ? "Ahora puedes invertir!"
+              : `Dorada bajo el mínimo de inversión: - ${formatCLP(faltaDorada)}`}
+          </h3>
+        </div>
       </div>
     </div>
   );

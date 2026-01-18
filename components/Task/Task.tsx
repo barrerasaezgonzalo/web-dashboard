@@ -1,11 +1,11 @@
 "use client";
 
-import { TaskInput } from "./TaskInput";
 import { TaskItem } from "./TaskItem";
-import { ChevronDown, ChevronUp, ListChecks } from "lucide-react";
+import { ChevronDown, ChevronUp, ListChecks, Plus } from "lucide-react";
 import { useTasks } from "@/hooks/useTasks";
 import { useState } from "react";
 import { Task } from "@/types";
+import { TaskModal } from "./TaskModal";
 
 const Tasks: React.FC = () => {
   const {
@@ -22,51 +22,45 @@ const Tasks: React.FC = () => {
     handleEdit,
     handleDelete,
     handleTaskToggle,
-    handleKeyDown,
+    handleOpenModal,
+    resetForm,
+    showModal,
   } = useTasks();
 
   const [isMinimized, setIsMinimized] = useState(false);
-
   return (
     <div
-      className={`bg-white text-black p-4 rounded shadow transition-all duration-300 ${
+      className={`bg-[#1E293C] text-white p-4 rounded shadow transition-all duration-300 ${
         isMinimized ? "min-h-0" : "min-h-[200px]"
       } overflow-x-auto`}
       role="region"
       aria-labelledby="tasks-heading"
     >
-      {/* Título */}
-      <div
-        className={`flex justify-between items-center border-b ${!isMinimized && "mb-4"} pb-2`}
-      >
-        <h2 id="tasks-heading" className="flex gap-2 text-xl font-bold mb-2">
+      <div className="flex justify-between items-center w-full border-b pb-2 text-white">
+        <h2 className="text-xl font-bold flex gap-2 items-center">
           <ListChecks size={25} />
-          Lista de pendientes
+          Lista de Tareas
         </h2>
-        <button
-          onClick={() => setIsMinimized(!isMinimized)}
-          className="p-1 hover:bg-blue-100 rounded transition-colors"
-        >
-          {isMinimized ? <ChevronDown size={20} /> : <ChevronUp size={20} />}
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            title="Nueva Tarea"
+            className="p-2 rounded hover:bg-blue-500 cursor-pointer transition-colors text-white"
+            onClick={handleOpenModal}
+          >
+            <Plus size={20} />
+          </button>
+
+          <button
+            onClick={() => setIsMinimized(!isMinimized)}
+            className="p-1 hover:bg-blue-400 rounded transition-colors cursor-pointer"
+          >
+            {isMinimized ? <ChevronDown size={24} /> : <ChevronUp size={24} />}
+          </button>
+        </div>
       </div>
 
       {!isMinimized && (
         <>
-          {/* Input */}
-          <TaskInput
-            title={title}
-            setTitle={setTitle}
-            date={date}
-            setDate={setDate}
-            inputRef={inputRef}
-            handleKeyDown={handleKeyDown}
-            editingTaskId={editingTaskId}
-            handleAdd={handleAdd}
-            handleSave={handleSave}
-            isLoading={tasksLoading}
-          />
-
           {/* Lista de tareas */}
           <ul role="list" className="mt-4">
             {tasks.map((task: Task) => (
@@ -80,6 +74,19 @@ const Tasks: React.FC = () => {
             ))}
           </ul>
         </>
+      )}
+      {showModal && (
+        <TaskModal
+          onClose={resetForm}
+          title={title}
+          setTitle={setTitle}
+          date={date}
+          setDate={setDate}
+          onSave={editingTaskId ? handleSave : handleAdd}
+          isLoading={tasksLoading}
+          inputRef={inputRef}
+          editingTaskId={editingTaskId || ""}
+        />
       )}
     </div>
   );

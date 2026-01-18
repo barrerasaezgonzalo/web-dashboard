@@ -23,6 +23,6 @@ export interface ToastProps {
 
 export type ToastConfig = {
   message: string;
-  onConfirm: () => void;
+  onConfirm?: () => void;
   onCancel?: () => void;
 };

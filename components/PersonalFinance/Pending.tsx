@@ -1,43 +1,19 @@
 import { PersonalFinanceContext } from "@/context/PersonalFinanceContext";
-import { useMovements } from "@/hooks/useMovements";
 import { getPendingAndVariableExpenses } from "@/utils";
-import {
-  CreditCard,
-  PiggyBank,
-  CheckCircle2,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
+import { PiggyBank, CheckCircle2, ChevronDown, ChevronUp } from "lucide-react";
 import { useContext, useState } from "react";
-import { MovementModal } from "./MovementModal";
-import { specialCategoryRules } from "@/constants";
-import { getTooltipClass } from "@/app/styles/labelStyles";
-import { usePrivacyMode } from "@/hooks/usePrivacyMode";
 
 export const Pending = () => {
   const { movements } = useContext(PersonalFinanceContext)!;
-  const [showAll, setShowAll] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
-  const pendingItems = getPendingAndVariableExpenses(movements, showAll);
-  const { isPrivate } = usePrivacyMode();
-  const {
-    handleOpenPendingPayment,
-    modalType,
-    category,
-    value,
-    errors,
-    selectedType,
-    editingItem,
-    resetModal,
-    handleUpdateMovement,
-    handleAddMovement,
-    setCategory,
-    setValue,
-  } = useMovements();
+  const pendingItems = getPendingAndVariableExpenses(movements);
 
+  if (!movements || movements.length === 0) {
+    return null;
+  }
   return (
     <div
-      className={`bg-white text-black p-4 rounded shadow transition-all duration-300 ${
+      className={`bg-[#1E293C] text-white p-4 rounded shadow transition-all duration-300 ${
         isMinimized ? "min-h-0" : "min-h-[200px]"
       } overflow-x-auto`}
     >
@@ -59,55 +35,17 @@ export const Pending = () => {
 
         {!isMinimized && (
           <>
-            <button
-              onClick={() => setShowAll(!showAll)}
-              className="mt-2 flex items-center justify-center gap-2 w-full py-2 text-sm text-blue-600 border border-dashed border-blue-200 rounded-lg cursor-pointer"
-            >
-              {showAll ? "Ver solo pendientes" : "Ver todos los gastos"}
-            </button>
             <div className="flex flex-col w-full gap-1">
               {pendingItems.length > 0 ? (
                 pendingItems.map((item) => (
                   <div
                     key={item.id}
-                    className={`flex justify-between items-center border-b border-gray-100 py-3 px-2 transition-colors rounded-lg ${
-                      !item.fijo ? "bg-gray-50/50" : ""
-                    }`}
+                    className={`flex justify-between items-center border-b border-gray-100 py-3 px-2 transition-colors rounded-lg bg-gray-50 mb-2`}
                   >
                     <div className="flex flex-col">
-                      <span className="font-medium text-gray-700">
+                      <span className="font-medium text-sm uppercase pl-4 text-blue-500">
                         {item.label}
                       </span>
-                    </div>
-
-                    <div className="flex items-center gap-3">
-                      {item.totalPaid > 0 && (
-                        <span
-                          className={`text-sm font-semibold text-green-600 ${isPrivate ? "privacy-blur" : ""} `}
-                        >
-                          ${item.totalPaid.toLocaleString()}
-                        </span>
-                      )}
-
-                      <div className="relative inline-block group">
-                        {!showAll && (
-                          <CreditCard
-                            size={22}
-                            onClick={() => handleOpenPendingPayment(item.id)}
-                            className="text-green-500 cursor-pointer hover:scale-110 transition-transform"
-                          />
-                        )}
-                        <div
-                          className={getTooltipClass({
-                            type: "default",
-                            inDev: false,
-                          })}
-                        >
-                          {item.isPaid
-                            ? `Añadir otro pago a ${item.label}`
-                            : `Pagar ${item.label}`}
-                        </div>
-                      </div>
                     </div>
                   </div>
                 ))
@@ -121,22 +59,6 @@ export const Pending = () => {
           </>
         )}
       </div>
-
-      {modalType && (
-        <MovementModal
-          modalType={modalType}
-          category={category}
-          value={value}
-          errors={errors}
-          specialCategoryRules={specialCategoryRules}
-          selectedType={selectedType}
-          editingItem={editingItem}
-          onClose={resetModal}
-          onSave={editingItem ? handleUpdateMovement : handleAddMovement}
-          onChangeCategory={setCategory}
-          onChangeValue={setValue}
-        />
-      )}
     </div>
   );
 };

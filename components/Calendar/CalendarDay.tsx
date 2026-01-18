@@ -11,7 +11,7 @@ export const CalendarDay = ({
     <div
       className={`h-12 border-b border-r flex flex-col items-center justify-start p-1 cursor-pointer hover:bg-blue-100 transition-colors
             ${!esMesActual ? "bg-gray-50 text-gray-400" : "text-gray-700"}
-            ${isToday(dia) ? "bg-amber-400 font-bold" : ""}`}
+            ${isToday(dia) ? "bg-blue-300 font-bold  text-white" : "bg-gray-50"}`}
       onClick={onClick}
     >
       <span>{format(dia, "d")}</span>

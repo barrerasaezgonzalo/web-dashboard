@@ -3,71 +3,68 @@ import { Trash } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 export const NotesList: React.FC<NotesListProps> = ({
-  openList,
   notes,
   handleDeleteNote,
   handleClickNote,
 }) => {
   const [search, setSearch] = useState("");
-  const elementoRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (openList) {
-      if (elementoRef.current) {
-        elementoRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-        });
-      }
-    }
-  }, [openList]);
 
   const filteredNotes = notes.filter((n) =>
     n.content.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
-    <>
-      {openList && (
-        <div
-          className="mt-4 p-2 bg-amber-100 rounded shadow max-h-64 overflow-auto"
-          ref={elementoRef}
-        >
-          <input
-            type="text"
-            placeholder="Buscar notas..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full p-1 mb-2 rounded border focus:outline-none focus:ring focus:border-amber-300"
-          />
+    <div className="absolute inset-0 top-[60px] bg-amber-50/95 backdrop-blur-sm z-10 p-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
+      <div className="flex items-center justify-between mb-3">
+        <span className="font-bold text-amber-900 text-sm">
+          Notas Guardadas
+        </span>
+        <span className="text-[10px] bg-amber-200 px-2 py-0.5 rounded-full text-amber-800">
+          {notes.length} notas
+        </span>
+      </div>
 
-          {filteredNotes.map((n) => (
+      <input
+        type="text"
+        placeholder="Buscar en el historial..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="w-full p-2 mb-4 rounded-lg border-2 border-amber-200 bg-white text-sm focus:outline-none focus:border-amber-400 transition-all"
+      />
+
+      <div className="space-y-2 max-h-[280px] overflow-y-auto pr-1">
+        {filteredNotes.map((n) => (
+          <div
+            key={n.id}
+            className="group flex justify-between items-center p-3 bg-white hover:bg-amber-100 rounded-lg border border-amber-200 shadow-sm transition-all"
+          >
             <div
-              key={n.id}
-              className="flex justify-between items-center p-2 border-b hover:bg-amber-200 cursor-pointer"
+              className="flex-1 cursor-pointer overflow-hidden"
+              onClick={() => handleClickNote(n)}
             >
-              <span
-                className="truncate flex-1"
-                onClick={() => handleClickNote(n)}
-              >
-                {n.content}
-              </span>
-              <button
-                onClick={() => handleDeleteNote(n)}
-                className="p-1 rounded hover:text-red-400 cursor-pointer"
-              >
-                <Trash size={16} />
-              </button>
+              <p className="text-sm text-amber-900 truncate pr-2 font-medium">
+                {n.content || "Nota vacía..."}
+              </p>
+              <p className="text-[10px] text-amber-600/70 mt-1">
+                Haz clic para editar
+              </p>
             </div>
-          ))}
 
-          {notes.filter((n) =>
-            n.content.toLowerCase().includes(search.toLowerCase()),
-          ).length === 0 && (
-            <p className="text-sm text-gray-500">No se encontraron notas</p>
-          )}
-        </div>
-      )}
-    </>
+            <button
+              onClick={() => handleDeleteNote(n)}
+              className="opacity-0 group-hover:opacity-100 p-2 rounded-md hover:bg-red-50 hover:text-red-500 transition-all text-gray-400"
+            >
+              <Trash size={16} />
+            </button>
+          </div>
+        ))}
+
+        {filteredNotes.length === 0 && (
+          <div className="text-center py-10">
+            <p className="text-sm text-amber-700/50">No hay coincidencias</p>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };

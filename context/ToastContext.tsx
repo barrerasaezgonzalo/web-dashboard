@@ -2,12 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode } from "react";
 import { Toast } from "@/components/ui/Toast";
-
-interface ToastConfig {
-  message: string;
-  onConfirm?: () => void;
-  onCancel?: () => void;
-}
+import { ToastConfig } from "@/types";
 
 export const ToastContext = createContext<
   | {

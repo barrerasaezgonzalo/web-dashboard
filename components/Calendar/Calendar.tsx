@@ -42,9 +42,17 @@ const Calendar = () => {
 
   return (
     <div
-      className={`bg-white p-4 rounded shadow transition-all duration-300 ${isMinimized ? "min-h-0" : "min-h-72"}`}
+      className={`
+        bg-[#1E293C] 
+        p-4 
+        rounded
+        shadow 
+        transition-all 
+        duration-500 
+        ${isMinimized ? "min-h-0" : "min-h-72"}
+      `}
     >
-      <div className="flex justify-between items-center w-full pb-2">
+      <div className="flex justify-between items-center w-full pb-2 text-white">
         <div className="flex justify-between items-center mb-4 border-b w-full! pb-2">
           <h2 className="text-xl flex gap-2 font-bold">
             <CalendarDays size={25} />
@@ -52,7 +60,7 @@ const Calendar = () => {
           </h2>
           <button
             onClick={() => setIsMinimized(!isMinimized)}
-            className="p-1 hover:bg-gray-100 rounded transition-colors cursor-pointer"
+            className="p-1 hover:bg-blue-500 rounded transition-colors cursor-pointer"
           >
             {isMinimized ? <ChevronDown size={24} /> : <ChevronUp size={24} />}
           </button>

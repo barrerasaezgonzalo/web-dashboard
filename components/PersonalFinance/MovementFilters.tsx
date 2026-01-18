@@ -12,7 +12,7 @@ export const MovementFilters: React.FC<MovementFiltersProps> = ({
     <div className="flex gap-3 w-full justify-between">
       <div className="relative">
         <select
-          className="appearance-none border border-gray-300 rounded-lg p-2 pr-10 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+          className="w-30 bg-slate-900 border rounded-xl p-3 text-white focus:outline-none focus:ring-2 transition-all appearance-none cursor-pointer border-slate-700 focus:ring-blue-500/50"
           value={selectedMonth}
           onChange={(e) => setSelectedMonth(e.target.value)}
         >
@@ -38,14 +38,14 @@ export const MovementFilters: React.FC<MovementFiltersProps> = ({
 
       <div className="relative">
         <select
-          className="appearance-none border border-gray-300 rounded-lg p-2 pr-10 bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+          className="w-30 bg-slate-900 border rounded-xl p-3 text-white focus:outline-none focus:ring-2 transition-all appearance-none cursor-pointer border-slate-700 focus:ring-blue-500/50"
           value={selectedType}
           onChange={(e) =>
             setSelectedType(e.target.value as PersonalFinance["type"])
           }
         >
           {Object.entries(typeLabels).map(([key, label]) => (
-            <option key={key} value={key}>
+            <option key={key} value={key} className="bg-slate-900">
               {label}
             </option>
           ))}

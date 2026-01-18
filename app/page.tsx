@@ -10,6 +10,7 @@ import { useAuth } from "@/context/AuthContext";
 import { PersonalFinance } from "@/components/PersonalFinance/PersonalFinance";
 import { Pending } from "@/components/PersonalFinance/Pending";
 import { MainProvider } from "./MainProvider";
+import { BankReconciliation } from "@/components/PersonalFinance/BankReconciliation";
 
 const Task = dynamic(() => import("@/components/Task/Task"), {
   ssr: false,
@@ -49,9 +50,6 @@ export const App: React.FC = () => {
             <ErrorBoundary>
               <Calendar />
             </ErrorBoundary>
-            <ErrorBoundary>
-              <Notes />
-            </ErrorBoundary>
           </div>
 
           <div className={columnStyle}>
@@ -65,13 +63,19 @@ export const App: React.FC = () => {
               <PersonalFinance />
             </ErrorBoundary>
             <ErrorBoundary>
-              <Pending />
+              <BankReconciliation />
+            </ErrorBoundary>
+            <ErrorBoundary>
+              <Notes />
             </ErrorBoundary>
           </div>
 
           <div className={columnStyle}>
             <ErrorBoundary>
               <Task />
+            </ErrorBoundary>
+            <ErrorBoundary>
+              <Pending />
             </ErrorBoundary>
           </div>
         </main>

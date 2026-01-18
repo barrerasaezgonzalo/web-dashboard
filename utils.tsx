@@ -114,7 +114,7 @@ export const generateMonthOptions = () => {
     const value = `${year}-${String(month).padStart(2, "0")}`;
 
     options.push(
-      <option key={value} value={value}>
+      <option key={value} value={value} className="bg-slate-900">
         {formatMonthYearFromYMD(year, month)}
       </option>,
     );
@@ -175,10 +175,7 @@ const isSameMonth = (dateStr: string, targetMonth: string) => {
   return `${month}-${year}` === targetMonth;
 };
 
-export const getPendingAndVariableExpenses = (
-  movements: PersonalFinance[],
-  showAll: boolean,
-) => {
+export const getPendingAndVariableExpenses = (movements: PersonalFinance[]) => {
   const now = new Date();
   const currentMonth = (now.getMonth() + 1).toString().padStart(2, "0");
   const currentYear = now.getFullYear().toString();
@@ -206,7 +203,6 @@ export const getPendingAndVariableExpenses = (
       isPaid,
     };
   }).filter((item) => {
-    if (showAll) return true;
     return item.fijo === true && item.isPaid === false;
   });
 };

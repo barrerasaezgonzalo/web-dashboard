@@ -14,11 +14,17 @@ export const TaskItem: React.FC<TaskItemProps> = ({
 }) => {
   return (
     <li
-      className={`flex items-center gap-2 p-2 rounded mb-2 bg-red-300 text-black ${
-        task.in_dev ? "bg-blue-500! text-white" : ""
-      }
-        ${task.date && getDaysRemainingUntil(task.date) < 0 ? "bg-red-500 text-white" : ""}
-      }`}
+      className={`flex items-center gap-2 p-2 rounded mb-2 text-black 
+        ${
+          task.in_dev
+            ? "bg-blue-400 text-white"
+            : task.date && getDaysRemainingUntil(task.date) < 0
+              ? "bg-red-400 text-white"
+              : "bg-white"
+        }
+        
+        
+      `}
     >
       <div className="flex flex-col gap-2 px-2 shrink w-full">
         <h3 className="font-normal text-md pl-2 max-w-[250px] select-text">

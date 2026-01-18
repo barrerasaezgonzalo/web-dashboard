@@ -61,3 +61,15 @@ export interface TaskContextType {
   removeTask: (id: string) => Promise<void>;
   toggleTaskInDev: (id: string) => Promise<void>;
 }
+
+export interface TaskModalProps {
+  onClose: () => void;
+  title: string;
+  setTitle: (s: string) => void;
+  date: string;
+  setDate: (d: string) => void;
+  onSave: () => void;
+  editingTaskId?: string | null;
+  isLoading: boolean;
+  inputRef: React.MutableRefObject<HTMLInputElement | null>;
+}

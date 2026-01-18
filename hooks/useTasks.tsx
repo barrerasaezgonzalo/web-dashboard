@@ -19,7 +19,9 @@ export interface UseTasksReturn {
   handleEdit: (task: Task) => void;
   handleDelete: (id: string) => void;
   handleTaskToggle: (id: string) => Promise<void>;
-  handleKeyDown: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  handleOpenModal: () => void;
+  resetForm: () => void;
+  showModal: boolean;
 }
 
 export const useTasks = (): UseTasksReturn => {
@@ -33,11 +35,16 @@ export const useTasks = (): UseTasksReturn => {
   const [date, setDate] = useState("");
   const [editingTaskId, setEditingTaskId] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const [showModal, setShowModal] = useState(false);
 
+  const handleOpenModal = () => {
+    setShowModal(true);
+  };
   const resetForm = () => {
     setTitle("");
     setDate("");
     setEditingTaskId("");
+    setShowModal(false);
   };
 
   const handleAdd = async () => {
@@ -49,6 +56,7 @@ export const useTasks = (): UseTasksReturn => {
       await context.addTask(title, date);
       resetForm();
       openToast({ message: `Tarea "${title}" agregada correctamente` });
+      setShowModal(false);
     } catch (error) {
       openToast({ message: "Error agregando task" });
     }
@@ -62,7 +70,7 @@ export const useTasks = (): UseTasksReturn => {
     try {
       await context.editTask(editingTaskId, title, date);
       resetForm();
-      openToast({ message: `Tarea actualizada agregada correctamente` });
+      openToast({ message: `Tarea "${title}" actualizada correctamente` });
     } catch (error) {
       openToast({ message: "Error guardando task" });
     }
@@ -72,6 +80,7 @@ export const useTasks = (): UseTasksReturn => {
     setEditingTaskId(task.id);
     setTitle(task.title);
     setDate(task.date || "");
+    setShowModal(true);
     inputRef.current?.focus();
   };
 
@@ -91,12 +100,6 @@ export const useTasks = (): UseTasksReturn => {
     });
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      editingTaskId ? handleSave() : handleAdd();
-    }
-  };
-
   const handleTaskToggle = async (id: string) => {
     await context.toggleTaskInDev(id);
   };
@@ -113,7 +116,9 @@ export const useTasks = (): UseTasksReturn => {
     handleSave,
     handleEdit,
     handleDelete,
-    handleKeyDown,
     handleTaskToggle,
+    handleOpenModal,
+    resetForm,
+    showModal,
   };
 };

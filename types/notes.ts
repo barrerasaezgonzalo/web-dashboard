@@ -4,7 +4,7 @@ export interface NotesListProps {
   openList: boolean;
   notes: Note[];
   setOpenList: (s: boolean) => void;
-  openToast: (config: ToastConfig) => void;
+  openToast?: (config: ToastConfig) => void;
   handleDeleteNote: (note: Note) => void;
   handleClickNote: (note: Note) => void;
 }
