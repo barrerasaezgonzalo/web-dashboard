@@ -29,7 +29,7 @@ export default async function handler(
 
   const userId = user.id;
 
-  const { id, title, date, in_dev } = req.body;
+  const { id, title, date, in_dev, description } = req.body;
 
   if (req.method === "GET") {
     if (!userId) return res.status(400).json({ error: "Faltan datos" });
@@ -51,7 +51,7 @@ export default async function handler(
 
     const { data, error } = await supabaseAdmin
       .from("tasks")
-      .insert([{ title, in_dev: false, auth_data: userId, date }])
+      .insert([{ title, in_dev: false, auth_data: userId, date, description }])
       .select();
 
     if (error) return res.status(500).json({ error: error.message });
@@ -65,6 +65,7 @@ export default async function handler(
     if (title !== undefined) updates.title = title;
     if (in_dev !== undefined) updates.in_dev = in_dev;
     if (date !== undefined) updates.date = date;
+    if (description !== undefined) updates.description = description;
 
     const { data, error } = await supabaseAdmin
       .from("tasks")

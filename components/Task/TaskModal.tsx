@@ -12,6 +12,8 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   editingTaskId,
   isLoading,
   inputRef,
+  description,
+  setDescription,
 }) => {
   useEffect(() => {
     if (inputRef.current) {
@@ -77,6 +79,17 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                 className={`w-full bg-white border rounded-xl p-3 text-black focus:outline-none focus:ring-2 transition-all appearance-none  `}
               />
             </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-slate-400 mb-2">
+              Notas (Opcional)
+            </label>
+            <textarea
+              rows={6}
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className={`w-full text-black bg-white border rounded-xl p-3 focus:outline-none focus:ring-2 transition-all appearance-none`}
+            />
           </div>
         </div>
 

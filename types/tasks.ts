@@ -10,6 +10,7 @@ export interface Task {
   date?: string | null;
   in_dev: boolean;
   order?: number;
+  description?: string;
 }
 
 /* =========================
@@ -52,11 +53,16 @@ export interface TaskContextType {
   tasks: Task[];
   tasksLoading: boolean;
   getTasks: () => Promise<void>;
-  addTask: (title: string, date?: string) => Promise<Task>;
+  addTask: (
+    title: string,
+    date?: string,
+    description?: string,
+  ) => Promise<Task>;
   editTask: (
     id: string,
     newTitle: string,
     newDate?: string | null,
+    newDescription?: string | null,
   ) => Promise<void>;
   removeTask: (id: string) => Promise<void>;
   toggleTaskInDev: (id: string) => Promise<void>;
@@ -72,4 +78,27 @@ export interface TaskModalProps {
   editingTaskId?: string | null;
   isLoading: boolean;
   inputRef: React.MutableRefObject<HTMLInputElement | null>;
+  description: string;
+  setDescription: (d: string) => void;
+}
+
+export interface UseTasksReturn {
+  tasks: Task[];
+  tasksLoading: boolean;
+  title: string;
+  setTitle: (value: string) => void;
+  date: string;
+  setDate: (value: string) => void;
+  editingTaskId: string | null;
+  inputRef: React.MutableRefObject<HTMLInputElement | null>;
+  handleAdd: () => Promise<void>;
+  handleSave: () => Promise<void>;
+  handleEdit: (task: Task) => void;
+  handleDelete: (id: string) => void;
+  handleTaskToggle: (id: string) => Promise<void>;
+  handleOpenModal: () => void;
+  resetForm: () => void;
+  showModal: boolean;
+  description: string;
+  setDescription: (d: string) => void;
 }

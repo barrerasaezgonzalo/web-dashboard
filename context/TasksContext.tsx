@@ -40,12 +40,20 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
     }
   }, [userId]);
 
-  const addTask = async (title: string, date?: string) => {
+  const addTask = async (
+    title: string,
+    date?: string,
+    description?: string,
+  ) => {
     setTasksLoading(true);
     try {
       const response = await authFetch("/api/task", {
         method: "POST",
-        body: JSON.stringify({ title, date: date || null }),
+        body: JSON.stringify({
+          title,
+          date: date || null,
+          description: description || null,
+        }),
       });
       const data = await response.json();
       const newEntry = data[0];
@@ -60,12 +68,18 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
     id: string,
     newTitle: string,
     newDate?: string | null,
+    newDescription?: string | null,
   ) => {
     setTasksLoading(true);
     try {
       const response = await authFetch("/api/task", {
         method: "PATCH",
-        body: JSON.stringify({ id, title: newTitle, date: newDate || null }),
+        body: JSON.stringify({
+          id,
+          title: newTitle,
+          date: newDate || null,
+          description: newDescription || null,
+        }),
       });
       const updated = await response.json();
       setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)));

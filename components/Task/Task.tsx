@@ -25,6 +25,8 @@ const Tasks: React.FC = () => {
     handleOpenModal,
     resetForm,
     showModal,
+    description,
+    setDescription,
   } = useTasks();
 
   const [isMinimized, setIsMinimized] = useState(false);
@@ -87,6 +89,8 @@ const Tasks: React.FC = () => {
           isLoading={tasksLoading}
           inputRef={inputRef}
           editingTaskId={editingTaskId || ""}
+          description={description}
+          setDescription={setDescription}
         />
       )}
     </div>

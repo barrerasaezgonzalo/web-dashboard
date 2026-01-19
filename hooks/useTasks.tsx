@@ -3,26 +3,7 @@ import React from "react";
 import { TasksContext } from "@/context/TasksContext";
 import { useContext, useState, useRef } from "react";
 import { useToast } from "@/hooks/useToast";
-import { Task } from "@/types/";
-
-export interface UseTasksReturn {
-  tasks: Task[];
-  tasksLoading: boolean;
-  title: string;
-  setTitle: (value: string) => void;
-  date: string;
-  setDate: (value: string) => void;
-  editingTaskId: string | null;
-  inputRef: React.MutableRefObject<HTMLInputElement | null>;
-  handleAdd: () => Promise<void>;
-  handleSave: () => Promise<void>;
-  handleEdit: (task: Task) => void;
-  handleDelete: (id: string) => void;
-  handleTaskToggle: (id: string) => Promise<void>;
-  handleOpenModal: () => void;
-  resetForm: () => void;
-  showModal: boolean;
-}
+import { Task, UseTasksReturn } from "@/types/";
 
 export const useTasks = (): UseTasksReturn => {
   const context = useContext(TasksContext);
@@ -32,6 +13,7 @@ export const useTasks = (): UseTasksReturn => {
 
   const { openToast, closeToast } = useToast();
   const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
   const [editingTaskId, setEditingTaskId] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -43,6 +25,7 @@ export const useTasks = (): UseTasksReturn => {
   const resetForm = () => {
     setTitle("");
     setDate("");
+    setDescription("");
     setEditingTaskId("");
     setShowModal(false);
   };
@@ -53,7 +36,7 @@ export const useTasks = (): UseTasksReturn => {
       return;
     }
     try {
-      await context.addTask(title, date);
+      await context.addTask(title, date, description);
       resetForm();
       openToast({ message: `Tarea "${title}" agregada correctamente` });
       setShowModal(false);
@@ -68,7 +51,7 @@ export const useTasks = (): UseTasksReturn => {
       return;
     }
     try {
-      await context.editTask(editingTaskId, title, date);
+      await context.editTask(editingTaskId, title, date, description);
       resetForm();
       openToast({ message: `Tarea "${title}" actualizada correctamente` });
     } catch (error) {
@@ -80,6 +63,7 @@ export const useTasks = (): UseTasksReturn => {
     setEditingTaskId(task.id);
     setTitle(task.title);
     setDate(task.date || "");
+    setDescription(task.description ?? "");
     setShowModal(true);
     inputRef.current?.focus();
   };
@@ -120,5 +104,7 @@ export const useTasks = (): UseTasksReturn => {
     handleOpenModal,
     resetForm,
     showModal,
+    description,
+    setDescription,
   };
 };
