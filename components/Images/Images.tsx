@@ -6,7 +6,6 @@ import {
   ChevronUp,
   ChevronLeft,
   ChevronRight,
-  List,
   Trash,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
@@ -52,6 +51,7 @@ export const Images: React.FC = () => {
 
   return (
     <div
+      id="images"
       className={`relative bg-[#1E293C] rounded shadow transition-all duration-500 ${isMinimized ? "min-h-0" : "min-h-[500px]"} flex flex-col p-4`}
     >
       <div className="flex justify-between items-center pb-2 text-white border-b border-slate-700 mb-4">

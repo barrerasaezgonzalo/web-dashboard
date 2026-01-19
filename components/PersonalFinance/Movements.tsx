@@ -41,6 +41,7 @@ export default function Movements() {
 
   return (
     <div
+      id="movements"
       className={`bg-[#1E293C] p-4 rounded shadow transition-all duration-300 ${isMinimized ? "min-h-0" : "min-h-[200px]"} overflow-x-auto  text-white`}
     >
       <div className="max-w-4xl mx-auto">

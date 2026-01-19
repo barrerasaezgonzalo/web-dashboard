@@ -7,6 +7,7 @@ import { Notes } from "@/components/Notes/Notes";
 import { User } from "@/components/User/User";
 import { BackGround } from "@/components/ui/BackGround";
 import { Images } from "@/components/Images/Images";
+import { Sidebar } from "@/components/Sidebar/Sidebar";
 import { useAuth } from "@/context/AuthContext";
 import { PersonalFinance } from "@/components/PersonalFinance/PersonalFinance";
 import { Pending } from "@/components/PersonalFinance/Pending";
@@ -42,7 +43,7 @@ export const App: React.FC = () => {
     <MainProvider>
       <div className="relative w-full min-h-screen">
         <BackGround />
-
+        <Sidebar />
         <main className="relative z-10 p-4 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           <div className={columnStyle}>
             <ErrorBoundary>

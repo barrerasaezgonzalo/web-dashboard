@@ -52,7 +52,10 @@ const Calendar = () => {
         ${isMinimized ? "min-h-0" : "min-h-72"}
       `}
     >
-      <div className="flex justify-between items-center w-full pb-2 text-white">
+      <div
+        id="calendario"
+        className="flex justify-between items-center w-full pb-2 text-white"
+      >
         <div className="flex justify-between items-center mb-4 border-b w-full! pb-2">
           <h2 className="text-xl flex gap-2 font-bold">
             <CalendarDays size={25} />

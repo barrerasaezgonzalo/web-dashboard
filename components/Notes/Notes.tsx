@@ -44,7 +44,7 @@ export const Notes: React.FC = () => {
         p-4
         `}
     >
-      <div className="flex justify-between items-center pb-2">
+      <div id="notes" className="flex justify-between items-center pb-2">
         <div className="flex justify-between items-center border-b w-full pb-2">
           <h2 className="text-xl flex gap-2 font-bold">
             <StickyNote size={25} />

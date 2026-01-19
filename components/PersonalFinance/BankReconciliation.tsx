@@ -9,7 +9,7 @@ export const BankReconciliation = () => {
   const diferencia = bancoValue !== "" ? Number(bancoValue) - saldo : 0;
 
   return (
-    <div className="p-3 bg-[#1E293C] rounded shadow">
+    <div id="BankReconciliation" className="p-3 bg-[#1E293C] rounded shadow">
       <h4 className="text-sm font-bold text-gray-300 mb-2 flex justify-between">
         Conciliación Bancaria
         {bancoValue !== "" && (

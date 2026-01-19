@@ -81,7 +81,10 @@ export const User = () => {
   };
 
   return (
-    <div className="relative flex flex-col bg-[#4D677E] p-5 rounded shadow-lg gap-6 text-white">
+    <div
+      id="user"
+      className="relative flex flex-col bg-[#4D677E] p-5 rounded shadow-lg gap-6 text-white"
+    >
       <div className="absolute top-3 right-3 flex gap-2">
         <button
           onClick={handlePrivacyClick}

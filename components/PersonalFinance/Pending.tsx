@@ -13,6 +13,7 @@ export const Pending = () => {
   }
   return (
     <div
+      id="pending"
       className={`bg-[#1E293C] text-white p-4 rounded shadow transition-all duration-300 ${
         isMinimized ? "min-h-0" : "min-h-[200px]"
       } overflow-x-auto`}
