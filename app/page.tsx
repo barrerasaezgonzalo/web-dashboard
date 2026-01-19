@@ -7,13 +7,13 @@ import { Notes } from "@/components/Notes/Notes";
 import { User } from "@/components/User/User";
 import { BackGround } from "@/components/ui/BackGround";
 import { Images } from "@/components/Images/Images";
-import { Sidebar } from "@/components/Sidebar/Sidebar";
+import { Sidebar } from "@/components/ui/Sidebar";
 import { useAuth } from "@/context/AuthContext";
 import { PersonalFinance } from "@/components/PersonalFinance/PersonalFinance";
 import { Pending } from "@/components/PersonalFinance/Pending";
 import { MainProvider } from "./MainProvider";
 import { BankReconciliation } from "@/components/PersonalFinance/BankReconciliation";
-import { ScrollToTop } from "@/components/ScrollToTop/ScrollToTop";
+import { ScrollToTop } from "@/components/ui/ScrollToTop";
 
 const Task = dynamic(() => import("@/components/Task/Task"), {
   ssr: false,

@@ -25,7 +25,7 @@ export const Sidebar = () => {
   const menuItems: MenuItem[] = [
     { name: "User", href: "#user", icon: <LayoutDashboard size={20} /> },
     { name: "Calendario", href: "#calendario", icon: <Calendar size={20} /> },
-    { name: "Images", href: "#images", icon: <ImageIcon size={20} /> },
+    { name: "Imágenes", href: "#images", icon: <ImageIcon size={20} /> },
     { name: "Movimientos", href: "#movements", icon: <Logs size={20} /> },
     {
       name: "PersonalFinances",

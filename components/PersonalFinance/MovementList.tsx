@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { LineChart, Line, ResponsiveContainer, YAxis } from "recharts";
-import { MovementListProps } from "@/types/";
+import { ExtendedProps, MovementListProps } from "@/types/";
 import { formatCLP, formatDateToDMY, getCategoryLabel } from "@/utils";
 import {
   ChevronDown,
@@ -11,10 +11,6 @@ import {
   TrendingDown,
 } from "lucide-react";
 
-interface ExtendedProps extends MovementListProps {
-  listaParaGráfico: any[];
-}
-
 export const MovementList: React.FC<ExtendedProps> = ({
   filtrados,
   isPrivate,
@@ -23,8 +19,6 @@ export const MovementList: React.FC<ExtendedProps> = ({
   listaParaGráfico = [],
 }) => {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
-
-  // --- 1. PROCESAR ESTADÍSTICAS POR LLAVE ÚNICA (TIPO-CATEGORÍA) ---
   const statsPorCategoria = useMemo(() => {
     const data: Record<string, any> = {};
     const hoy = new Date();
@@ -38,10 +32,7 @@ export const MovementList: React.FC<ExtendedProps> = ({
     }
 
     listaParaGráfico.forEach((m) => {
-      // FILTRO: Solo procesamos tendencias para Gastos
       if (m.type !== "gastos") return;
-
-      // LLAVE ÚNICA para evitar que se mezcle con Ahorros/Ingresos del mismo nombre
       const statsKey = `${m.type}-${m.category}`;
 
       const d = new Date(m.date);
@@ -59,7 +50,6 @@ export const MovementList: React.FC<ExtendedProps> = ({
       if (punto) punto.valor += m.value;
     });
 
-    // Calcular variación y preparar puntos para el gráfico
     Object.keys(data).forEach((sKey) => {
       const p = data[sKey].puntos;
       const actual = p[5].valor;
@@ -95,10 +85,9 @@ export const MovementList: React.FC<ExtendedProps> = ({
     return data;
   }, [listaParaGráfico]);
 
-  // --- 2. AGRUPAR LISTA ACTUAL ---
   const groupedData = filtrados.reduce(
     (acc, item) => {
-      const key = `${item.type}-${item.category}`; // Usar la misma llave aquí
+      const key = `${item.type}-${item.category}`;
       if (!acc[key])
         acc[key] = {
           category: item.category,
@@ -118,7 +107,6 @@ export const MovementList: React.FC<ExtendedProps> = ({
   return (
     <div className="flex flex-col gap-2">
       {groupedArray.map((grupo) => {
-        // BUSCAMOS EN EL DICCIONARIO USANDO LA LLAVE TIPO-CATEGORIA
         const statsKey = `${grupo.type}-${grupo.category}`;
         const stats = statsPorCategoria[statsKey];
         const variacion = stats?.variacion || 0;
@@ -130,7 +118,7 @@ export const MovementList: React.FC<ExtendedProps> = ({
             key={statsKey}
             className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm"
           >
-            <div className="flex items-center p-3 gap-3">
+            <div className="flex items-center p-3 gap-3 cursor-pointer">
               <button
                 onClick={() =>
                   setExpandedCategory(isExpanded ? null : statsKey)
@@ -138,7 +126,9 @@ export const MovementList: React.FC<ExtendedProps> = ({
                 className="flex flex-col flex-1 min-w-0 text-left"
               >
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-[11px] uppercase tracking-wider text-blue-600 truncate">
+                  <span
+                    className={`font-bold text-[12px] uppercase tracking-wider text-blue-600 truncate ${isPrivate ? "privacy-blur" : ""}`}
+                  >
                     {getCategoryLabel(grupo.type, grupo.category)}
                   </span>
                   {isExpanded ? (
@@ -148,10 +138,8 @@ export const MovementList: React.FC<ExtendedProps> = ({
                   )}
                 </div>
 
-                <div className="flex items-center gap-1 min-h-[14px]">
-                  {grupo.type === "gastos" &&
-                  tieneComparativa &&
-                  variacion !== 0 ? (
+                <div className="flex items-center gap-1 min-h-3.5">
+                  {grupo.type === "gastos" && tieneComparativa && variacion && (
                     <span
                       className={`flex items-center text-[10px] font-bold ${variacion > 0 ? "text-red-500" : "text-emerald-500"}`}
                     >
@@ -162,15 +150,10 @@ export const MovementList: React.FC<ExtendedProps> = ({
                       )}
                       {Math.abs(variacion).toFixed(1)}%
                     </span>
-                  ) : (
-                    <span className="text-[10px] text-gray-400 font-medium italic">
-                      {grupo.type === "gastos" ? "Nueva categoría" : ""}
-                    </span>
                   )}
                 </div>
               </button>
 
-              {/* Sparkline solo para Gastos */}
               <div className="h-7 w-16 sm:w-20">
                 {grupo.type === "gastos" && stats?.puntosParaGraficar ? (
                   <ResponsiveContainer width="100%" height="100%">
@@ -194,7 +177,7 @@ export const MovementList: React.FC<ExtendedProps> = ({
                   </ResponsiveContainer>
                 ) : (
                   <div className="h-full w-full flex items-center justify-center opacity-20">
-                    <div className="w-8 h-[1px] bg-gray-300" />
+                    <div className="w-8 h-px bg-gray-300" />
                   </div>
                 )}
               </div>
@@ -215,7 +198,7 @@ export const MovementList: React.FC<ExtendedProps> = ({
                     key={item.id}
                     className="flex items-center justify-between p-3 pl-11 pr-4"
                   >
-                    <span className="text-[11px] font-medium text-gray-400">
+                    <span className="text-[12px] font-medium text-gray-400">
                       {formatDateToDMY(item.date)}
                     </span>
                     {item.description && (

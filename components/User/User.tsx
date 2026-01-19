@@ -153,7 +153,7 @@ export const User = () => {
           </div>
         ) : (
           <div
-            className="text-sm tracking-wider cursor-pointer"
+            className={`text-sm tracking-wider cursor-pointer ${isPrivate ? "privacy-blur" : ""} `}
             onClick={() => handleShowModal(new Date())}
           >
             {eventosHoy} {eventosHoy === 1 ? "Evento" : "Eventos"} del día

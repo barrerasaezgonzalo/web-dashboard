@@ -31,7 +31,6 @@ export default async function handler(
 
   const { id, title, date, in_dev } = req.body;
 
-  // GET: obtener tasks de un usuario
   if (req.method === "GET") {
     if (!userId) return res.status(400).json({ error: "Faltan datos" });
 
@@ -39,14 +38,13 @@ export default async function handler(
       .from("tasks")
       .select("*")
       .eq("auth_data", userId)
-      .order("in_dev", { ascending: false })
-      .order("date", { ascending: true });
+      .order("date", { ascending: true })
+      .order("in_dev", { ascending: false });
 
     if (error) return res.status(500).json({ error: error.message });
     return res.status(200).json(data || []);
   }
 
-  // POST: agregar task
   if (req.method === "POST") {
     if (!userId || !title)
       return res.status(400).json({ error: "Faltan datos" });
@@ -60,7 +58,6 @@ export default async function handler(
     return res.status(201).json(data || []);
   }
 
-  // PATCH: editar task
   if (req.method === "PATCH") {
     if (!id || !userId) return res.status(400).json({ error: "Faltan datos" });
 

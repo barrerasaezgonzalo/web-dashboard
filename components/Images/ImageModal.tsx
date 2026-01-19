@@ -58,7 +58,7 @@ export const ImageModal: React.FC<any> = ({
                 <img
                   src={preview}
                   alt="Vista previa"
-                  className="w-full h-40 object-cover rounded-xl border border-slate-200"
+                  className="w-full max-h-200 object-cover rounded-xl border border-slate-200"
                 />
               </div>
             )}

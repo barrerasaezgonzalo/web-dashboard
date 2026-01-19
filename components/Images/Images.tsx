@@ -1,15 +1,16 @@
 import { useImages } from "@/hooks/useImages";
 import {
-  StickyNote,
   Plus,
   ChevronDown,
   ChevronUp,
   ChevronLeft,
   ChevronRight,
   Trash,
+  Camera,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ImageModal } from "./ImageModal";
+import { usePrivacyMode } from "@/hooks/usePrivacyMode";
 
 export const Images: React.FC = () => {
   const {
@@ -23,8 +24,23 @@ export const Images: React.FC = () => {
     handleDelete,
     selectedImage,
     setSelectedImage,
+    scrollRef,
+    scroll,
   } = useImages();
   const [isMinimized, setIsMinimized] = useState(false);
+  const { isPrivate } = usePrivacyMode();
+  const modalRef = useRef<HTMLDialogElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  const openModal = (src: string) => {
+    if (imgRef.current) {
+      imgRef.current.src = src;
+    }
+    if (modalRef.current) {
+      modalRef.current.showModal();
+    }
+  };
+
   const sorted = [...images].sort(
     (a, b) =>
       new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime(),
@@ -36,27 +52,14 @@ export const Images: React.FC = () => {
     }
   }, [images]);
 
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  const scroll = (direction: "left" | "right") => {
-    if (scrollRef.current) {
-      const { current } = scrollRef;
-      const scrollAmount = 200;
-      current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      });
-    }
-  };
-
   return (
     <div
       id="images"
       className={`relative bg-[#1E293C] rounded shadow transition-all duration-500 ${isMinimized ? "min-h-0" : "min-h-[500px]"} flex flex-col p-4`}
     >
-      <div className="flex justify-between items-center pb-2 text-white border-b border-slate-700 mb-4">
+      <div className="flex justify-between items-center pb-2 text-white border-b mb-4">
         <h2 className="text-xl flex gap-2 font-bold items-center">
-          <StickyNote size={25} /> Imagenes
+          <Camera size={25} /> Imágenes
         </h2>
         <div className="flex items-center gap-1">
           {!isMinimized && (
@@ -80,21 +83,43 @@ export const Images: React.FC = () => {
         <div className="flex-1 flex flex-col w-full max-w-full overflow-visible">
           <div className="w-full flex justify-center">
             {selectedImage ? (
-              <div className="relative w-full max-w-3xl h-[300px] mt-[-30px]  flex items-center justify-center">
-                <a
-                  href={selectedImage.url}
-                  download
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-2xl transition-all"
-                >
-                  <div className="relative w-full max-w-3xl aspect-video overflow-hidden flex items-center justify-center rounded-xl">
-                    <img
-                      src={selectedImage.url}
-                      className="max-w-full max-h-full object-contain"
-                    />
-                  </div>
-                </a>
+              <div
+                className={`relative w-full max-w-3xl h-[300px] mt-[-30px]  flex items-center justify-center ${isPrivate ? "privacy-blur" : ""}`}
+              >
+                <div className="relative w-full max-w-3xl aspect-video overflow-hidden flex items-center justify-center rounded-xl">
+                  <img
+                    onClick={() => openModal(selectedImage.url)}
+                    src={selectedImage.url}
+                    className="max-w-full max-h-full object-contain cursor-pointer"
+                  />
+                  <dialog
+                    ref={modalRef}
+                    onClick={() => modalRef.current?.close()}
+                    className="bg-transparent p-0 outline-none backdrop:bg-black/90 backdrop:backdrop-blur-sm 
+             fixed inset-0 w-full h-full max-w-full max-h-full"
+                  >
+                    <div className="w-full h-full flex items-center justify-center p-4">
+                      <div className="relative group max-w-full max-h-full">
+                        <img
+                          ref={imgRef}
+                          src={selectedImage.url}
+                          alt="Vista previa"
+                          className="rounded-lg shadow-2xl object-contain max-h-[90vh] max-w-[95vw] mx-auto"
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                        <button
+                          onClick={() => modalRef.current?.close()}
+                          className="absolute -top-10 right-0 md:-right-10 text-white text-4xl font-light hover:text-gray-300 transition"
+                        >
+                          <Plus
+                            size={30}
+                            className="rotate-45 cursor-pointer"
+                          />
+                        </button>
+                      </div>
+                    </div>
+                  </dialog>
+                </div>
               </div>
             ) : (
               <div className="w-full max-w-3xl h-[300px] mb-4 border-2 border-dashed border-slate-700 rounded-3xl flex items-center justify-center text-slate-500">
@@ -143,7 +168,7 @@ export const Images: React.FC = () => {
                     >
                       <img
                         src={img.url}
-                        className="w-full h-full object-cover pointer-events-none"
+                        className={`w-full h-full object-cover pointer-events-none ${isPrivate ? "privacy-blur" : ""}`}
                         alt="thumb"
                       />
                     </button>
@@ -163,7 +188,7 @@ export const Images: React.FC = () => {
           ) : (
             <>
               <p className="text-slate-500 text-center ">
-                No existen imagenes cargadas
+                No existen imágenes cargadas
               </p>
               <button
                 onClick={handleOpenModal}

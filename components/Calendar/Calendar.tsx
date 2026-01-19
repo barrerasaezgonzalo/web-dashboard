@@ -23,11 +23,14 @@ import { EventModal } from "./EventModal";
 import { useCalendar } from "@/hooks/useCalendar";
 import { diasSemana } from "@/constants";
 import { CalendarDay } from "./CalendarDay";
+import { usePrivacyMode } from "@/hooks/usePrivacyMode";
 
 const Calendar = () => {
   const [isMinimized, setIsMinimized] = useState(false);
   const [mesActual, setMesActual] = useState(new Date());
   const { events, modalConfig, handleShowModal } = useCalendar(mesActual);
+  const { isPrivate } = usePrivacyMode();
+
   const { dias, inicioMes } = useMemo(() => {
     const inicio = startOfMonth(mesActual);
     const inicioCal = startOfWeek(inicio, { weekStartsOn: 1 });
@@ -112,7 +115,9 @@ const Calendar = () => {
           </div>
 
           {/* Grid de días */}
-          <div className="grid grid-cols-7 text-sm">
+          <div
+            className={`grid grid-cols-7 text-sm ${isPrivate ? "privacy-blur" : ""}`}
+          >
             {dias.map((dia, idx) => {
               const fechaKey = format(dia, "yyyy-MM-dd");
               const tieneEvento = events.some((ev) => ev.fecha === fechaKey);

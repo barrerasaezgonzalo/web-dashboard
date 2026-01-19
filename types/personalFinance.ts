@@ -132,3 +132,7 @@ export interface Movement {
   date: string; // ISO format
   created_at?: string;
 }
+
+export interface ExtendedProps extends MovementListProps {
+  listaParaGráfico: any[];
+}

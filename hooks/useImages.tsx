@@ -1,5 +1,5 @@
 import { useAuth } from "@/context/AuthContext";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useToast } from "./useToast";
 import { VercelBlob } from "@/types";
 
@@ -12,6 +12,26 @@ export const useImages = () => {
   const [blobUrl, setBlobUrl] = useState("");
   const [selectedImage, setSelectedImage] = useState<VercelBlob | null>(null);
   const { openToast, closeToast } = useToast();
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const scroll = (direction: "left" | "right" | "start") => {
+    if (scrollRef.current) {
+      const { current } = scrollRef;
+      const scrollAmount = 200;
+
+      if (direction === "start") {
+        current.scrollTo({
+          left: 0,
+          behavior: "smooth",
+        });
+      } else {
+        current.scrollBy({
+          left: direction === "left" ? -scrollAmount : scrollAmount,
+          behavior: "smooth",
+        });
+      }
+    }
+  };
 
   const handleOpenModal = () => {
     setShowModal(true);
@@ -30,9 +50,9 @@ export const useImages = () => {
       const data = await response.json();
       setImages(data);
     } catch (error) {
-      console.log("Error al obtener las imagenes");
+      console.log("Error al obtener las imágenes");
       openToast({
-        message: "Error obteniendo las imagenes, intenta nuevamente",
+        message: "Error obteniendo las imágenes, intenta nuevamente",
       });
     }
   }, [userId]);
@@ -64,6 +84,8 @@ export const useImages = () => {
         resetForm();
         setShowModal(false);
         fetchImages();
+        setSelectedImage(newBlob);
+        scroll("start");
       }
     } catch (error) {
       console.error("Error al subir:", error);
@@ -110,5 +132,7 @@ export const useImages = () => {
     handleDelete,
     selectedImage,
     setSelectedImage,
+    scrollRef,
+    scroll,
   };
 };
