@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from "react";
-// Asumiendo que usas lucide-react (puedes cambiarlos por los que uses)
 import {
   Menu,
   X,
   Image as ImageIcon,
-  BarChart,
-  Settings,
   LayoutDashboard,
   Calendar,
   Logs,
@@ -15,18 +12,16 @@ import {
   ListChecks,
 } from "lucide-react";
 
-// 1. Definimos la interfaz para los items del menú
 interface MenuItem {
   name: string;
   href: string;
   icon?: React.ReactNode;
-  count?: number; // Opcional, por si quieres mostrar cantidad de elementos
+  count?: number;
 }
 
 export const Sidebar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  // 2. Declaración de los links (puedes mover esto a un archivo de constantes)
   const menuItems: MenuItem[] = [
     { name: "User", href: "#user", icon: <LayoutDashboard size={20} /> },
     { name: "Calendario", href: "#calendario", icon: <Calendar size={20} /> },
@@ -47,7 +42,6 @@ export const Sidebar = () => {
     { name: "Pending", href: "#pending", icon: <PiggyBank size={20} /> },
   ];
 
-  // 3. Cerrar con la tecla ESC
   useEffect(() => {
     const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") setIsOpen(false);
@@ -58,8 +52,6 @@ export const Sidebar = () => {
 
   return (
     <>
-      {/* 2. BOTÓN HAMBURGUESA CORREGIDO */}
-      {/* Usamos fixed y valores específicos de top/left para sacarlo de cualquier flujo */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         aria-label="Abrir menú"
@@ -68,7 +60,6 @@ export const Sidebar = () => {
         <Menu size={16} />
       </button>
 
-      {/* OVERLAY */}
       <div
         className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-[1000] transition-opacity ${
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -76,14 +67,12 @@ export const Sidebar = () => {
         onClick={() => setIsOpen(false)}
       />
 
-      {/* SIDEBAR */}
       <aside
         className={`fixed top-0 left-0 h-full w-64 bg-slate-950 z-[1001] shadow-2xl transform transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="flex flex-col h-full">
-          {/* Header con menos margen inferior */}
           <div className="p-5 pb-2 flex justify-between items-center">
             <span className="text-xs mt-8 font-bold uppercase tracking-widest text-slate-500">
               Navegación
@@ -96,7 +85,6 @@ export const Sidebar = () => {
             </button>
           </div>
 
-          {/* 1. LISTADO CON MÁRGENES REDUCIDOS */}
           <nav className="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto">
             {menuItems.map((item) => (
               <a

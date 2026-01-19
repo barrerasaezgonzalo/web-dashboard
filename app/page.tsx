@@ -13,6 +13,7 @@ import { PersonalFinance } from "@/components/PersonalFinance/PersonalFinance";
 import { Pending } from "@/components/PersonalFinance/Pending";
 import { MainProvider } from "./MainProvider";
 import { BankReconciliation } from "@/components/PersonalFinance/BankReconciliation";
+import { ScrollToTop } from "@/components/ScrollToTop/ScrollToTop";
 
 const Task = dynamic(() => import("@/components/Task/Task"), {
   ssr: false,
@@ -85,6 +86,7 @@ export const App: React.FC = () => {
           </div>
         </main>
       </div>
+      <ScrollToTop />
     </MainProvider>
   );
 };
