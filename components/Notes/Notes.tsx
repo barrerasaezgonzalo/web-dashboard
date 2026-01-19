@@ -7,8 +7,15 @@ import { StickyNote, Plus, List, ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 
 export const Notes: React.FC = () => {
-  const { note, selectNote, notes, deleteNote, createNote, handleChange } =
-    useNotes();
+  const {
+    note,
+    selectNote,
+    notes,
+    deleteNote,
+    createNote,
+    handleChange,
+    favoriteNote,
+  } = useNotes();
   const [openList, setOpenList] = useState(false);
   const { openToast, closeToast } = useToast();
   const [isMinimized, setIsMinimized] = useState(false);
@@ -117,6 +124,21 @@ export const Notes: React.FC = () => {
           openList={openList}
           notes={notes}
           setOpenList={setOpenList}
+          handleFavoriteNote={(id: string) => {
+            openToast({
+              message: "¿Marcar/Desmarcar esta nota como favorita??",
+              onConfirm: () => {
+                favoriteNote(id);
+                setTimeout(() => {
+                  openToast({
+                    message: "Nota marcada/desmarcada como favorita",
+                  });
+                }, 100);
+                closeToast();
+              },
+              onCancel: closeToast,
+            });
+          }}
           handleDeleteNote={(n: Note) => {
             openToast({
               message: "¿Eliminar esta nota permanentemente?",

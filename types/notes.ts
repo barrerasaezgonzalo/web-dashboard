@@ -7,9 +7,11 @@ export interface NotesListProps {
   openToast?: (config: ToastConfig) => void;
   handleDeleteNote: (note: Note) => void;
   handleClickNote: (note: Note) => void;
+  handleFavoriteNote: (id: string) => void;
 }
 
 export interface Note {
   id: string;
   content: string;
+  favorite?: boolean;
 }

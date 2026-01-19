@@ -2,6 +2,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { supabase } from "@/lib/supabaseClient";
 import { createClient } from "@supabase/supabase-js";
+import { Note } from "@/types";
 
 export default async function handler(
   req: NextApiRequest,
@@ -24,7 +25,7 @@ export default async function handler(
   if (error || !user) return res.status(401).json({ error: "Token inválido" });
 
   const { body, query, method } = req;
-  const { content, noteId } = body || {};
+  const { content, noteId, favorite } = body || {};
   const userId = user.id;
 
   if (!userId) {
@@ -38,6 +39,7 @@ export default async function handler(
         .from("notes")
         .select("*")
         .eq("auth_data", userId)
+        .order("favorite", { ascending: false })
         .order("updated_at", { ascending: false });
 
       if (error) return res.status(500).json({ error: error.message });
@@ -89,6 +91,27 @@ export default async function handler(
       if (error) return res.status(500).json({ error: error.message });
 
       return res.status(200).json({ success: false });
+    }
+
+    if (req.method === "PATCH") {
+      if (!noteId || !userId)
+        return res.status(400).json({ error: "userId y NoteId datos" });
+
+      const updates: Partial<Note> = {};
+      if (favorite !== undefined) updates.favorite = favorite;
+      if (content !== undefined) updates.content = content;
+
+      const { data, error } = await supabaseAdmin
+        .from("notes")
+        .update(updates)
+        .eq("auth_data", userId)
+        .eq("id", noteId)
+        .select();
+
+      if (error) return res.status(500).json({ error: error.message });
+      if (!data) return res.status(404).json({ error: "Task no encontrada" });
+
+      return res.status(200).json(data[0]);
     }
 
     return res.status(405).json({ error: "Method not allowed" });

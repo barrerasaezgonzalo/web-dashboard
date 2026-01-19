@@ -1,11 +1,12 @@
-import { Note, NotesListProps } from "@/types/";
-import { Trash } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { NotesListProps } from "@/types/";
+import { Heart, Trash } from "lucide-react";
+import { useState } from "react";
 
 export const NotesList: React.FC<NotesListProps> = ({
   notes,
   handleDeleteNote,
   handleClickNote,
+  handleFavoriteNote,
 }) => {
   const [search, setSearch] = useState("");
 
@@ -49,8 +50,18 @@ export const NotesList: React.FC<NotesListProps> = ({
             </div>
 
             <button
+              onClick={() => handleFavoriteNote(n.id)}
+              className="group-hover:opacity-100 p-2 -mr-2.5 rounded-md hover:bg-red-50 hover:text-red-500 transition-all text-gray-400 cursor-pointer"
+            >
+              <Heart
+                size={16}
+                fill={` ${n.favorite ? "red" : "white"}`}
+                strokeWidth={2}
+              />
+            </button>
+            <button
               onClick={() => handleDeleteNote(n)}
-              className="opacity-0 group-hover:opacity-100 p-2 rounded-md hover:bg-red-50 hover:text-red-500 transition-all text-gray-400"
+              className="p-2 rounded-md hover:bg-red-50 hover:text-red-500 transition-all text-gray-400 cursor-pointer"
             >
               <Trash size={16} />
             </button>

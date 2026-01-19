@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import { getTooltipClass } from "@/app/styles/labelStyles";
 import { TaskActionButtonProps } from "@/types/";
 
 export const TaskActionButton: React.FC<TaskActionButtonProps> = ({
@@ -17,7 +16,21 @@ export const TaskActionButton: React.FC<TaskActionButtonProps> = ({
       className="relative inline-block group cursor-pointer"
     >
       {icon}
-      <div className={getTooltipClass({ type: tooltipType, inDev })}>
+      <div
+        className="absolute
+    bottom-full 
+    left-1/2 
+    -translate-x-1/2 
+    mb-2
+    hidden 
+    group-hover:block
+    whitespace-nowrap
+    rounded 
+    bg-gray-900 
+    px-2 
+    py-1
+    text-xs text-white"
+      >
         {tooltipText}
       </div>
     </button>

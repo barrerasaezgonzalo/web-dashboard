@@ -108,10 +108,7 @@ export const User = () => {
         <div>
           <h1 className="text-3xl font-light tracking-tight">
             {getGreeting()},{" "}
-            <span className="font-bold">
-              {isPrivate ? "Gonzalo" : userName?.split(" ")[0]}
-            </span>
-            !
+            <div className="font-bold">{userName?.split(" ")[0]}!</div>
           </h1>
           <div className="flex items-center gap-4 mt-2">
             <div className="flex flex-col opacity-80 border-r border-white/20 pr-4">
@@ -120,7 +117,7 @@ export const User = () => {
                 {hora}
               </span>
             </div>
-            <div className="flex items-center gap-1 text-amber-300">
+            <div className="flex items-center ml-[-15px] gap-1 text-amber-300 mr-4">
               <Thermometer size={25} />
               <span className="text-4xl font-semibold">
                 {wheater?.temperatura}

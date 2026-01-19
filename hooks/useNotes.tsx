@@ -124,6 +124,29 @@ export const useNotes = () => {
     [note, userId],
   );
 
+  const favoriteNote = async (id: string) => {
+    const note = notes.find((n) => n.id === id);
+    if (!note) return;
+
+    const nextFavorite = !note.favorite;
+
+    setNotes((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, favorite: nextFavorite } : n)),
+    );
+    try {
+      await authFetch("/api/note", {
+        method: "PATCH",
+        body: JSON.stringify({ noteId: id, favorite: nextFavorite, userId }),
+      });
+    } catch (error) {
+      setNotes((prev) =>
+        prev.map((n) => (n.id === id ? { ...n, favorite: note.favorite } : n)),
+      );
+    } finally {
+      fetchNotes();
+    }
+  };
+
   useEffect(() => {
     fetchNotes();
   }, [fetchNotes]);
@@ -136,5 +159,6 @@ export const useNotes = () => {
     deleteNote,
     handleChange,
     selectNote,
+    favoriteNote,
   };
 };

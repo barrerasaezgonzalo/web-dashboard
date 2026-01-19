@@ -38,51 +38,61 @@ export const App: React.FC = () => {
   if (loading) return <LoadingScreen />;
   if (!userId) return <LoginScreen onLogin={signInWithGoogle} />;
 
-  const columnStyle = "flex flex-col gap-4 w-full";
+  const columnStyle = "break-inside-avoid";
+  const rowSpacer = "break-inside-avoid h-4 w-full block";
 
   return (
     <MainProvider>
       <div className="relative w-full min-h-screen">
         <BackGround />
         <Sidebar />
-        <main className="relative z-10 p-4 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        <main className="relative z-10 p-4 columns-1 sm:columns-2 lg:columns-2 xl:columns-4 gap-4 space-y-4">
           <div className={columnStyle}>
             <ErrorBoundary>
               <User />
             </ErrorBoundary>
+            <div className={rowSpacer}></div>
             <ErrorBoundary>
               <Calendar />
             </ErrorBoundary>
+            <div className={rowSpacer}></div>
             <ErrorBoundary>
               <Images />
             </ErrorBoundary>
+            <div className={rowSpacer}></div>
           </div>
 
           <div className={columnStyle}>
             <ErrorBoundary>
               <Movements />
             </ErrorBoundary>
+            <div className={rowSpacer}></div>
           </div>
 
           <div className={columnStyle}>
             <ErrorBoundary>
               <PersonalFinance />
             </ErrorBoundary>
+            <div className={rowSpacer}></div>
             <ErrorBoundary>
               <BankReconciliation />
             </ErrorBoundary>
+            <div className={rowSpacer}></div>
             <ErrorBoundary>
               <Notes />
             </ErrorBoundary>
+            <div className={rowSpacer}></div>
           </div>
 
           <div className={columnStyle}>
             <ErrorBoundary>
               <Task />
             </ErrorBoundary>
+            <div className={rowSpacer}></div>
             <ErrorBoundary>
               <Pending />
             </ErrorBoundary>
+            <div className={rowSpacer}></div>
           </div>
         </main>
       </div>
