@@ -1,5 +1,4 @@
 "use client";
-import * as XLSX from "xlsx";
 import { useState } from "react";
 import { ChevronUp, ChevronDown, Logs, Plus, Download } from "lucide-react";
 import { MovementFooter } from "./MovementFooter";
@@ -34,48 +33,11 @@ export default function Movements() {
     resetModal,
     setDescription,
     listaParaGráfico,
+    exportToExcel,
   } = useMovements();
 
   const [isMinimized, setIsMinimized] = useState(false);
   const { isPrivate } = usePrivacyMode();
-
-  const exportToExcel = (data: any[], periodName: string) => {
-    // 1. Mapear y formatear los datos
-    const rows = data.map((item) => {
-      // Convertir YYYY-MM-DD a DD/MM/YYYY
-      const [year, month, day] = item.date.split("-");
-      const fechaFormateada = `${day}/${month}/${year}`;
-
-      return {
-        FECHA: fechaFormateada,
-        TIPO: item.type.toUpperCase(),
-        CATEGORÍA:
-          item.category.charAt(0).toUpperCase() + item.category.slice(1),
-        DESCRIPCIÓN: item.description || "-",
-        MONTO: Number(item.value), // Enviarlo como número para que Excel pueda sumar
-      };
-    });
-
-    // 2. Crear la hoja
-    const worksheet = XLSX.utils.json_to_sheet(rows);
-
-    // 3. Definir anchos de columna para que no se vea apretado (UX de Excel)
-    const columnWidths = [
-      { wch: 12 }, // Fecha
-      { wch: 10 }, // Tipo
-      { wch: 15 }, // Categoría
-      { wch: 30 }, // Descripción
-      { wch: 12 }, // Monto
-    ];
-    worksheet["!cols"] = columnWidths;
-
-    // 4. Crear el libro y descargar
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Finanzas");
-
-    // El nombre del archivo será algo como: Reporte_Enero_2026.xlsx
-    XLSX.writeFile(workbook, `Reporte_${periodName.replace(" ", "_")}.xlsx`);
-  };
 
   return (
     <div

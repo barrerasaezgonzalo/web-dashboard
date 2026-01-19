@@ -48,17 +48,22 @@ Handles external API integration to fetch and cache local weather data, providin
 
 A robust system for tracking and analyzing personal wealth:
 
-- **Interactive Analytics**: Comparative bar charts powered by Recharts, transforming raw database movements into monthly performance insights.
+- **Interactive Analytics**: Summary and Comparative bar charts powered by Recharts, transforming raw database movements into monthly performance insights.
 - **Privacy Obfuscation**: A global toggle that instantly masks sensitive financial figures across the UI, using React Context for synchronized state.
 - **Bulletproof Inputs**: Sanitized numeric fields using Regex-based filtering to block invalid characters (dots/commas) at the source.
 
-### 2\. Productivity Ecosystem (Notes , Calendar & Tasks)
+PENDING, BALANCE,
+
+### 2\. Productivity Ecosystem (Notes, Calendar & Tasks)
 
 Beyond finance, the dashboard acts as a central hub for personal organization:
 
-- **Smart Notes**: A cloud-synced system with categorization and priority levels. Features auto-save functionality and a clean "Dark Slate" interface.
-- **Task Manager**: A specialized To-Do engine with status tracking (Pending/Completed) and real-time updates via PostgreSQL subscriptions.
+- **Smart Notes**: A cloud-synced system with priority levels. Features auto-save functionality and a clean "Dark Slate" interface.
+- **Task Manager**: A specialized To-Do engine with status tracking (Pending/Delay/In Dev) and real-time updates.
+
 - **Unified Event Calendar**: A custom-built scheduling interface for managing time-sensitive events with precision time-slot controls.
+
+SUMARY
 
 ## 🌐 Backend & Cloud Architecture
 
@@ -81,7 +86,7 @@ Technical Implementation
 
 Strict TypeScript interfaces, Omit/Partial utility types, and Polymorphic components.
 
-**Data Viz**
+**TypeScript**
 
 Complex SVG rendering with Recharts, optimized for mobile responsiveness.
 
@@ -91,7 +96,7 @@ Tailwind CSS custom design system with "Dark Slate" aesthetic and Lucide icons.
 
 **Business Logic**
 
-Custom algorithms for financial summary, savings rates, and expense categorization.
+Custom algorithms for financial summary, savings rates, and custom expense categorization.
 
 ---
 

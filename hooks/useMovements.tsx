@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback, useContext } from "react";
 import { PersonalFinanceContext } from "@/context/PersonalFinanceContext";
 import { PersonalFinance, MovementType } from "@/types";
 import { useToast } from "@/hooks/useToast";
+import * as XLSX from "xlsx";
 
 export const useMovements = () => {
   const context = useContext(PersonalFinanceContext);
@@ -173,6 +174,36 @@ export const useMovements = () => {
     };
   }, [context.movements, selectedMonth]);
 
+  const exportToExcel = (data: any[], periodName: string) => {
+    const rows = data.map((item) => {
+      const [year, month, day] = item.date.split("-");
+      const fechaFormateada = `${day}/${month}/${year}`;
+
+      return {
+        FECHA: fechaFormateada,
+        TIPO: item.type.toUpperCase(),
+        CATEGORÍA:
+          item.category.charAt(0).toUpperCase() + item.category.slice(1),
+        DESCRIPCIÓN: item.description || "-",
+        MONTO: Number(item.value),
+      };
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(rows);
+    const columnWidths = [
+      { wch: 12 }, // Fecha
+      { wch: 10 }, // Tipo
+      { wch: 15 }, // Categoría
+      { wch: 30 }, // Descripción
+      { wch: 12 }, // Monto
+    ];
+    worksheet["!cols"] = columnWidths;
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Finanzas");
+    XLSX.writeFile(workbook, `Reporte_${periodName.replace(" ", "_")}.xlsx`);
+  };
+
   return {
     ...context,
     summary,
@@ -203,5 +234,6 @@ export const useMovements = () => {
     ...checkInversionDorada,
     handleOpenPendingPayment,
     listaParaGráfico: context.movements,
+    exportToExcel,
   };
 };

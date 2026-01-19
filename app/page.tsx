@@ -6,6 +6,7 @@ import { ErrorBoundary } from "@/components/ui/ErrorBoundary";
 import { Notes } from "@/components/Notes/Notes";
 import { User } from "@/components/User/User";
 import { BackGround } from "@/components/ui/BackGround";
+import { Images } from "@/components/Images/Images";
 import { useAuth } from "@/context/AuthContext";
 import { PersonalFinance } from "@/components/PersonalFinance/PersonalFinance";
 import { Pending } from "@/components/PersonalFinance/Pending";
@@ -49,6 +50,9 @@ export const App: React.FC = () => {
             </ErrorBoundary>
             <ErrorBoundary>
               <Calendar />
+            </ErrorBoundary>
+            <ErrorBoundary>
+              <Images />
             </ErrorBoundary>
           </div>
 

@@ -16,9 +16,7 @@ export const NotesList: React.FC<NotesListProps> = ({
   return (
     <div className="absolute inset-0 top-[60px] bg-amber-50/95 backdrop-blur-sm z-10 p-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
       <div className="flex items-center justify-between mb-3">
-        <span className="font-bold text-amber-900 text-sm">
-          Notas Guardadas
-        </span>
+        <span className="font-bold text-gray-900 text-sm">Notas Guardadas</span>
         <span className="text-[10px] bg-amber-200 px-2 py-0.5 rounded-full text-amber-800">
           {notes.length} notas
         </span>
