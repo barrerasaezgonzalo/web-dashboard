@@ -80,6 +80,7 @@ export interface TaskModalProps {
   inputRef: React.MutableRefObject<HTMLInputElement | null>;
   description: string;
   setDescription: (d: string) => void;
+  disableSubmit: boolean;
 }
 
 export interface UseTasksReturn {
@@ -101,4 +102,5 @@ export interface UseTasksReturn {
   showModal: boolean;
   description: string;
   setDescription: (d: string) => void;
+  disableSubmit: boolean;
 }

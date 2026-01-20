@@ -14,6 +14,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   inputRef,
   description,
   setDescription,
+  disableSubmit,
 }) => {
   useEffect(() => {
     if (inputRef.current) {
@@ -62,9 +63,14 @@ export const TaskModal: React.FC<TaskModalProps> = ({
               ref={inputRef}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className={`w-full text-black bg-white border rounded-xl p-3 focus:outline-none focus:ring-2 transition-all appearance-none`}
+              className={`w-full bg-slate-900 border rounded-xl p-3 pl-4 text-white font-mono text-sm focus:outline-none focus:ring-2 transition-all border-slate-700 focus:ring-blue-500/50`}
             />
           </div>
+          {title.trim().length < 5 && (
+            <p className="text-[12px] text-red-500 pl-1 mt-1">
+              Título debe tener al menos 5 Letras
+            </p>
+          )}
 
           <div>
             <label className="block text-sm font-medium text-slate-400 mb-2">
@@ -76,7 +82,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
                 type="date"
                 value={date}
                 onChange={(e) => setDate(e.target.value)}
-                className={`w-full bg-white border rounded-xl p-3 text-black focus:outline-none focus:ring-2 transition-all appearance-none  `}
+                className={`w-full bg-slate-900 border rounded-xl p-3 pl-4 text-white font-mono text-sm focus:outline-none focus:ring-2 transition-all border-slate-700 focus:ring-blue-500/50`}
               />
             </div>
           </div>
@@ -88,7 +94,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
               rows={6}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className={`w-full text-black bg-white border rounded-xl p-3 focus:outline-none focus:ring-2 transition-all appearance-none`}
+              className={`w-full bg-slate-900 border rounded-xl p-3 pl-4 text-white font-mono text-sm focus:outline-none focus:ring-2 transition-all border-slate-700 focus:ring-blue-500/50`}
             />
           </div>
         </div>
@@ -101,9 +107,10 @@ export const TaskModal: React.FC<TaskModalProps> = ({
             Cancelar
           </button>
           <button
+            disabled={disableSubmit}
             className={`flex-1  px-4 py-3 rounded-xl font-bold transition-all active:scale-95 
               ${
-                isLoading
+                disableSubmit
                   ? "bg-slate-700 text-slate-400 cursor-not-allowed opacity-70"
                   : "bg-blue-600 cursor-pointer text-white hover:bg-blue-500 shadow-lg shadow-blue-900/20"
               }`}

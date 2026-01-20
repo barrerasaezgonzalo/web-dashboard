@@ -15,7 +15,6 @@ export default function Movements() {
     category,
     value,
     editingItem,
-    errors,
     filtrados,
     total,
     selectedType,
@@ -34,6 +33,7 @@ export default function Movements() {
     setDescription,
     listaParaGráfico,
     exportToExcel,
+    disableSubmit,
   } = useMovements();
 
   const [isMinimized, setIsMinimized] = useState(false);
@@ -117,7 +117,6 @@ export default function Movements() {
           category={category}
           description={description}
           value={value}
-          errors={errors}
           specialCategoryRules={specialCategoryRules}
           selectedType={selectedType}
           editingItem={editingItem || ""}
@@ -126,6 +125,7 @@ export default function Movements() {
           onChangeCategory={setCategory}
           onChangeValue={setValue}
           onChangeDescription={setDescription}
+          disableSubmit={disableSubmit}
         />
       )}
     </div>

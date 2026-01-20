@@ -67,8 +67,14 @@ export const ImageModal: React.FC<any> = ({
               type="file"
               accept="image/*"
               onChange={handleImageChange}
-              className={`w-full text-black bg-white border rounded-xl p-3 focus:outline-none focus:ring-2 transition-all appearance-none`}
+              className={`w-full bg-slate-900 border rounded-xl p-3 pl-8 text-white font-mono text-sm focus:outline-none focus:ring-2 transition-all border-slate-700 focus:ring-blue-500/50`}
             />
+
+            {!preview && (
+              <p className="text-[12px] text-red-500 pl-1 mt-1">
+                Debe seleccionar una imagen
+              </p>
+            )}
           </div>
         </div>
 
@@ -80,9 +86,10 @@ export const ImageModal: React.FC<any> = ({
             Cancelar
           </button>
           <button
+            disabled={!preview || isLoading}
             className={`flex-1  px-4 py-3 rounded-xl font-bold transition-all active:scale-95 
               ${
-                isLoading
+                !preview || isLoading
                   ? "bg-slate-700 text-slate-400 cursor-not-allowed opacity-70"
                   : "bg-blue-600 cursor-pointer text-white hover:bg-blue-500 shadow-lg shadow-blue-900/20"
               }`}

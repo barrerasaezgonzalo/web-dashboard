@@ -27,6 +27,7 @@ const Tasks: React.FC = () => {
     showModal,
     description,
     setDescription,
+    disableSubmit,
   } = useTasks();
 
   const [isMinimized, setIsMinimized] = useState(false);
@@ -91,6 +92,7 @@ const Tasks: React.FC = () => {
           editingTaskId={editingTaskId || ""}
           description={description}
           setDescription={setDescription}
+          disableSubmit={disableSubmit}
         />
       )}
     </div>

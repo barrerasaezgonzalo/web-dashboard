@@ -31,10 +31,6 @@ export const useTasks = (): UseTasksReturn => {
   };
 
   const handleAdd = async () => {
-    if (title.trim().length < 5) {
-      openToast({ message: "Titulo debe tener al menos 5 Letras" });
-      return;
-    }
     try {
       await context.addTask(title, date, description);
       resetForm();
@@ -46,10 +42,6 @@ export const useTasks = (): UseTasksReturn => {
   };
 
   const handleSave = async () => {
-    if (title.trim().length < 5) {
-      openToast({ message: "Titulo debe tener al menos 5 Letras" });
-      return;
-    }
     try {
       await context.editTask(editingTaskId, title, date, description);
       resetForm();
@@ -88,6 +80,9 @@ export const useTasks = (): UseTasksReturn => {
     await context.toggleTaskInDev(id);
   };
 
+  const emptyFields = title.trim() === "" || title.trim().length < 5;
+  const disableSubmit = emptyFields || context.tasksLoading;
+
   return {
     ...context,
     title,
@@ -106,5 +101,6 @@ export const useTasks = (): UseTasksReturn => {
     showModal,
     description,
     setDescription,
+    disableSubmit,
   };
 };

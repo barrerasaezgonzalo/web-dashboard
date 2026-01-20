@@ -4,13 +4,13 @@ import { getCategoryLabels, getSpecialValue } from "@/utils";
 import { MovementModalProps } from "@/types/";
 import { usePersonalFinance } from "@/hooks/usePersonalFinance";
 import { PlusCircle, Wallet, X } from "lucide-react";
+import { format } from "date-fns";
 
 export const MovementModal: React.FC<MovementModalProps> = ({
   modalType,
   category,
   description,
   value,
-  errors,
   specialCategoryRules,
   selectedType,
   editingItem,
@@ -19,9 +19,10 @@ export const MovementModal: React.FC<MovementModalProps> = ({
   onChangeCategory,
   onChangeValue,
   onChangeDescription,
+  disableSubmit,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { financial, loading } = usePersonalFinance();
+  const { financial } = usePersonalFinance();
 
   useEffect(() => {
     if (modalType && inputRef.current) {
@@ -31,7 +32,7 @@ export const MovementModal: React.FC<MovementModalProps> = ({
 
   useEffect(() => {
     if (!modalType || !category) return;
-
+    onChangeValue("");
     const key = `${modalType}-${category}`;
     if (specialCategoryRules[key]) {
       const specialValue = getSpecialValue(
@@ -63,8 +64,8 @@ export const MovementModal: React.FC<MovementModalProps> = ({
               <h3 className="text-xl font-bold text-white">
                 {editingItem ? "Editar movimiento" : modalTitles[modalType]}
               </h3>
-              <p className="text-xs text-slate-400">
-                Completa los datos del registro
+              <p className="text-sm mt-1 text-slate-400">
+                Con fecha {format(new Date(), "dd-MM-yyyy")}
               </p>
             </div>
           </div>
@@ -84,24 +85,21 @@ export const MovementModal: React.FC<MovementModalProps> = ({
             <select
               value={category}
               onChange={(e) => onChangeCategory(e.target.value)}
-              className={`w-full bg-slate-900 border rounded-xl p-3 text-white focus:outline-none focus:ring-2 transition-all appearance-none cursor-pointer ${
-                errors.category
-                  ? "border-red-500 focus:ring-red-500/50"
-                  : "border-slate-700 focus:ring-blue-500/50"
-              }`}
+              className={`w-full bg-transparent border rounded-xl p-3 text-white focus:outline-none focus:ring-2 transition-all appearance-none cursor-pointer border-slate-700 focus:ring-blue-500/50"
+                `}
             >
-              <option value="" className="bg-slate-900">
+              <option value="" className="bg-[#1E293B]">
                 Selecciona una categoría
               </option>
               {getCategoryLabels(selectedType).map(({ id, label }) => (
-                <option key={id} value={id} className="bg-slate-900">
+                <option key={id} value={id} className="bg-[#1E293B]">
                   {label}
                 </option>
               ))}
             </select>
-            {errors.category && (
-              <p className="text-red-400 text-xs mt-2 font-medium flex items-center gap-1">
-                {errors.category}
+            {category.trim() === "" && (
+              <p className="text-[12px] text-red-500 pl-1 mt-1">
+                Este campo es obligatorio
               </p>
             )}
           </div>
@@ -112,9 +110,6 @@ export const MovementModal: React.FC<MovementModalProps> = ({
             </label>
 
             <div className="relative">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 font-bold z-10">
-                $
-              </span>
               <input
                 type="text"
                 ref={inputRef}
@@ -130,15 +125,11 @@ export const MovementModal: React.FC<MovementModalProps> = ({
                     onSave();
                   }
                 }}
-                className={`w-full bg-slate-900 border rounded-xl p-3 pl-8 text-white font-mono text-lg focus:outline-none focus:ring-2 transition-all ${
-                  errors.value
-                    ? "border-red-500 focus:ring-red-500/50"
-                    : "border-slate-700 focus:ring-blue-500/50"
-                }`}
+                className="flex-1 bg-transparent text-white font-semibold placeholder:text-slate-600 focus:outline-none text-lg"
               />
             </div>
 
-            {value && !errors.value && (
+            {value && (
               <p className="text-blue-400 text-xs mt-2 ml-1 font-medium italic">
                 Se guardará como:{" "}
                 {new Intl.NumberFormat("es-CL", {
@@ -148,21 +139,21 @@ export const MovementModal: React.FC<MovementModalProps> = ({
               </p>
             )}
 
-            {errors.value && (
-              <p className="text-red-400 text-xs mt-2 font-medium flex items-center gap-1">
-                {errors.value}
+            {value.trim() === "" && (
+              <p className="text-[12px] text-red-500 pl-1 mt-1">
+                Este campo es obligatorio
               </p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-400 mb-2">
-              Descripcion (Opcional)
-            </label>
             <textarea
               value={description}
+              placeholder="Descripcion (Opcional)"
               onChange={(e) => onChangeDescription(e.target.value)}
-              className={`w-full bg-slate-900 border rounded-xl p-3 text-white focus:outline-none focus:ring-2 transition-all appearance-none cursor-pointer border-slate-700 focus:ring-blue-500/50`}
+              className={
+                "w-full bg-transparent text-slate-400 text-sm placeholder:text-slate-600 focus:outline-none resize-none h-10 border-t border-slate-700/30 pt-1"
+              }
             />
           </div>
         </div>
@@ -175,9 +166,10 @@ export const MovementModal: React.FC<MovementModalProps> = ({
             Cancelar
           </button>
           <button
+            disabled={disableSubmit}
             className={`flex-1  px-4 py-3 rounded-xl font-bold transition-all active:scale-95 
               ${
-                loading
+                disableSubmit
                   ? "bg-slate-700 text-slate-400 cursor-not-allowed opacity-70"
                   : "bg-blue-600 cursor-pointer text-white hover:bg-blue-500 shadow-lg shadow-blue-900/20"
               }`}

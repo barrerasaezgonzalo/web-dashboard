@@ -60,7 +60,6 @@ export const useImages = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!image) {
-      openToast({ message: "Debe seleccionar una imagen" });
       return;
     }
     if (image.size > 4 * 1024 * 1024) {
@@ -99,7 +98,7 @@ export const useImages = () => {
     openToast({
       message: "¿Estas seguro que deseas eliminar esta imagen?",
       onConfirm: async () => {
-        const response = await fetch(`/api/images?url=${img}`, {
+        await fetch(`/api/images?url=${img}`, {
           method: "DELETE",
         });
         closeToast();

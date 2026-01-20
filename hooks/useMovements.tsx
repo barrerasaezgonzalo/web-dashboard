@@ -14,11 +14,6 @@ export const useMovements = () => {
   const [description, setDescription] = useState("");
   const [value, setValue] = useState("");
   const [editingItem, setEditingItem] = useState<string | null>(null);
-  const [errors, setErrors] = useState<{
-    category?: string;
-    value?: string;
-    description?: string;
-  }>({});
   const [selectedType, setSelectedType] = useState<MovementType>("gastos");
   const [selectedMonth, setSelectedMonth] = useState(
     new Date().toISOString().slice(0, 7),
@@ -42,22 +37,7 @@ export const useMovements = () => {
     setValue("");
     setDescription("");
     setEditingItem(null);
-    setErrors({});
   }, []);
-
-  const validateFields = () => {
-    const newErrors: { category?: string; value?: string } = {};
-
-    if (!category) newErrors.category = "Categoría es requerida";
-
-    const numericValue = Number(value);
-    if (!value || isNaN(numericValue) || numericValue <= 0) {
-      newErrors.value = "Ingresa un número válido mayor que cero";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
 
   const handleOpenAddModal = useCallback(() => {
     setModalType(selectedType);
@@ -75,11 +55,9 @@ export const useMovements = () => {
     setDescription(item.description ?? "");
     setValue(item.value.toString());
     setModalType(item.type);
-    setErrors({});
   }, []);
 
   const handleAddMovement = async () => {
-    if (!validateFields()) return;
     try {
       const day = new Date().getDate().toString().padStart(2, "0");
       const newMovement = {
@@ -99,7 +77,7 @@ export const useMovements = () => {
   };
 
   const handleUpdateMovement = async () => {
-    if (!editingItem || !validateFields()) return;
+    if (!editingItem) return;
     try {
       const updated = {
         id: editingItem,
@@ -204,6 +182,9 @@ export const useMovements = () => {
     XLSX.writeFile(workbook, `Reporte_${periodName.replace(" ", "_")}.xlsx`);
   };
 
+  const emptyFields = category.trim() === "" || value.trim() === "";
+  const disableSubmit = emptyFields || context.loading;
+
   return {
     ...context,
     summary,
@@ -212,7 +193,6 @@ export const useMovements = () => {
     description,
     value,
     editingItem,
-    errors,
     filtrados,
     total,
     selectedType,
@@ -224,7 +204,6 @@ export const useMovements = () => {
     setSelectedMonth,
     setEditingItem,
     setModalType,
-    setErrors,
     handleOpenAddModal,
     handleAddMovement,
     handleUpdateMovement,
@@ -235,5 +214,6 @@ export const useMovements = () => {
     handleOpenPendingPayment,
     listaParaGráfico: context.movements,
     exportToExcel,
+    disableSubmit,
   };
 };

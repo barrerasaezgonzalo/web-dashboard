@@ -51,7 +51,7 @@ export const EventItem = ({
           />
           <button
             onClick={() => onRemove(idx)}
-            className="text-slate-500 hover:text-red-400 transition-colors p-1 cursor-pointer"
+            className="text-slate-500 hover:text-red-400 transition-colors p-1"
           >
             <Trash size={20} />
           </button>

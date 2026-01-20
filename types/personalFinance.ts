@@ -61,7 +61,6 @@ export interface MovementModalProps {
   category: string;
   description: string;
   value: string;
-  errors: { category?: string; value?: string };
   specialCategoryRules: Record<string, (financial: Financial) => number>;
   selectedType: PersonalFinance["type"];
   editingItem: string | null;
@@ -70,6 +69,7 @@ export interface MovementModalProps {
   onChangeCategory: (category: string) => void;
   onChangeValue: (value: string) => void;
   onChangeDescription: (description: string) => void;
+  disableSubmit: boolean;
 }
 
 export interface MovementListProps {

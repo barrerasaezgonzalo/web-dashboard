@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { LineChart, Line, ResponsiveContainer, YAxis } from "recharts";
-import { ExtendedProps, MovementListProps } from "@/types/";
+import { ExtendedProps } from "@/types/";
 import { formatCLP, formatDateToDMY, getCategoryLabel } from "@/utils";
 import {
   ChevronDown,
