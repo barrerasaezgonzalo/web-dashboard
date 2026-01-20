@@ -4,6 +4,7 @@ export interface CalendarEvent {
   minutos: string;
   notas?: string;
   fecha?: string; // solo cuando viene del backend
+  id?: string;
 }
 
 export interface EventItemProps {

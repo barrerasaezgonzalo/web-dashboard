@@ -30,6 +30,11 @@ const Movements = dynamic(
 
 const Calendar = dynamic(() => import("@/components/Calendar/Calendar"), {
   ssr: false,
+  loading: () => (
+    <div className="w-full h-[600px] bg-slate-900/50 animate-pulse rounded-3xl border border-slate-800 flex items-center justify-center">
+      <span className="text-slate-500 font-medium">Cargando calendario...</span>
+    </div>
+  ),
 });
 
 export const App: React.FC = () => {

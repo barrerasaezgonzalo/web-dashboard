@@ -31,7 +31,7 @@ export default async function handler(
       if (!userId) return res.status(400).json({ error: "Faltan datos" });
       const { data, error } = await supabase
         .from("calendar")
-        .select("*")
+        .select("id, titulo, notas, fecha, hora")
         .eq("auth_data", userId)
         .order("fecha", { ascending: false });
 
@@ -53,13 +53,20 @@ export default async function handler(
       if (deleteError) throw deleteError;
 
       if (events && events.length > 0) {
-        const eventsToInsert = events.map((ev: CalendarEvent) => ({
-          auth_data: userId,
-          fecha: fecha,
-          titulo: ev.titulo,
-          notas: ev.notas || "",
-          hora: ev.hora,
-        }));
+        const eventsToInsert = events.map((ev: CalendarEvent) => {
+          let fechaLimpia = ev.fecha || fecha;
+          if (fechaLimpia.includes("/")) {
+            fechaLimpia = fechaLimpia.split("/").reverse().join("-");
+          }
+
+          return {
+            auth_data: userId,
+            fecha: fechaLimpia,
+            titulo: ev.titulo,
+            notas: ev.notas || "",
+            hora: ev.hora,
+          };
+        });
 
         const { error: insertError } = await supabase
           .from("calendar")

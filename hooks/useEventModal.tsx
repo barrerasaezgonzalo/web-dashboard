@@ -14,12 +14,20 @@ export const useEventModal = (
   const { openToast, closeToast } = useToast();
 
   useEffect(() => {
-    const formatted = (eventsToday || []).map((ev: CalendarEvent) => ({
-      ...ev,
-      notas: ev.notas || "",
-      hora: ev.hora?.split(":")[0] || "09",
-      minutos: ev.hora?.split(":")[1] || "00",
-    }));
+    const formatted = (eventsToday || []).map((ev: CalendarEvent) => {
+      let fechaIso = ev.fecha || date;
+      if (fechaIso.includes("/")) {
+        fechaIso = fechaIso.split("/").reverse().join("-");
+      }
+
+      return {
+        ...ev,
+        fecha: fechaIso,
+        notas: ev.notas || "",
+        hora: ev.hora?.split(":")[0] || "09",
+        minutos: ev.hora?.split(":")[1] || "00",
+      };
+    });
     setLocalEvents(formatted);
     initialEventsRef.current = JSON.stringify(formatted);
   }, [date, eventsToday]);
@@ -51,7 +59,7 @@ export const useEventModal = (
       return;
     setLocalEvents([
       ...localEvents,
-      { titulo: "", notas: "", hora: "09", minutos: "00" },
+      { titulo: "", notas: "", hora: "09", minutos: "00", fecha: date },
     ]);
   };
 
