@@ -1,4 +1,5 @@
 import { NotesListProps } from "@/types/";
+import { stripHtml } from "@/utils";
 import { Heart, Trash } from "lucide-react";
 import { useState } from "react";
 
@@ -42,7 +43,7 @@ export const NotesList: React.FC<NotesListProps> = ({
               onClick={() => handleClickNote(n)}
             >
               <p className="text-sm text-amber-900 truncate pr-2 font-medium">
-                {n.content || "Nota vacía..."}
+                {stripHtml(n.content) || "Nota vacía..."}
               </p>
               <p className="text-[10px] text-amber-600/70 mt-1">
                 Haz clic para editar

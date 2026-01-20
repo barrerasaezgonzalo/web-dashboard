@@ -220,3 +220,11 @@ export const getSpecialValue = (
   }
   return defaultValue;
 };
+
+export const stripHtml = (html: string) => {
+  if (!html) return "";
+  let clean = html.replace(/&nbsp;/g, " ");
+  clean = clean.replace(/<\/div>|<br\s*\/?>|<\/p>/gi, " ");
+  clean = clean.replace(/<[^>]*>?/gm, "");
+  return clean.replace(/\s+/g, " ").trim();
+};

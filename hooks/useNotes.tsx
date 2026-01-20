@@ -8,6 +8,8 @@ export const useNotes = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [note, setNote] = useState<Note | null>(null);
   const saveTimeout = useRef<NodeJS.Timeout | null>(null);
+  const noteRef = useRef(note);
+  const editorRef = useRef<HTMLDivElement>(null);
 
   const fetchNotes = useCallback(async () => {
     if (!userId) return;
@@ -24,41 +26,6 @@ export const useNotes = () => {
     }
   }, [userId]);
 
-  const handleChange = useCallback(
-    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-      const value = e.target.value;
-
-      if (!note && value.trim() !== "") {
-        const tempId = "temp-" + Date.now();
-        const tempNote = { id: tempId, content: value, user_id: userId! };
-        setNote(tempNote);
-
-        createInitialNote(value);
-        return;
-      }
-
-      if (note) {
-        setNote({ ...note, content: value });
-
-        if (saveTimeout.current) clearTimeout(saveTimeout.current);
-        saveTimeout.current = setTimeout(async () => {
-          if (!note.id.startsWith("temp-")) {
-            await authFetch(`/api/note`, {
-              method: "PUT",
-              body: JSON.stringify({ content: value, noteId: note.id }),
-            });
-            setNotes((prev) =>
-              prev.map((n) =>
-                n.id === note.id ? { ...n, content: value } : n,
-              ),
-            );
-          }
-        }, 500);
-      }
-    },
-    [note, userId],
-  );
-
   const createInitialNote = async (initialContent: string) => {
     const res = await authFetch(`/api/note`, {
       method: "POST",
@@ -68,6 +35,47 @@ export const useNotes = () => {
     setNote(newNote);
     setNotes((prev) => [newNote, ...prev]);
   };
+
+  const handleChange = useCallback(
+    (htmlContent: string) => {
+      const currentNote = noteRef.current;
+
+      if (!currentNote && htmlContent.trim() !== "" && htmlContent !== "<br>") {
+        const tempId = "temp-" + Date.now();
+        const tempNote = { id: tempId, content: htmlContent, user_id: userId! };
+        setNote(tempNote);
+        createInitialNote(htmlContent);
+        return;
+      }
+
+      if (currentNote) {
+        if (saveTimeout.current) clearTimeout(saveTimeout.current);
+
+        saveTimeout.current = setTimeout(async () => {
+          if (
+            currentNote.id &&
+            !currentNote.id.toString().startsWith("temp-")
+          ) {
+            await authFetch(`/api/note`, {
+              method: "PUT",
+              body: JSON.stringify({
+                content: htmlContent,
+                noteId: currentNote.id,
+              }),
+            });
+
+            setNotes((prev) =>
+              prev.map((n) =>
+                n.id === currentNote.id ? { ...n, content: htmlContent } : n,
+              ),
+            );
+          }
+        }, 500);
+      }
+    },
+    [userId, setNotes, createInitialNote],
+  );
+
   const createNote = useCallback(async () => {
     if (!userId) return;
 
@@ -112,13 +120,17 @@ export const useNotes = () => {
 
   const selectNote = useCallback(
     async (nextNote: Note) => {
-      if (note && note.content.trim() === "") {
-        const currentId = note.id;
-        authFetch(`/api/note?noteId=${currentId}`, { method: "DELETE" });
+      const currentContent = editorRef.current?.innerHTML || "";
+      const isActuallyEmpty =
+        currentContent.trim() === "" || currentContent === "<br>";
 
+      if (note && note.content.trim() === "" && isActuallyEmpty) {
+        const currentId = note.id;
+        if (!currentId.toString().startsWith("temp-")) {
+          authFetch(`/api/note?noteId=${currentId}`, { method: "DELETE" });
+        }
         setNotes((prev) => prev.filter((n) => n.id !== currentId));
       }
-
       setNote(nextNote);
     },
     [note, userId],
@@ -160,5 +172,7 @@ export const useNotes = () => {
     handleChange,
     selectNote,
     favoriteNote,
+    noteRef,
+    editorRef,
   };
 };

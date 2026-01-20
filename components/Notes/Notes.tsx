@@ -4,7 +4,7 @@ import { useNotes } from "@/hooks/useNotes";
 import { usePrivacyMode } from "@/hooks/usePrivacyMode";
 import { useToast } from "@/hooks/useToast";
 import { StickyNote, Plus, List, ChevronDown, ChevronUp } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const Notes: React.FC = () => {
   const {
@@ -15,11 +15,24 @@ export const Notes: React.FC = () => {
     createNote,
     handleChange,
     favoriteNote,
+    noteRef,
+    editorRef,
   } = useNotes();
   const [openList, setOpenList] = useState(false);
   const { openToast, closeToast } = useToast();
   const [isMinimized, setIsMinimized] = useState(false);
   const { isPrivate } = usePrivacyMode();
+
+  useEffect(() => {
+    noteRef.current = note;
+    if (editorRef.current && note) {
+      if (editorRef.current.innerHTML !== note.content) {
+        editorRef.current.innerHTML = note.content || "";
+      }
+    } else if (editorRef.current && !note) {
+      editorRef.current.innerHTML = "";
+    }
+  }, [note?.id]);
 
   const handleAddNote = () => {
     openToast({
@@ -104,12 +117,15 @@ export const Notes: React.FC = () => {
             </div>
           ) : (
             <>
-              <textarea
-                value={note?.content || ""}
-                onChange={handleChange}
-                rows={14}
-                placeholder="Escribe tu nota..."
-                className={`w-full p-2 outline-none  bg-amber-100 ${isPrivate ? "privacy-blur" : ""} `}
+              <div
+                ref={editorRef}
+                contentEditable={!isPrivate}
+                onInput={(e) => handleChange(e.currentTarget.innerHTML)}
+                data-placeholder="Escribe tu nota..."
+                className={`w-full p-2 outline-none bg-amber-100 min-h-[300px] text-slate-800
+                  ${isPrivate ? "privacy-blur" : ""} 
+                  empty:before:content-[attr(data-placeholder)] empty:before:text-slate-400
+                `}
               />
               <div className="absolute bottom-2 right-4 text-[10px] uppercase font-bold text-amber-700/60 tracking-widest">
                 Auto-guardado
