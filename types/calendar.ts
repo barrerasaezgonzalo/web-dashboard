@@ -18,7 +18,7 @@ export interface EventItemProps {
 export interface CalendarDayProps {
   dia: Date;
   esMesActual: boolean;
-  tieneEvento: number;
+  tieneEvento: boolean;
   onClick: () => void;
 }
 
