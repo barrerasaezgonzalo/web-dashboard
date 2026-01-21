@@ -37,18 +37,15 @@ export default function Movements() {
     groupedData,
   } = useMovements();
 
-  const [isMinimized, setIsMinimized] = useState(false);
   const { isPrivate } = usePrivacyMode();
 
   return (
     <div
       id="movements"
-      className={`bg-[#1E293C] p-4 rounded shadow transition-all duration-300 ${isMinimized ? "min-h-0" : "min-h-[200px]"} text-white`}
+      className={`bg-[#1E293C] p-4 rounded shadow transition-all duration-300 text-white`}
     >
       <div className="max-w-4xl mx-auto">
-        <div
-          className={`flex flex-wrap items-center justify-between ${!isMinimized && "pb-4"} gap-3`}
-        >
+        <div className={`flex flex-wrap items-center justify-between gap-3`}>
           <div className="flex justify-between items-center w-full border-b pb-2 text-white">
             <h2 className="text-xl font-bold flex gap-2 items-center">
               <Logs size={25} />
@@ -69,47 +66,32 @@ export default function Movements() {
               >
                 <Download size={20} />
               </button>
-
-              <button
-                onClick={() => setIsMinimized(!isMinimized)}
-                className="p-1 hover:bg-blue-400 rounded transition-colors cursor-pointer"
-              >
-                {isMinimized ? (
-                  <ChevronDown size={24} />
-                ) : (
-                  <ChevronUp size={24} />
-                )}
-              </button>
             </div>
           </div>
 
-          {!isMinimized && (
-            <MovementFilters
-              selectedMonth={selectedMonth}
-              setSelectedMonth={setSelectedMonth}
-              selectedType={selectedType}
-              setSelectedType={setSelectedType}
-            />
-          )}
+          <MovementFilters
+            selectedMonth={selectedMonth}
+            setSelectedMonth={setSelectedMonth}
+            selectedType={selectedType}
+            setSelectedType={setSelectedType}
+          />
         </div>
 
-        {!isMinimized && (
-          <div className="flex flex-col gap-4">
-            <MovementList
-              isPrivate={isPrivate}
-              onEdit={handleEditClick}
-              onDelete={handleDeleteMovement}
-              graphList={graphList}
-              groupedData={groupedData}
-            />
+        <div className="flex flex-col gap-4">
+          <MovementList
+            isPrivate={isPrivate}
+            onEdit={handleEditClick}
+            onDelete={handleDeleteMovement}
+            graphList={graphList}
+            groupedData={groupedData}
+          />
 
-            <MovementFooter
-              total={total}
-              isPrivate={isPrivate}
-              handleOpenAddModal={handleOpenAddModal}
-            />
-          </div>
-        )}
+          <MovementFooter
+            total={total}
+            isPrivate={isPrivate}
+            handleOpenAddModal={handleOpenAddModal}
+          />
+        </div>
       </div>
 
       {modalType && (

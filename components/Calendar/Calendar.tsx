@@ -26,7 +26,6 @@ import { CalendarDay } from "./CalendarDay";
 import { usePrivacyMode } from "@/hooks/usePrivacyMode";
 
 const Calendar = () => {
-  const [isMinimized, setIsMinimized] = useState(false);
   const [mesActual, setMesActual] = useState(new Date());
   const { events, modalConfig, handleShowModal } = useCalendar(mesActual);
   const { isPrivate } = usePrivacyMode();
@@ -53,7 +52,6 @@ const Calendar = () => {
         shadow 
         transition-all 
         duration-500 
-        ${isMinimized ? "min-h-0" : "min-h-72"}
       `}
     >
       <div className="flex justify-between items-center w-full pb-2 text-white">
@@ -62,78 +60,70 @@ const Calendar = () => {
             <CalendarDays size={25} />
             Calendario
           </h2>
-          <button
-            onClick={() => setIsMinimized(!isMinimized)}
-            className="p-1 hover:bg-blue-500 rounded transition-colors cursor-pointer"
-          >
-            {isMinimized ? <ChevronDown size={24} /> : <ChevronUp size={24} />}
-          </button>
         </div>
       </div>
 
-      {!isMinimized && (
-        <>
-          {/* Navegación de Meses */}
-          <div className="flex items-center justify-between px-6 py-4 bg-gray-50 border-b">
-            <button
-              onClick={() => setMesActual(subMonths(mesActual, 1))}
-              className="p-2 hover:bg-gray-200 rounded-full cursor-pointer"
-            >
-              <ChevronLeft size={25} />
-            </button>
-            <h3 className="text-lg font-bold capitalize">
-              {format(mesActual, "MMMM yyyy", { locale: es })}
-            </h3>
-            {!isSameMonth(new Date(), mesActual) && (
-              <div
-                className="text-blue-500 cursor-pointer"
-                onClick={() => setMesActual(new Date())}
-              >
-                <TimerReset size={25} />
-              </div>
-            )}
-            <button
-              onClick={() => setMesActual(addMonths(mesActual, 1))}
-              className="p-2 hover:bg-gray-200 rounded-full cursor-pointer"
-            >
-              <ChevronRight size={25} />
-            </button>
-          </div>
-
-          {/* Días de la semana */}
-          <div className="grid grid-cols-7 border-b bg-gray-50">
-            {diasSemana.map((dia) => (
-              <div
-                key={dia}
-                className="text-center text-xs font-semibold py-2 text-gray-500 uppercase"
-              >
-                {dia}
-              </div>
-            ))}
-          </div>
-
-          {/* Grid de días */}
-          <div
-            className={`grid grid-cols-7 text-sm ${isPrivate ? "privacy-blur" : ""}`}
+      <>
+        {/* Navegación de Meses */}
+        <div className="flex items-center justify-between px-6 py-4 bg-gray-50 border-b">
+          <button
+            onClick={() => setMesActual(subMonths(mesActual, 1))}
+            className="p-2 hover:bg-gray-200 rounded-full cursor-pointer"
           >
-            {dias.map((dia, idx) => {
-              const fechaKey = format(dia, "yyyy-MM-dd");
-              const tieneEvento = events.some((ev) => ev.fecha === fechaKey);
-              const esMesActual = isSameDay(startOfMonth(dia), inicioMes);
+            <ChevronLeft size={25} />
+          </button>
+          <h3 className="text-lg font-bold capitalize">
+            {format(mesActual, "MMMM yyyy", { locale: es })}
+          </h3>
+          {!isSameMonth(new Date(), mesActual) && (
+            <div
+              className="text-blue-500 cursor-pointer"
+              onClick={() => setMesActual(new Date())}
+            >
+              <TimerReset size={25} />
+            </div>
+          )}
+          <button
+            onClick={() => setMesActual(addMonths(mesActual, 1))}
+            className="p-2 hover:bg-gray-200 rounded-full cursor-pointer"
+          >
+            <ChevronRight size={25} />
+          </button>
+        </div>
 
-              return (
-                <CalendarDay
-                  key={idx}
-                  dia={dia}
-                  esMesActual={esMesActual}
-                  tieneEvento={tieneEvento}
-                  onClick={() => handleShowModal(dia)}
-                />
-              );
-            })}
-          </div>
-        </>
-      )}
+        {/* Días de la semana */}
+        <div className="grid grid-cols-7 border-b bg-gray-50">
+          {diasSemana.map((dia) => (
+            <div
+              key={dia}
+              className="text-center text-xs font-semibold py-2 text-gray-500 uppercase"
+            >
+              {dia}
+            </div>
+          ))}
+        </div>
+
+        {/* Grid de días */}
+        <div
+          className={`grid grid-cols-7 text-sm ${isPrivate ? "privacy-blur" : ""}`}
+        >
+          {dias.map((dia, idx) => {
+            const fechaKey = format(dia, "yyyy-MM-dd");
+            const tieneEvento = events.some((ev) => ev.fecha === fechaKey);
+            const esMesActual = isSameDay(startOfMonth(dia), inicioMes);
+
+            return (
+              <CalendarDay
+                key={idx}
+                dia={dia}
+                esMesActual={esMesActual}
+                tieneEvento={tieneEvento}
+                onClick={() => handleShowModal(dia)}
+              />
+            );
+          })}
+        </div>
+      </>
 
       {modalConfig && (
         <EventModal

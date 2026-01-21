@@ -30,13 +30,10 @@ const Tasks: React.FC = () => {
     disableSubmit,
   } = useTasks();
 
-  const [isMinimized, setIsMinimized] = useState(false);
   return (
     <div
       id="tasks"
-      className={`bg-[#1E293C] text-white p-4 rounded shadow transition-all duration-300 ${
-        isMinimized ? "min-h-0" : "min-h-[200px]"
-      } `}
+      className={`bg-[#1E293C] text-white p-4 rounded shadow transition-all duration-300 `}
       role="region"
       aria-labelledby="tasks-heading"
     >
@@ -53,32 +50,23 @@ const Tasks: React.FC = () => {
           >
             <Plus size={20} />
           </button>
-
-          <button
-            onClick={() => setIsMinimized(!isMinimized)}
-            className="p-1 hover:bg-blue-400 rounded transition-colors cursor-pointer"
-          >
-            {isMinimized ? <ChevronDown size={24} /> : <ChevronUp size={24} />}
-          </button>
         </div>
       </div>
 
-      {!isMinimized && (
-        <>
-          {/* Lista de tareas */}
-          <ul role="list" className="mt-4">
-            {tasks.map((task: Task) => (
-              <TaskItem
-                key={task.id}
-                task={task}
-                handleEdit={() => handleEdit(task)}
-                handleRemove={() => handleDelete(task.id)}
-                handleTaskToggle={() => handleTaskToggle(task.id)}
-              />
-            ))}
-          </ul>
-        </>
-      )}
+      <>
+        {/* Lista de tareas */}
+        <ul role="list" className="mt-4">
+          {tasks.map((task: Task) => (
+            <TaskItem
+              key={task.id}
+              task={task}
+              handleEdit={() => handleEdit(task)}
+              handleRemove={() => handleDelete(task.id)}
+              handleTaskToggle={() => handleTaskToggle(task.id)}
+            />
+          ))}
+        </ul>
+      </>
       {showModal && (
         <TaskModal
           onClose={resetForm}
