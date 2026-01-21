@@ -46,11 +46,11 @@ export const useMovements = () => {
 
       const matchesMonth = normalizedDate.startsWith(selectedMonth);
       const matchesType =
-        selectedType === "gastos" ||
         m.type.toLowerCase().trim() === selectedType.toLowerCase().trim();
 
       return matchesMonth && matchesType;
     });
+
     return filtered.reduce((acc: Record<string, MovementGroup>, mov) => {
       const key = `${mov.type}-${mov.category}`;
 

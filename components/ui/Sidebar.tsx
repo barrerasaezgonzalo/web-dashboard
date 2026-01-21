@@ -28,18 +28,22 @@ export const Sidebar = () => {
     { name: "Imágenes", href: "#images", icon: <ImageIcon size={20} /> },
     { name: "Movimientos", href: "#movements", icon: <Logs size={20} /> },
     {
-      name: "PersonalFinances",
+      name: "Resumen Mensual",
       href: "#PersonalFinances",
       icon: <Activity size={20} />,
     },
     {
-      name: "BankReconciliation",
+      name: "Conciliación Bancaria",
       href: "#BankReconciliation",
       icon: <PiggyBank size={20} />,
     },
-    { name: "Notes", href: "#notes", icon: <StickyNote size={20} /> },
-    { name: "Tasks", href: "#tasks", icon: <ListChecks size={20} /> },
-    { name: "Pending", href: "#pending", icon: <PiggyBank size={20} /> },
+    { name: "Notas Rápidas", href: "#notes", icon: <StickyNote size={20} /> },
+    { name: "Lista de Tareas", href: "#tasks", icon: <ListChecks size={20} /> },
+    {
+      name: "Gastos Pendientes",
+      href: "#pending",
+      icon: <PiggyBank size={20} />,
+    },
   ];
 
   useEffect(() => {
@@ -61,14 +65,14 @@ export const Sidebar = () => {
       </button>
 
       <div
-        className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-[1000] transition-opacity ${
+        className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-1000 transition-opacity ${
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         onClick={() => setIsOpen(false)}
       />
 
       <aside
-        className={`fixed top-0 left-0 h-full w-64 bg-slate-950 z-[1001] shadow-2xl transform transition-transform duration-300 ${
+        className={`fixed top-0 left-0 h-full w-64 bg-slate-950 z-1001 shadow-2xl transform transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >

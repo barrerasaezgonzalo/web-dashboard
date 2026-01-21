@@ -14,6 +14,8 @@ import { Pending } from "@/components/PersonalFinance/Pending";
 import { MainProvider } from "./MainProvider";
 import { BankReconciliation } from "@/components/PersonalFinance/BankReconciliation";
 import { ScrollToTop } from "@/components/ui/ScrollToTop";
+import { useEffect } from "react";
+import { useHashHighlight } from "@/hooks/useHashHighlight";
 
 const Task = dynamic(() => import("@/components/Task/Task"), {
   ssr: false,
@@ -38,6 +40,7 @@ const Calendar = dynamic(() => import("@/components/Calendar/Calendar"), {
 });
 
 export const App: React.FC = () => {
+  useHashHighlight();
   const { userId, loading, signInWithGoogle } = useAuth();
 
   if (loading) return <LoadingScreen />;

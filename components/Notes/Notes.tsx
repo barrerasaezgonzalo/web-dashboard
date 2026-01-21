@@ -48,6 +48,7 @@ export const Notes: React.FC = () => {
 
   return (
     <div
+      id="notes"
       className={`
         relative 
         bg-linear-to-br 
@@ -60,11 +61,10 @@ export const Notes: React.FC = () => {
         ${isMinimized ? "min-h-0" : "min-h-120"}
         flex 
         flex-col 
-        overflow-hidden
         p-4
         `}
     >
-      <div id="notes" className="flex justify-between items-center pb-2">
+      <div className="flex justify-between items-center pb-2">
         <div className="flex justify-between items-center border-b w-full pb-2">
           <h2 className="text-xl flex gap-2 font-bold">
             <StickyNote size={25} />

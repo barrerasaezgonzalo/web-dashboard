@@ -26,7 +26,7 @@ export const MovementList: React.FC<MovementListProps> = ({
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
   const statsPorCategoria = useMemo(
-    () => calculateCategoryStats(graphList), // TypeScript ahora valida que graphList sea correcto
+    () => calculateCategoryStats(graphList),
     [graphList],
   );
 

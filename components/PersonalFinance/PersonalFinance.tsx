@@ -21,7 +21,7 @@ export const PersonalFinance = () => {
   return (
     <div
       id="PersonalFinances"
-      className={`bg-[#1E293C] p-4 rounded shadow transition-all duration-300 ${isMinimized ? "min-h-0" : "min-h-[200px]"} overflow-x-auto  text-white`}
+      className={`bg-[#1E293C] p-4 rounded shadow transition-all duration-300 ${isMinimized ? "min-h-0" : "min-h-[200px]"} text-white`}
     >
       <div
         className={`flex justify-between items-center border-b ${!isMinimized && "mb-4"} pb-2`}
