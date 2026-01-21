@@ -8,7 +8,7 @@ import {
 } from "@/utils";
 import { useTasks } from "@/hooks/useTasks";
 import { useAuth } from "@/context/AuthContext";
-import { useState, useEffect, useContext, useRef } from "react";
+import { useEffect, useContext, useRef } from "react";
 import { usePrivacyMode } from "@/hooks/usePrivacyMode";
 import {
   Eye,
@@ -30,8 +30,6 @@ export const User = () => {
   const { isPrivate } = usePrivacyMode();
   const { tasks } = useTasks();
   const { openToast, closeToast } = useToast();
-  const [date, setDate] = useState("Cargando...");
-  const [hour, setHour] = useState("Cargando...");
   const { events, handleShowModal } = useContext(CalendarContext)!;
   const { canInvest, missingGolden } = useMovements();
   const hoyStr = format(new Date(), "yyyy-MM-dd");

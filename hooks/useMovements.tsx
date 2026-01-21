@@ -148,8 +148,15 @@ export const useMovements = () => {
       onCancel: closeToast,
     });
   };
-
   const checkGoldenInvestment = useMemo(() => {
+    if (!context.movements || context.movements.length === 0) {
+      return {
+        canInvest: false,
+        totalDorada: 0,
+        missingGolden: 0,
+        hasData: false,
+      };
+    }
     const BASE_VALUE = 2800000;
     const FACTOR = 6;
     const minimalGolden = BASE_VALUE * FACTOR;

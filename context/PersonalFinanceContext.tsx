@@ -76,7 +76,7 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
     } catch (error) {
       trackError(error, "GetFinancial");
     }
-  }, [authFetch, trackError]);
+  }, []);
 
   useEffect(() => {
     getFinancial();
