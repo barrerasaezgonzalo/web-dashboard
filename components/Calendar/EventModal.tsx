@@ -1,6 +1,6 @@
 // EventModal.tsx
 import { CalendarDays, Info, X } from "lucide-react";
-import { memo } from "react";
+import { memo, useEffect } from "react";
 import { useEventModal } from "@/hooks/useEventModal";
 import { EventItem } from "./EventItem";
 import { horas, minutos } from "@/constants";
@@ -22,6 +22,18 @@ export const EventModalComponent: React.FC<EventModalComponentProps> = ({
     handleConfirm,
     events,
   } = useEventModal(eventsToday, date, onConfirm);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        onCancel();
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [onCancel]);
 
   return (
     <>

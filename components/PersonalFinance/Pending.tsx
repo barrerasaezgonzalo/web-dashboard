@@ -2,11 +2,13 @@ import { PersonalFinanceContext } from "@/context/PersonalFinanceContext";
 import { getPendingAndVariableExpenses } from "@/utils";
 import { PiggyBank, CheckCircle2, ChevronDown, ChevronUp } from "lucide-react";
 import { useContext, useState } from "react";
+import { usePrivacyMode } from "@/hooks/usePrivacyMode";
 
 export const Pending = () => {
   const { movements } = useContext(PersonalFinanceContext)!;
   const [isMinimized, setIsMinimized] = useState(false);
   const pendingItems = getPendingAndVariableExpenses(movements);
+  const { isPrivate } = usePrivacyMode();
 
   if (!movements || movements.length === 0) {
     return null;
@@ -36,7 +38,9 @@ export const Pending = () => {
 
         {!isMinimized && (
           <>
-            <div className="flex flex-col w-full gap-1">
+            <div
+              className={`flex flex-col w-full gap-1  ${isPrivate ? "privacy-blur" : ""} `}
+            >
               {pendingItems.length > 0 ? (
                 pendingItems.map((item) => (
                   <div

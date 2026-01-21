@@ -5,6 +5,7 @@ import { TaskItemProps } from "@/types/";
 import { TaskActionButton } from "./TaskActionButton";
 import { formatDateToDMY, getDaysRemainingUntil } from "@/utils";
 import { Rocket, SquarePen, Trash } from "lucide-react";
+import { usePrivacyMode } from "@/hooks/usePrivacyMode";
 
 export const TaskItem: React.FC<TaskItemProps> = ({
   task,
@@ -12,9 +13,11 @@ export const TaskItem: React.FC<TaskItemProps> = ({
   handleRemove,
   handleTaskToggle,
 }) => {
+  const { isPrivate } = usePrivacyMode();
+
   return (
     <li
-      className={`flex items-center gap-2 p-2 rounded mb-2 text-black 
+      className={`flex items-center gap-2 p-2 rounded mb-2 text-black  ${isPrivate ? "privacy-blur" : ""}
         ${
           task.in_dev
             ? "bg-blue-400 text-white"
