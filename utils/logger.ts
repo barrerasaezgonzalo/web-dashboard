@@ -1,13 +1,8 @@
 import * as Sentry from "@sentry/nextjs";
+import { initSentry } from "@/lib/sentry-client";
 
 export const trackError = (error: unknown, context: string) => {
-  if (!Sentry.getClient()) {
-    Sentry.init({
-      dsn: process.env.NEXT_PUBLIC_SENTRY_DSN,
-      tracesSampleRate: 1.0,
-      debug: false,
-    });
-  }
+  initSentry();
   Sentry.captureException(error, {
     tags: { context },
   });

@@ -129,7 +129,7 @@ export const MovementModal: React.FC<MovementModalProps> = ({
                   onClick={() => onChangeValue(refValue)}
                   className="text-left w-fit text-sm font-bold text-green-400 hover:text-green-300 transition-colors cursor-pointer"
                 >
-                  Referencia Sugerida: {refValue} (Usar este value)
+                  Referencia Sugerida: {refValue} (Usar este valor)
                 </button>
               </div>
             )}

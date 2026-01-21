@@ -45,21 +45,38 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
   });
 
   const getFinancial = useCallback(async () => {
+    const CACHE_KEY = "cache_utm_data";
+    const now = new Date();
+    const currentMonthYear = `${now.getMonth()}-${now.getFullYear()}`;
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (cached) {
+      const { data, monthYear } = JSON.parse(cached);
+      if (monthYear === currentMonthYear && data.current.utm > 0) {
+        setFinancial(data);
+        return;
+      }
+    }
     try {
       const response = await authFetch("/api/getUtm");
       if (!response.ok) throw new Error("GetFinancial: api Error");
 
       const data: Financial = await response.json();
-      setFinancial((prevFinancial) => {
-        const newCurrent = {
-          utm: data.current.utm || prevFinancial.current.utm,
-        };
-        return { current: newCurrent };
-      });
+
+      if (data.current.utm > 0) {
+        setFinancial({ current: { utm: data.current.utm } });
+
+        localStorage.setItem(
+          CACHE_KEY,
+          JSON.stringify({
+            data: data,
+            monthYear: currentMonthYear,
+          }),
+        );
+      }
     } catch (error) {
       trackError(error, "GetFinancial");
     }
-  }, []);
+  }, [authFetch, trackError]);
 
   useEffect(() => {
     getFinancial();
