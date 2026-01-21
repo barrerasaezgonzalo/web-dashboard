@@ -73,10 +73,11 @@ export interface MovementModalProps {
 }
 
 export interface MovementListProps {
-  filtrados: PersonalFinance[];
   isPrivate: boolean;
-  onEdit: (item: PersonalFinance) => void;
+  onEdit: (item: PersonalFinanceMovement) => void;
   onDelete: (id: string) => void;
+  graphList: PersonalFinanceMovement[];
+  groupedData: Record<string, MovementGroup>;
 }
 
 export type PersonalFinanceContextType = {
@@ -126,13 +127,28 @@ export interface Financial {
 export interface Movement {
   id: string;
   user_id: string;
-  type: "ahorros" | "gastos";
+  type: "ahorros" | "gastos" | "ingresos";
   category: string;
   value: number;
   date: string; // ISO format
   created_at?: string;
 }
 
-export interface ExtendedProps extends MovementListProps {
-  listaParaGráfico: any[];
-}
+export type MovementGroup = {
+  items: PersonalFinanceMovement[];
+  total: number;
+  type: "ahorros" | "gastos" | "ingresos";
+  category: string;
+};
+
+export type PuntoGrafico = {
+  mes: string;
+  valor: number;
+};
+
+export type CategoryStat = {
+  puntos: PuntoGrafico[];
+  variacion: number;
+  tieneComparativa: boolean;
+  puntosParaGraficar: PuntoGrafico[];
+};

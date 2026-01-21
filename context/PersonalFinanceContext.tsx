@@ -43,7 +43,7 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
     current: { utm: 0 },
   });
 
-  const getFinancial = async () => {
+  const getFinancial = useCallback(async () => {
     try {
       const response = await authFetch("/api/getUtm");
       const data: Financial = await response.json();
@@ -53,10 +53,11 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
     } catch (error) {
       console.log(error);
     }
-  };
+  }, [financial]);
+
   useEffect(() => {
     getFinancial();
-  }, []);
+  }, [getFinancial]);
 
   const getMovements = useCallback(async (): Promise<void> => {
     if (!userId) return;

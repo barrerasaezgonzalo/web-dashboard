@@ -1,5 +1,3 @@
-import React from "react";
-
 import { TasksContext } from "@/context/TasksContext";
 import { useContext, useState, useRef } from "react";
 import { useToast } from "@/hooks/useToast";
@@ -37,6 +35,7 @@ export const useTasks = (): UseTasksReturn => {
       openToast({ message: `Tarea "${title}" agregada correctamente` });
       setShowModal(false);
     } catch (error) {
+      console.log(error);
       openToast({ message: "Error agregando task" });
     }
   };
@@ -47,6 +46,7 @@ export const useTasks = (): UseTasksReturn => {
       resetForm();
       openToast({ message: `Tarea "${title}" actualizada correctamente` });
     } catch (error) {
+      console.log(error);
       openToast({ message: "Error guardando task" });
     }
   };

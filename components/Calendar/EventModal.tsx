@@ -20,11 +20,13 @@ export const EventModalComponent: React.FC<EventModalComponentProps> = ({
     removeEvent,
     addNewEvent,
     handleConfirm,
+    events,
   } = useEventModal(eventsToday, date, onConfirm);
 
   return (
     <>
       <div
+        key={events.length > 0 ? events[0].fecha : "vacio"}
         className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-40"
         onClick={onCancel}
       />

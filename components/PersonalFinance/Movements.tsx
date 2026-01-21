@@ -31,9 +31,10 @@ export default function Movements() {
     handleEditClick,
     resetModal,
     setDescription,
-    listaParaGráfico,
+    graphList,
     exportToExcel,
     disableSubmit,
+    groupedData,
   } = useMovements();
 
   const [isMinimized, setIsMinimized] = useState(false);
@@ -95,11 +96,11 @@ export default function Movements() {
         {!isMinimized && (
           <div className="flex flex-col gap-4">
             <MovementList
-              filtrados={filtrados}
               isPrivate={isPrivate}
               onEdit={handleEditClick}
               onDelete={handleDeleteMovement}
-              listaParaGráfico={listaParaGráfico}
+              graphList={graphList}
+              groupedData={groupedData}
             />
 
             <MovementFooter

@@ -78,11 +78,11 @@ export default async function handler(
     }
 
     if (method === "DELETE") {
-      let { noteId } = query;
+      const { noteId } = query;
       if (!noteId || !userId)
         return res.status(400).json({ error: "id y authData son requeridos" });
 
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from("notes")
         .delete()
         .eq("id", noteId)

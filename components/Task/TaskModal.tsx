@@ -10,7 +10,6 @@ export const TaskModal: React.FC<TaskModalProps> = ({
   setDate,
   onSave,
   editingTaskId,
-  isLoading,
   inputRef,
   description,
   setDescription,
@@ -20,7 +19,7 @@ export const TaskModal: React.FC<TaskModalProps> = ({
     if (inputRef.current) {
       inputRef.current.focus();
     }
-  }, []);
+  }, [inputRef]);
 
   return (
     <>

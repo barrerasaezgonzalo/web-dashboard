@@ -3,9 +3,7 @@ import { supabase } from "@/lib/supabaseClient";
 export const authFetch = async (url: string, options: RequestInit = {}) => {
   const {
     data: { session },
-    error: sessionError,
   } = await supabase.auth.getSession();
-
   let token = session?.access_token;
 
   if (
@@ -16,6 +14,10 @@ export const authFetch = async (url: string, options: RequestInit = {}) => {
       await supabase.auth.refreshSession();
     if (refreshError) {
       console.error("Sesión expirada, re-logueo necesario");
+      await supabase.auth.signOut();
+      if (typeof window !== "undefined") {
+        window.location.reload();
+      }
       return Promise.reject("Unauthorized");
     }
     token = refreshData.session?.access_token;
@@ -35,6 +37,10 @@ export const authFetch = async (url: string, options: RequestInit = {}) => {
 
   if (response.status === 401) {
     console.warn("Token rechazado por el servidor");
+    await supabase.auth.signOut();
+    if (typeof window !== "undefined") {
+      window.location.reload();
+    }
   }
 
   return response;

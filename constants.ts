@@ -58,7 +58,7 @@ export const specialCategoryRules: Record<
   "gastos-apv": () => 150000,
   "gastos-fintual": () => 150000,
   "gastos-fondo_mutuo": () => 100000,
-  //"gastos-comisiones": () => 300,
+  "gastos-comisiones": () => 300,
   "gastos-btc": () => 50000,
   "gastos-eth": () => 50000,
 };

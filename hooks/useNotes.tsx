@@ -26,7 +26,7 @@ export const useNotes = () => {
     }
   }, [userId]);
 
-  const createInitialNote = async (initialContent: string) => {
+  const createInitialNote = useCallback(async (initialContent: string) => {
     const res = await authFetch(`/api/note`, {
       method: "POST",
       body: JSON.stringify({ content: initialContent }),
@@ -34,7 +34,7 @@ export const useNotes = () => {
     const newNote = await res.json();
     setNote(newNote);
     setNotes((prev) => [newNote, ...prev]);
-  };
+  }, []);
 
   const handleChange = useCallback(
     (htmlContent: string) => {
@@ -133,7 +133,7 @@ export const useNotes = () => {
       }
       setNote(nextNote);
     },
-    [note, userId],
+    [note],
   );
 
   const favoriteNote = async (id: string) => {
@@ -151,6 +151,7 @@ export const useNotes = () => {
         body: JSON.stringify({ noteId: id, favorite: nextFavorite, userId }),
       });
     } catch (error) {
+      console.log(error);
       setNotes((prev) =>
         prev.map((n) => (n.id === id ? { ...n, favorite: note.favorite } : n)),
       );

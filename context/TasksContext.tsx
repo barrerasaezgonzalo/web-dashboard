@@ -115,6 +115,7 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
         body: JSON.stringify({ id, in_dev: nextStatus, userId }),
       });
     } catch (error) {
+      console.log(error);
       setTasks((prev) =>
         prev.map((t) => (t.id === id ? { ...t, in_dev: task.in_dev } : t)),
       );

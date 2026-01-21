@@ -5,10 +5,8 @@ import { TaskActionButtonProps } from "@/types/";
 
 export const TaskActionButton: React.FC<TaskActionButtonProps> = ({
   icon,
-  tooltipType = "default",
   tooltipText,
   onClick,
-  inDev = false,
 }) => {
   return (
     <button

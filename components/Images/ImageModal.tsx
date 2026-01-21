@@ -1,7 +1,9 @@
+import { ImageModalProps } from "@/types";
 import { PlusCircle, X } from "lucide-react";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 
-export const ImageModal: React.FC<any> = ({
+export const ImageModal: React.FC<ImageModalProps> = ({
   onClose,
   setImage,
   onSave,
@@ -54,11 +56,13 @@ export const ImageModal: React.FC<any> = ({
             </label>
 
             {preview && (
-              <div className="mb-4">
-                <img
+              <div className="mb-4 relative w-full h-[200px]">
+                <Image
                   src={preview}
                   alt="Vista previa"
-                  className="w-full max-h-200 object-cover rounded-xl border border-slate-200"
+                  fill
+                  className="object-cover rounded-xl border border-slate-200"
+                  priority
                 />
               </div>
             )}

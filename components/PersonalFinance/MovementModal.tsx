@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useMemo } from "react";
 import { modalTitles } from "@/constants";
 import { getCategoryLabels, getSpecialValue } from "@/utils";
 import { MovementModalProps } from "@/types/";
@@ -30,23 +30,25 @@ export const MovementModal: React.FC<MovementModalProps> = ({
     }
   }, [modalType]);
 
-  useEffect(() => {
-    if (!modalType || !category) return;
-    onChangeValue("");
+  const refValue = useMemo(() => {
+    if (!modalType || !category || editingItem) return "";
+
     const key = `${modalType}-${category}`;
-    if (specialCategoryRules[key]) {
+    const isSpecial = !!specialCategoryRules[key];
+
+    if (isSpecial) {
       const specialValue = getSpecialValue(
         modalType,
         category,
         financial,
-        Number(value),
+        0,
         specialCategoryRules,
       );
-      if (Number(value) !== specialValue) {
-        onChangeValue(specialValue.toFixed(0));
-      }
+      return specialValue.toFixed(0);
     }
-  }, [category, modalType, financial]);
+
+    return "";
+  }, [category, modalType, financial, editingItem, specialCategoryRules]);
 
   return (
     <>
@@ -85,8 +87,7 @@ export const MovementModal: React.FC<MovementModalProps> = ({
             <select
               value={category}
               onChange={(e) => onChangeCategory(e.target.value)}
-              className={`w-full bg-transparent border rounded-xl p-3 text-white focus:outline-none focus:ring-2 transition-all appearance-none cursor-pointer border-slate-700 focus:ring-blue-500/50"
-                `}
+              className="w-full bg-transparent border rounded-xl p-3 text-white focus:outline-none focus:ring-2 transition-all appearance-none cursor-pointer border-slate-700 focus:ring-blue-500/50"
             >
               <option value="" className="bg-[#1E293B]">
                 Selecciona una categoría
@@ -109,6 +110,21 @@ export const MovementModal: React.FC<MovementModalProps> = ({
               Valor (sin puntos ni comas)
             </label>
 
+            {/* BOTÓN DE REFERENCIA SUGERIDA */}
+            <div className="flex flex-col mb-2 h-6">
+              {" "}
+              {/* h-6 mantiene el espacio si no hay ref */}
+              {refValue !== "" && (
+                <button
+                  type="button"
+                  onClick={() => onChangeValue(refValue)}
+                  className="text-left w-fit text-sm font-bold text-green-400 hover:text-green-300 transition-colors cursor-pointer"
+                >
+                  Referencia Sugerida: {refValue} (Usar este valor)
+                </button>
+              )}
+            </div>
+
             <div className="relative">
               <input
                 type="text"
@@ -122,10 +138,10 @@ export const MovementModal: React.FC<MovementModalProps> = ({
                   if (e.key === "." || e.key === ",") e.preventDefault();
                   if (e.key === "Enter") {
                     e.preventDefault();
-                    onSave();
+                    if (!disableSubmit) onSave();
                   }
                 }}
-                className="flex-1 bg-transparent text-white font-semibold placeholder:text-slate-600 focus:outline-none text-lg"
+                className="flex-1 bg-transparent text-white font-semibold placeholder:text-slate-600 focus:outline-none text-lg w-full"
               />
             </div>
 
@@ -149,25 +165,25 @@ export const MovementModal: React.FC<MovementModalProps> = ({
           <div>
             <textarea
               value={description}
-              placeholder="Descripcion (Opcional)"
+              placeholder="Descripción (Opcional)"
               onChange={(e) => onChangeDescription(e.target.value)}
-              className={
-                "w-full bg-transparent text-slate-400 text-sm placeholder:text-slate-600 focus:outline-none resize-none h-10 border-t border-slate-700/30 pt-1"
-              }
+              className="w-full bg-transparent text-slate-400 text-sm placeholder:text-slate-600 focus:outline-none resize-none h-10 border-t border-slate-700/30 pt-1"
             />
           </div>
         </div>
 
         <div className="p-6 bg-slate-800/80 border-t border-slate-700 flex gap-4">
           <button
+            type="button"
             className="flex-1 cursor-pointer bg-slate-700 text-white px-4 py-3 rounded-xl font-bold hover:bg-slate-600 transition-all"
             onClick={onClose}
           >
             Cancelar
           </button>
           <button
+            type="button"
             disabled={disableSubmit}
-            className={`flex-1  px-4 py-3 rounded-xl font-bold transition-all active:scale-95 
+            className={`flex-1 px-4 py-3 rounded-xl font-bold transition-all active:scale-95 
               ${
                 disableSubmit
                   ? "bg-slate-700 text-slate-400 cursor-not-allowed opacity-70"

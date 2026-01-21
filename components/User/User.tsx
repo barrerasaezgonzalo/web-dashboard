@@ -36,7 +36,7 @@ export const User = () => {
   const { canInvest, faltaDorada } = useMovements();
   const hoyStr = format(new Date(), "yyyy-MM-dd");
   const eventosHoy = events.filter((ev) => ev.fecha === hoyStr).length;
-  const { wheater } = useWheater();
+  const { weather } = useWheater();
 
   const handleLogout = () => {
     openToast({
@@ -120,7 +120,7 @@ export const User = () => {
             <div className="flex items-center ml-[-15px] gap-1 text-amber-300 mr-4">
               <Thermometer size={25} />
               <span className="text-4xl font-semibold">
-                {wheater?.temperatura}
+                {weather?.temperatura}
               </span>
             </div>
           </div>

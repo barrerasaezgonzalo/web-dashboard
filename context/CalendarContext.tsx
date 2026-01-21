@@ -39,30 +39,30 @@ export const CalendarProvider: React.FC<CalendarProviderProps> = ({
     }
   }, []);
 
-  const saveEvents = async (
-    fechaOriginal: string,
-    eventos: CalendarEvent[],
-  ) => {
-    try {
-      await authFetch("/api/calendar", {
-        method: "POST",
-        body: JSON.stringify({
-          userId,
-          fecha: fechaOriginal,
-          events: eventos.map((ev) => ({
-            titulo: ev.titulo,
-            notas: ev.notas || "",
-            hora: `${ev.hora}:${ev.minutos}:00`,
-            fecha: ev.fecha || fechaOriginal,
-          })),
-        }),
-      });
-      await getEvents(new Date(fechaOriginal));
-    } catch (error) {
-      console.error("Error al guardar en Provider:", error);
-      throw error;
-    }
-  };
+  const saveEvents = useCallback(
+    async (fechaOriginal: string, eventos: CalendarEvent[]) => {
+      try {
+        await authFetch("/api/calendar", {
+          method: "POST",
+          body: JSON.stringify({
+            userId,
+            fecha: fechaOriginal,
+            events: eventos.map((ev) => ({
+              titulo: ev.titulo,
+              notas: ev.notas || "",
+              hora: `${ev.hora}:${ev.minutos}:00`,
+              fecha: ev.fecha || fechaOriginal,
+            })),
+          }),
+        });
+        await getEvents(new Date(fechaOriginal));
+      } catch (error) {
+        console.error("Error al guardar en Provider:", error);
+        throw error;
+      }
+    },
+    [userId, getEvents],
+  );
 
   const handleShowModal = useCallback(
     (dia: Date) => {

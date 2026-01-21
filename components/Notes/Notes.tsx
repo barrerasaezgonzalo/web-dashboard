@@ -32,7 +32,7 @@ export const Notes: React.FC = () => {
     } else if (editorRef.current && !note) {
       editorRef.current.innerHTML = "";
     }
-  }, [note?.id]);
+  }, [note?.id, editorRef, note, noteRef]);
 
   const handleAddNote = () => {
     openToast({

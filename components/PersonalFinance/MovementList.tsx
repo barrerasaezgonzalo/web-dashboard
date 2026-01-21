@@ -1,7 +1,12 @@
 import React, { useMemo, useState } from "react";
 import { LineChart, Line, ResponsiveContainer, YAxis } from "recharts";
-import { ExtendedProps } from "@/types/";
-import { formatCLP, formatDateToDMY, getCategoryLabel } from "@/utils";
+import { MovementListProps } from "@/types/";
+import {
+  calculateCategoryStats,
+  formatCLP,
+  formatDateToDMY,
+  getCategoryLabel,
+} from "@/utils";
 import {
   ChevronDown,
   ChevronUp,
@@ -11,95 +16,18 @@ import {
   TrendingDown,
 } from "lucide-react";
 
-export const MovementList: React.FC<ExtendedProps> = ({
-  filtrados,
+export const MovementList: React.FC<MovementListProps> = ({
+  groupedData,
   isPrivate,
   onEdit,
   onDelete,
-  listaParaGráfico = [],
+  graphList = [],
 }) => {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
-  const statsPorCategoria = useMemo(() => {
-    const data: Record<string, any> = {};
-    const hoy = new Date();
 
-    const ultimos6MesesKeys: string[] = [];
-    for (let i = 5; i >= 0; i--) {
-      const d = new Date(
-        Date.UTC(hoy.getUTCFullYear(), hoy.getUTCMonth() - i, 1),
-      );
-      ultimos6MesesKeys.push(`${d.getUTCFullYear()}-${d.getUTCMonth()}`);
-    }
-
-    listaParaGráfico.forEach((m) => {
-      if (m.type !== "gastos") return;
-      const statsKey = `${m.type}-${m.category}`;
-
-      const d = new Date(m.date);
-      const key = `${d.getUTCFullYear()}-${d.getUTCMonth()}`;
-
-      if (!ultimos6MesesKeys.includes(key)) return;
-
-      if (!data[statsKey]) {
-        data[statsKey] = {
-          puntos: ultimos6MesesKeys.map((k) => ({ mes: k, valor: 0 })),
-        };
-      }
-
-      const punto = data[statsKey].puntos.find((p: any) => p.mes === key);
-      if (punto) punto.valor += m.value;
-    });
-
-    Object.keys(data).forEach((sKey) => {
-      const p = data[sKey].puntos;
-      const actual = p[5].valor;
-      const anterior = p[4].valor;
-
-      let variacion = 0;
-      let tieneComparativa = false;
-
-      if (anterior > 0) {
-        variacion = ((actual - anterior) / anterior) * 100;
-        tieneComparativa = true;
-      }
-
-      data[sKey].variacion = variacion;
-      data[sKey].tieneComparativa = tieneComparativa;
-
-      const puntosConDatos = p.filter((punto: any) => punto.valor > 0);
-      if (puntosConDatos.length === 1) {
-        data[sKey].puntosParaGraficar = [
-          { ...puntosConDatos[0], mes: "prev" },
-          puntosConDatos[0],
-        ];
-      } else {
-        data[sKey].puntosParaGraficar = p.filter(
-          (punto: any, index: number) => {
-            if (index >= 4) return true;
-            return punto.valor > 0;
-          },
-        );
-      }
-    });
-
-    return data;
-  }, [listaParaGráfico]);
-
-  const groupedData = filtrados.reduce(
-    (acc, item) => {
-      const key = `${item.type}-${item.category}`;
-      if (!acc[key])
-        acc[key] = {
-          category: item.category,
-          type: item.type,
-          total: 0,
-          items: [],
-        };
-      acc[key].total += item.value;
-      acc[key].items.push(item);
-      return acc;
-    },
-    {} as Record<string, any>,
+  const statsPorCategoria = useMemo(
+    () => calculateCategoryStats(graphList), // TypeScript ahora valida que graphList sea correcto
+    [graphList],
   );
 
   const groupedArray = Object.values(groupedData);
@@ -118,12 +46,13 @@ export const MovementList: React.FC<ExtendedProps> = ({
             key={statsKey}
             className="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm"
           >
-            <div className="flex items-center p-3 gap-3 cursor-pointer">
+            <div className="flex items-center w-full p-3 gap-3">
               <button
+                type="button"
                 onClick={() =>
                   setExpandedCategory(isExpanded ? null : statsKey)
                 }
-                className="flex flex-col flex-1 min-w-0 text-left"
+                className="flex items-center cursor-pointer justify-between w-full p-3 gap-3 text-left transition-colors group"
               >
                 <div className="flex items-center gap-2">
                   <span
@@ -134,106 +63,124 @@ export const MovementList: React.FC<ExtendedProps> = ({
                   {isExpanded ? (
                     <ChevronUp size={14} className="text-blue-400" />
                   ) : (
-                    <ChevronDown size={14} className="text-gray-300" />
+                    <ChevronDown
+                      size={14}
+                      className="text-gray-300 group-hover:text-blue-400"
+                    />
                   )}
                 </div>
 
+                {/* Variación */}
                 <div className="flex items-center gap-1 min-h-3.5">
-                  {grupo.type === "gastos" && tieneComparativa && variacion && (
-                    <span
-                      className={`flex items-center text-[10px] font-bold ${variacion > 0 ? "text-red-500" : "text-emerald-500"}`}
-                    >
-                      {variacion > 0 ? (
-                        <TrendingUp size={10} className="mr-0.5" />
-                      ) : (
-                        <TrendingDown size={10} className="mr-0.5" />
-                      )}
-                      {Math.abs(variacion).toFixed(1)}%
-                    </span>
-                  )}
-                </div>
-              </button>
-
-              <div className="h-7 w-16 sm:w-20">
-                {grupo.type === "gastos" && stats?.puntosParaGraficar ? (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={stats.puntosParaGraficar}>
-                      <YAxis hide domain={["dataMin - 10", "dataMax + 10"]} />
-                      <Line
-                        type="monotone"
-                        dataKey="valor"
-                        stroke={
-                          !tieneComparativa
-                            ? "#cbd5e1"
-                            : variacion > 0
-                              ? "#ef4444"
-                              : "#10b981"
-                        }
-                        strokeWidth={2.5}
-                        dot={false}
-                        isAnimationActive={false}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                ) : (
-                  <div className="h-full w-full flex items-center justify-center opacity-20">
-                    <div className="w-8 h-px bg-gray-300" />
-                  </div>
-                )}
-              </div>
-
-              <div className="text-right min-w-[90px]">
-                <span
-                  className={`font-bold text-sm text-gray-900 ${isPrivate ? "privacy-blur" : ""}`}
-                >
-                  {formatCLP(grupo.total)}
-                </span>
-              </div>
-            </div>
-
-            {isExpanded && (
-              <div className="bg-gray-50 border-t border-gray-100 divide-y divide-gray-200/50">
-                {grupo.items.map((item: any) => (
-                  <div
-                    key={item.id}
-                    className="flex items-center justify-between p-3 pl-11 pr-4"
-                  >
-                    <span className="text-[12px] font-medium text-gray-400">
-                      {formatDateToDMY(item.date)}
-                    </span>
-                    {item.description && (
+                  {grupo.type === "gastos" &&
+                    tieneComparativa &&
+                    variacion !== 0 && (
                       <span
-                        title={item.description}
-                        className="text-[10px] text-slate-500 italic leading-tight truncate max-w-[120px] sm:max-w-[200px]"
+                        className={`flex items-center text-[10px] font-bold ${variacion > 0 ? "text-red-500" : "text-emerald-500"}`}
                       >
-                        {item.description}
+                        {variacion > 0 ? (
+                          <TrendingUp size={10} className="mr-0.5" />
+                        ) : (
+                          <TrendingDown size={10} className="mr-0.5" />
+                        )}
+                        {Math.abs(variacion).toFixed(1)}%
                       </span>
                     )}
-                    <div className="flex items-center gap-4">
-                      <span
-                        className={`text-sm font-semibold text-gray-700 ${isPrivate ? "privacy-blur" : ""}`}
-                      >
-                        {formatCLP(item.value)}
-                      </span>
-                      <div className="flex gap-1">
-                        <button
-                          onClick={() => onEdit(item)}
-                          className="p-1 text-blue-400"
-                        >
-                          <SquarePen size={15} />
-                        </button>
-                        <button
-                          onClick={() => onDelete(item.id)}
-                          className="p-1 text-red-400"
-                        >
-                          <Trash size={15} />
-                        </button>
-                      </div>
+                </div>
+
+                {/* Mini Gráfico */}
+                <div className="h-7 w-16 sm:w-20">
+                  {grupo.type === "gastos" &&
+                  stats?.puntosParaGraficar?.length > 0 ? (
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={stats.puntosParaGraficar}>
+                        <YAxis hide domain={["dataMin - 10", "dataMax + 10"]} />
+                        <Line
+                          type="monotone"
+                          dataKey="valor"
+                          stroke={
+                            !tieneComparativa
+                              ? "#cbd5e1"
+                              : variacion > 0
+                                ? "#ef4444"
+                                : "#10b981"
+                          }
+                          strokeWidth={2.5}
+                          dot={false}
+                          isAnimationActive={false}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  ) : (
+                    <div className="h-full w-full flex items-center justify-center opacity-20">
+                      <div className="w-8 h-px bg-gray-300" />
                     </div>
+                  )}
+                </div>
+
+                <div className="text-right min-w-[90px]">
+                  <span
+                    className={`font-bold text-sm text-gray-900 ${isPrivate ? "privacy-blur" : ""}`}
+                  >
+                    {formatCLP(grupo.total)}
+                  </span>
+                </div>
+              </button>
+            </div>
+
+            {/* Detalles expandibles */}
+            <div
+              className={`grid transition-all duration-300 ease-in-out ${isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
+            >
+              <div className="overflow-hidden">
+                <div className="p-4 bg-gray-50/50 border-t border-gray-100">
+                  <div className="divide-y divide-gray-200/50">
+                    {grupo.items.map((item) => (
+                      <div
+                        key={item.id}
+                        className="flex items-center justify-between p-3"
+                      >
+                        <span className="text-[12px] font-medium text-gray-400">
+                          {formatDateToDMY(item.date)}
+                        </span>
+
+                        {item.description && (
+                          <span
+                            title={item.description}
+                            className="text-[10px] text-slate-500 italic truncate max-w-[100px] sm:max-w-[200px]"
+                          >
+                            {item.description}
+                          </span>
+                        )}
+
+                        <div className="flex items-center gap-4">
+                          <span
+                            className={`text-sm font-semibold text-gray-700 ${isPrivate ? "privacy-blur" : ""}`}
+                          >
+                            {formatCLP(item.value)}
+                          </span>
+                          <div className="flex gap-1">
+                            {/* Eliminamos el casting 'as PersonalFinance' si es posible */}
+                            <button
+                              onClick={() => onEdit(item)}
+                              className="p-1 text-blue-400 cursor-pointer hover:bg-blue-50 rounded"
+                            >
+                              <SquarePen size={18} />
+                            </button>
+                            <button
+                              onClick={() => onDelete(item.id)}
+                              className="p-1 text-red-400 cursor-pointer hover:bg-red-50 rounded"
+                            >
+                              <Trash size={18} />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                </div>
               </div>
-            )}
+            </div>
           </div>
         );
       })}

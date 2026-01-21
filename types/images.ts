@@ -6,3 +6,10 @@ export interface VercelBlob {
   uploadedAt: Date;
   name: string;
 }
+
+export interface ImageModalProps {
+  onClose: () => void;
+  setImage: (i: File) => void;
+  onSave: (e?: React.SyntheticEvent) => Promise<void>;
+  isLoading: boolean;
+}

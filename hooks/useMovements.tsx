@@ -1,6 +1,11 @@
 import { useState, useMemo, useCallback, useContext } from "react";
 import { PersonalFinanceContext } from "@/context/PersonalFinanceContext";
-import { PersonalFinance, MovementType } from "@/types";
+import {
+  PersonalFinance,
+  MovementType,
+  PersonalFinanceMovement,
+  MovementGroup,
+} from "@/types";
 import { useToast } from "@/hooks/useToast";
 import * as XLSX from "xlsx";
 
@@ -31,6 +36,40 @@ export const useMovements = () => {
     return filtrados.reduce((acc, curr) => acc + curr.value, 0);
   }, [filtrados]);
 
+  const groupedData = useMemo(() => {
+    if (!context.movements) return {};
+
+    const filtered = context.movements.filter((m) => {
+      const normalizedDate = m.date.includes("/")
+        ? m.date.split("/").reverse().join("-")
+        : m.date;
+
+      const matchesMonth = normalizedDate.startsWith(selectedMonth);
+      const matchesType =
+        selectedType === "gastos" ||
+        m.type.toLowerCase().trim() === selectedType.toLowerCase().trim();
+
+      return matchesMonth && matchesType;
+    });
+    return filtered.reduce((acc: Record<string, MovementGroup>, mov) => {
+      const key = `${mov.type}-${mov.category}`;
+
+      if (!acc[key]) {
+        acc[key] = {
+          items: [],
+          total: 0,
+          type: mov.type,
+          category: mov.category,
+        };
+      }
+
+      acc[key].items.push(mov);
+      acc[key].total += mov.value;
+
+      return acc;
+    }, {});
+  }, [context.movements, selectedMonth, selectedType]);
+
   const resetModal = useCallback(() => {
     setModalType(null);
     setCategory("");
@@ -49,7 +88,7 @@ export const useMovements = () => {
     setValue("");
   }, []);
 
-  const handleEditClick = useCallback((item: PersonalFinance) => {
+  const handleEditClick = useCallback((item: PersonalFinanceMovement) => {
     setEditingItem(item.id);
     setCategory(item.category);
     setDescription(item.description ?? "");
@@ -72,6 +111,7 @@ export const useMovements = () => {
       resetModal();
       openToast({ message: "Movimiento agregado correctamente" });
     } catch (error) {
+      console.log(error);
       openToast({ message: "Error al agregar el movimiento" });
     }
   };
@@ -92,6 +132,7 @@ export const useMovements = () => {
       resetModal();
       openToast({ message: "Movimiento actualizado" });
     } catch (error) {
+      console.log(error);
       openToast({ message: "Error al actualizar" });
     }
   };
@@ -152,7 +193,10 @@ export const useMovements = () => {
     };
   }, [context.movements, selectedMonth]);
 
-  const exportToExcel = (data: any[], periodName: string) => {
+  const exportToExcel = (
+    data: PersonalFinanceMovement[],
+    periodName: string,
+  ) => {
     const rows = data.map((item) => {
       const [year, month, day] = item.date.split("-");
       const fechaFormateada = `${day}/${month}/${year}`;
@@ -212,8 +256,9 @@ export const useMovements = () => {
     resetModal,
     ...checkInversionDorada,
     handleOpenPendingPayment,
-    listaParaGráfico: context.movements,
+    graphList: context.movements,
     exportToExcel,
     disableSubmit,
+    groupedData,
   };
 };

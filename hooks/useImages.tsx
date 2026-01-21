@@ -9,7 +9,7 @@ export const useImages = () => {
   const [image, setImage] = useState<File | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [blobUrl, setBlobUrl] = useState("");
+  const [, setBlobUrl] = useState("");
   const [selectedImage, setSelectedImage] = useState<VercelBlob | null>(null);
   const { openToast, closeToast } = useToast();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -50,15 +50,15 @@ export const useImages = () => {
       const data = await response.json();
       setImages(data);
     } catch (error) {
-      console.log("Error al obtener las imágenes");
+      console.log("Error al obtener las imágenes", error);
       openToast({
         message: "Error obteniendo las imágenes, intenta nuevamente",
       });
     }
-  }, [userId]);
+  }, [userId, openToast]);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (e: React.SyntheticEvent) => {
+    if (e) e.preventDefault();
     if (!image) {
       return;
     }

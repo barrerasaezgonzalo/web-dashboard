@@ -1,20 +1,23 @@
 // hooks/useEventModal.ts
-import { useState, useEffect, useRef } from "react";
+import { useState, useMemo, useContext } from "react";
 import { useToast } from "@/hooks/useToast";
 import { CalendarEvent } from "@/types";
+import { CalendarContext } from "@/context/CalendarContext";
 
 export const useEventModal = (
   eventsToday: CalendarEvent[],
   date: string,
   onConfirm: (eventos: CalendarEvent[]) => Promise<void>,
 ) => {
-  const [isSaving, setIsSaving] = useState(false);
-  const [localEvents, setLocalEvents] = useState<CalendarEvent[]>([]);
-  const initialEventsRef = useRef<string>("");
-  const { openToast, closeToast } = useToast();
+  const context = useContext(CalendarContext);
+  if (!context) throw new Error("useEventModal must be used within provider");
 
-  useEffect(() => {
-    const formatted = (eventsToday || []).map((ev: CalendarEvent) => {
+  const [isSaving, setIsSaving] = useState(false);
+  const { openToast, closeToast } = useToast();
+  const [snapshotInicial] = useState(() => JSON.stringify(context.events));
+
+  const formattedEvents = useMemo(() => {
+    return (eventsToday || []).map((ev: CalendarEvent) => {
       let fechaIso = ev.fecha || date;
       if (fechaIso.includes("/")) {
         fechaIso = fechaIso.split("/").reverse().join("-");
@@ -28,9 +31,8 @@ export const useEventModal = (
         minutos: ev.hora?.split(":")[1] || "00",
       };
     });
-    setLocalEvents(formatted);
-    initialEventsRef.current = JSON.stringify(formatted);
-  }, [date, eventsToday]);
+  }, [eventsToday, date]);
+  const [localEvents, setLocalEvents] = useState(formattedEvents);
 
   const handleUpdate = (index: number, field: string, value: string) => {
     setLocalEvents((prev) => {
@@ -65,7 +67,10 @@ export const useEventModal = (
 
   const hayCamposVacios =
     localEvents.length > 0 && localEvents.some((ev) => !ev.titulo?.trim());
-  const hanCambiado = JSON.stringify(localEvents) !== initialEventsRef.current;
+
+  const hanCambiado = useMemo(() => {
+    return JSON.stringify(localEvents) !== snapshotInicial;
+  }, [localEvents, snapshotInicial]);
   const botonBloqueado = hayCamposVacios || isSaving || !hanCambiado;
 
   const handleConfirm = async () => {
@@ -75,6 +80,7 @@ export const useEventModal = (
       await onConfirm(localEvents);
       openToast({ message: "¡Eventos guardados correctamente!" });
     } catch (error) {
+      console.log(error);
       setIsSaving(false);
       openToast({ message: "Error al guardar los eventos" });
     }
@@ -88,5 +94,6 @@ export const useEventModal = (
     removeEvent,
     addNewEvent,
     handleConfirm,
+    events: context.events,
   };
 };

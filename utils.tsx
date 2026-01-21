@@ -5,9 +5,12 @@ import {
 } from "./constants";
 import {
   CategoryOption,
+  CategoryStat,
   Financial,
   MovementType,
   PersonalFinance,
+  PersonalFinanceMovement,
+  PuntoGrafico,
 } from "./types/";
 
 export const formatCLP = (valor: number | string) => {
@@ -105,7 +108,7 @@ export const generateMonthOptions = () => {
   const options = [];
   const start = new Date(2025, 10);
   const today = new Date();
-  let current = new Date(start);
+  const current = new Date(start);
 
   while (current <= today) {
     const month = current.getMonth() + 1;
@@ -227,4 +230,86 @@ export const stripHtml = (html: string) => {
   clean = clean.replace(/<\/div>|<br\s*\/?>|<\/p>/gi, " ");
   clean = clean.replace(/<[^>]*>?/gm, "");
   return clean.replace(/\s+/g, " ").trim();
+};
+
+export const getUltimos6MesesKeys = () => {
+  const keys = [];
+  const hoy = new Date();
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(hoy.getFullYear(), hoy.getMonth() - i, 1);
+    keys.push(`${d.getFullYear()}-${d.getMonth()}`);
+  }
+  return keys;
+};
+
+export const calculateCategoryStats = (
+  graphList: PersonalFinanceMovement[],
+): Record<string, CategoryStat> => {
+  const data: Record<string, CategoryStat> = {};
+
+  const ultimos6MesesKeys = getUltimos6MesesKeys();
+  graphList.forEach((m) => {
+    if (m.type !== "gastos") return;
+    const statsKey = `${m.type}-${m.category}`;
+
+    const d = new Date(m.date);
+    const key = `${d.getUTCFullYear()}-${d.getUTCMonth()}`;
+
+    if (!ultimos6MesesKeys.includes(key)) return;
+
+    if (!data[statsKey]) {
+      data[statsKey] = {
+        puntos: ultimos6MesesKeys.map((k) => ({ mes: k, valor: 0 })),
+        variacion: 0,
+        tieneComparativa: false,
+        puntosParaGraficar: [],
+      };
+    }
+
+    const punto = data[statsKey].puntos.find((p) => p.mes === key);
+    if (punto) punto.valor += m.value;
+  });
+
+  Object.keys(data).forEach((sKey) => {
+    const p = data[sKey].puntos;
+    const actual = p[5].valor;
+    const anterior = p[4].valor;
+
+    let variacion = 0;
+    let tieneComparativa = false;
+
+    if (anterior > 0) {
+      variacion = ((actual - anterior) / anterior) * 100;
+      tieneComparativa = true;
+    }
+
+    data[sKey].variacion = variacion;
+    data[sKey].tieneComparativa = tieneComparativa;
+
+    const puntosConDatos = p.filter((punto) => punto.valor > 0);
+    if (puntosConDatos.length === 1) {
+      data[sKey].puntosParaGraficar = [
+        { ...puntosConDatos[0], mes: "prev" },
+        puntosConDatos[0],
+      ];
+    } else {
+      data[sKey].puntosParaGraficar = p.filter(
+        (punto: PuntoGrafico, index: number) => {
+          if (index >= 4) return true;
+          return punto.valor > 0;
+        },
+      );
+    }
+  });
+
+  return data;
+};
+
+export const copyToClipboard = async (text: string) => {
+  try {
+    await navigator.clipboard.writeText(text);
+    alert("¡Copiado al portapapeles!");
+  } catch (err) {
+    console.error("Error al copiar: ", err);
+  }
 };
