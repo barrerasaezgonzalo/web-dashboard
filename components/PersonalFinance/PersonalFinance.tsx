@@ -1,20 +1,19 @@
 "use client";
 
-import { useState } from "react";
 import { formatCLP } from "@/utils";
-import { Activity, ChevronDown, ChevronUp } from "lucide-react";
+import { Activity } from "lucide-react";
 import { useMovements } from "@/hooks/useMovements";
 
 export const PersonalFinance = () => {
   const { summary, isPrivate } = useMovements();
 
-  const { ingresos, gastos, ahorros, saldo } = summary;
+  const { income, bills, saving, balance } = summary;
 
   const summaryCards = [
-    { label: "Ingresos", value: ingresos, color: "bg-green-200" },
-    { label: "Gastos", value: gastos, color: "bg-red-200" },
-    { label: "Ahorros", value: ahorros, color: "bg-blue-200" },
-    { label: "Saldo", value: saldo, color: "bg-indigo-200" },
+    { label: "Ingresos", value: income, color: "bg-green-200" },
+    { label: "Gastos", value: bills, color: "bg-red-200" },
+    { label: "Ahorros", value: saving, color: "bg-blue-200" },
+    { label: "Saldo", value: balance, color: "bg-indigo-200" },
   ];
 
   return (

@@ -31,13 +31,12 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
   children,
 }) => {
   const { isPrivate } = usePrivacyMode();
-
   const [movements, setMovements] = useState<PersonalFinance[]>([]);
   const [summary] = useState({
-    ingresos: 0,
-    gastos: 0,
-    ahorros: 0,
-    saldo: 0,
+    income: 0,
+    bills: 0,
+    saving: 0,
+    balance: 0,
   });
   const [loading, setLoading] = useState(false);
   const { userId } = useAuth();
@@ -76,11 +75,11 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
       const financials: PersonalFinance[] = dataFromApi.map(
         (item: PersonalFinance) => {
           switch (item.type) {
-            case "ingresos":
+            case "income":
               return { ...item, category: item.category as IngresosCategory };
-            case "gastos":
+            case "bills":
               return { ...item, category: item.category as GastosCategory };
-            case "ahorros":
+            case "saving":
               return { ...item, category: item.category as AhorrosCategory };
             default:
               throw new Error("Tipo inválido de movimiento");

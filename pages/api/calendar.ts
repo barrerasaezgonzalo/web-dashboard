@@ -32,40 +32,40 @@ export default async function handler(
       if (!userId) return res.status(400).json({ error: "Faltan datos" });
       const { data, error } = await supabase
         .from("calendar")
-        .select("id, titulo, notas, fecha, hora")
+        .select("id, title, notes, date, hour")
         .eq("auth_data", userId)
-        .order("fecha", { ascending: false });
+        .order("date", { ascending: false });
 
       if (error) return res.status(500).json({ error: error.message });
       return res.status(200).json(data || []);
     }
 
     if (req.method === "POST") {
-      const { fecha, events } = req.body;
+      const { date, events } = req.body;
 
-      if (!fecha) return res.status(400).json({ error: "Fecha requerida" });
+      if (!date) return res.status(400).json({ error: "Fecha requerida" });
 
       const { error: deleteError } = await supabase
         .from("calendar")
         .delete()
         .eq("auth_data", userId)
-        .eq("fecha", fecha);
+        .eq("date", date);
 
       if (deleteError) throw deleteError;
 
       if (events && events.length > 0) {
         const eventsToInsert = events.map((ev: CalendarEvent) => {
-          let fechaLimpia = ev.fecha || fecha;
+          let fechaLimpia = ev.date || date;
           if (fechaLimpia.includes("/")) {
             fechaLimpia = fechaLimpia.split("/").reverse().join("-");
           }
 
           return {
             auth_data: userId,
-            fecha: fechaLimpia,
-            titulo: ev.titulo,
-            notas: ev.notas || "",
-            hora: ev.hora,
+            date: fechaLimpia,
+            title: ev.title,
+            notes: ev.notes || "",
+            hour: ev.hour,
           };
         });
 

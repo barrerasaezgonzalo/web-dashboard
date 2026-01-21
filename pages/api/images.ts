@@ -44,7 +44,7 @@ export default async function handler(
     }
 
     return res.status(405).json({ error: `Método ${req.method} no permitido` });
-  } catch (error: any) {
+  } catch (error: unknown) {
     Sentry.captureException(error, {
       tags: {
         endpoint: "/api/blob",
@@ -52,13 +52,7 @@ export default async function handler(
       },
       extra: { query: req.query },
     });
-
-    console.error(`[Blob Error] ${req.method}:`, error);
-
-    return res.status(500).json({
-      error:
-        error.message || "Ocurrió un error inesperado en el almacenamiento",
-    });
+    return res.status(500).json({ error: error });
   }
 }
 

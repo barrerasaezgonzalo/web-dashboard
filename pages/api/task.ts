@@ -5,9 +5,7 @@ import * as Sentry from "@sentry/nextjs";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<
-    Task[] | Task | { error: string } | { success: boolean }
-  >,
+  res: NextApiResponse,
 ) {
   try {
     const authHeader =
@@ -100,12 +98,12 @@ export default async function handler(
     }
 
     return res.status(405).json({ error: "Método no permitido" });
-  } catch (error: any) {
+  } catch (error: unknown) {
     Sentry.captureException(error, {
       tags: { endpoint: "/api/task", method: req.method },
       extra: { payload: req.body },
     });
 
-    return res.status(500).json({ error: error.message || "Error interno" });
+    return res.status(500).json({ error: error });
   }
 }

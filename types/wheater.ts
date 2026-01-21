@@ -1,8 +1,8 @@
 export interface WheaterResponse {
-  temperatura: string;
+  temperature: string;
 }
 
 export interface WheaterData {
-  temperatura: string;
+  temperature: string;
   _fallback?: boolean;
 }

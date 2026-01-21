@@ -3,7 +3,7 @@ import { NotesList } from "./NotesList";
 import { useNotes } from "@/hooks/useNotes";
 import { usePrivacyMode } from "@/hooks/usePrivacyMode";
 import { useToast } from "@/hooks/useToast";
-import { StickyNote, Plus, List, ChevronDown, ChevronUp } from "lucide-react";
+import { StickyNote, Plus, List } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export const Notes: React.FC = () => {

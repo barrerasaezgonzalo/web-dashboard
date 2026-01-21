@@ -28,9 +28,9 @@ export const CalendarProvider: React.FC<CalendarProviderProps> = ({
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const { userId } = useAuth();
 
-  const getEvents = useCallback(async (mesActual: Date) => {
+  const getEvents = useCallback(async (currentMonth: Date) => {
     try {
-      const dateStr = format(mesActual, "yyyy-MM-dd");
+      const dateStr = format(currentMonth, "yyyy-MM-dd");
       const response = await authFetch(`/api/calendar?date=${dateStr}`);
       if (!response.ok) throw new Error("getEvents: api Error");
       const data = await response.json();
@@ -48,12 +48,12 @@ export const CalendarProvider: React.FC<CalendarProviderProps> = ({
           method: "POST",
           body: JSON.stringify({
             userId,
-            fecha: fechaOriginal,
+            date: fechaOriginal,
             events: eventos.map((ev) => ({
-              titulo: ev.titulo,
-              notas: ev.notas || "",
-              hora: `${ev.hora}:${ev.minutos}:00`,
-              fecha: ev.fecha || fechaOriginal,
+              title: ev.title,
+              notes: ev.notes || "",
+              hour: `${ev.hour}:${ev.minutes}:00`,
+              date: ev.date || fechaOriginal,
             })),
           }),
         });
@@ -67,11 +67,11 @@ export const CalendarProvider: React.FC<CalendarProviderProps> = ({
   );
 
   const handleShowModal = useCallback(
-    (dia: Date) => {
+    (newDay: Date) => {
       setModalConfig({
-        date: dia,
+        date: newDay,
         onConfirm: async (eventos: CalendarEvent[]) => {
-          await saveEvents(format(dia, "yyyy-MM-dd"), eventos);
+          await saveEvents(format(newDay, "yyyy-MM-dd"), eventos);
           setModalConfig(null);
           getEvents(new Date());
         },

@@ -8,7 +8,7 @@ import {
 } from "@/utils";
 import { useTasks } from "@/hooks/useTasks";
 import { useAuth } from "@/context/AuthContext";
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import { usePrivacyMode } from "@/hooks/usePrivacyMode";
 import {
   Eye,
@@ -30,12 +30,12 @@ export const User = () => {
   const { isPrivate } = usePrivacyMode();
   const { tasks } = useTasks();
   const { openToast, closeToast } = useToast();
-  const [fecha, setFecha] = useState("Cargando...");
-  const [hora, setHora] = useState("Cargando...");
+  const [date, setDate] = useState("Cargando...");
+  const [hour, setHour] = useState("Cargando...");
   const { events, handleShowModal } = useContext(CalendarContext)!;
-  const { canInvest, faltaDorada } = useMovements();
+  const { canInvest, missingGolden } = useMovements();
   const hoyStr = format(new Date(), "yyyy-MM-dd");
-  const eventosHoy = events.filter((ev) => ev.fecha === hoyStr).length;
+  const todayEvents = events.filter((ev) => ev.date === hoyStr).length;
   const { weather } = useWheater();
 
   const handleLogout = () => {
@@ -58,16 +58,20 @@ export const User = () => {
     { label: "Atrasadas", value: overdueTasks, color: "text-red-500" },
   ];
 
+  const hourRef = useRef<HTMLSpanElement>(null);
+  const dateRef = useRef<HTMLSpanElement>(null);
+
   useEffect(() => {
     function actualizar() {
-      const ahora = new Date();
-      const { fecha, hora } = formatFechaHora(ahora);
-      setFecha(fecha);
-      setHora(hora);
+      const now = new Date();
+      const { date, hour } = formatFechaHora(now);
+      if (hourRef.current) hourRef.current.textContent = hour;
+      if (dateRef.current) dateRef.current.textContent = date;
     }
+    const interval = setInterval(actualizar, 1000);
     actualizar();
-    const intervalo = setInterval(actualizar, 1000);
-    return () => clearInterval(intervalo);
+
+    return () => clearInterval(interval);
   }, []);
 
   const handlePrivacyClick = () => {
@@ -112,15 +116,16 @@ export const User = () => {
           </h1>
           <div className="flex items-center gap-4 mt-2">
             <div className="flex flex-col opacity-80 border-r border-white/20 pr-4">
-              <span className="text-sm font-medium">{fecha}</span>
-              <span className="text-2xl font-mono font-bold tracking-widest">
-                {hora}
-              </span>
+              <span ref={dateRef} className="text-sm font-medium" />
+              <span
+                ref={hourRef}
+                className="text-2xl font-mono font-bold tracking-widest"
+              />
             </div>
             <div className="flex items-center ml-[-15px] gap-1 text-amber-300 mr-4">
               <Thermometer size={25} />
               <span className="text-4xl font-semibold">
-                {weather?.temperatura}
+                {weather?.temperature}
               </span>
             </div>
           </div>
@@ -144,7 +149,7 @@ export const User = () => {
       </div>
 
       <div className="border-t border-white/10 pt-2">
-        {eventosHoy === 0 ? (
+        {todayEvents === 0 ? (
           <div className="flex items-center gap-2 text-white/70">
             <CalendarDays size={18} />
             <h3 className="text-sm tracking-wider">
@@ -156,7 +161,7 @@ export const User = () => {
             className={`text-sm tracking-wider cursor-pointer ${isPrivate ? "privacy-blur" : ""} `}
             onClick={() => handleShowModal(new Date())}
           >
-            {eventosHoy} {eventosHoy === 1 ? "Evento" : "Eventos"} del día
+            {todayEvents} {todayEvents === 1 ? "Evento" : "Eventos"} del día
           </div>
         )}
       </div>
@@ -169,7 +174,7 @@ export const User = () => {
           >
             {canInvest
               ? "Ahora puedes invertir!"
-              : `Dorada bajo el mínimo de inversión: - ${formatCLP(faltaDorada)}`}
+              : `Dorada bajo el mínimo de inversión: - ${formatCLP(missingGolden)}`}
           </h3>
         </div>
       </div>

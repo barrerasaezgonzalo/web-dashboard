@@ -19,12 +19,12 @@ export const useMovements = () => {
   const [description, setDescription] = useState("");
   const [value, setValue] = useState("");
   const [editingItem, setEditingItem] = useState<string | null>(null);
-  const [selectedType, setSelectedType] = useState<MovementType>("gastos");
+  const [selectedType, setSelectedType] = useState<MovementType>("bills");
   const [selectedMonth, setSelectedMonth] = useState(
     new Date().toISOString().slice(0, 7),
   );
 
-  const filtrados = useMemo(() => {
+  const filtered = useMemo(() => {
     return context.movements.filter((m) => {
       const matchesType = m.type === selectedType;
       const matchesMonth = m.date.startsWith(selectedMonth);
@@ -33,13 +33,13 @@ export const useMovements = () => {
   }, [context.movements, selectedType, selectedMonth]);
 
   const total = useMemo(() => {
-    return filtrados.reduce((acc, curr) => acc + curr.value, 0);
-  }, [filtrados]);
+    return filtered.reduce((acc, curr) => acc + curr.value, 0);
+  }, [filtered]);
 
   const groupedData = useMemo(() => {
     if (!context.movements) return {};
 
-    const filtered = context.movements.filter((m) => {
+    const filteredNormalized = context.movements.filter((m) => {
       const normalizedDate = m.date.includes("/")
         ? m.date.split("/").reverse().join("-")
         : m.date;
@@ -51,23 +51,26 @@ export const useMovements = () => {
       return matchesMonth && matchesType;
     });
 
-    return filtered.reduce((acc: Record<string, MovementGroup>, mov) => {
-      const key = `${mov.type}-${mov.category}`;
+    return filteredNormalized.reduce(
+      (acc: Record<string, MovementGroup>, mov) => {
+        const key = `${mov.type}-${mov.category}`;
 
-      if (!acc[key]) {
-        acc[key] = {
-          items: [],
-          total: 0,
-          type: mov.type,
-          category: mov.category,
-        };
-      }
+        if (!acc[key]) {
+          acc[key] = {
+            items: [],
+            total: 0,
+            type: mov.type,
+            category: mov.category,
+          };
+        }
 
-      acc[key].items.push(mov);
-      acc[key].total += mov.value;
+        acc[key].items.push(mov);
+        acc[key].total += mov.value;
 
-      return acc;
-    }, {});
+        return acc;
+      },
+      {},
+    );
   }, [context.movements, selectedMonth, selectedType]);
 
   const resetModal = useCallback(() => {
@@ -83,7 +86,7 @@ export const useMovements = () => {
   }, [selectedType]);
 
   const handleOpenPendingPayment = useCallback((categoryId: string) => {
-    setModalType("gastos");
+    setModalType("bills");
     setCategory(categoryId);
     setValue("");
   }, []);
@@ -124,7 +127,7 @@ export const useMovements = () => {
         category,
         description,
         value: Number(value),
-        date: filtrados.find((f) => f.id === editingItem)?.date,
+        date: filtered.find((f) => f.id === editingItem)?.date,
       } as PersonalFinance;
 
       await context.updateMovement(updated);
@@ -146,48 +149,48 @@ export const useMovements = () => {
     });
   };
 
-  const checkInversionDorada = useMemo(() => {
-    const VALOR_BASE = 2800000;
+  const checkGoldenInvestment = useMemo(() => {
+    const BASE_VALUE = 2800000;
     const FACTOR = 6;
-    const minimoDorada = VALOR_BASE * FACTOR;
+    const minimalGolden = BASE_VALUE * FACTOR;
 
-    const totalAhorroDorada = context.movements
-      .filter((m) => m.type === "ahorros" && m.category === "dorada_be")
+    const totalGoldenSavings = context.movements
+      .filter((m) => m.type === "saving" && m.category === "dorada_be")
       .reduce((acc, curr) => acc + (Number(curr.value) || 0), 0);
 
-    const canInvest = totalAhorroDorada >= minimoDorada;
-    const falta = minimoDorada - totalAhorroDorada;
+    const canInvest = totalGoldenSavings >= minimalGolden;
+    const lack = minimalGolden - totalGoldenSavings;
 
     return {
       canInvest,
-      totalDorada: totalAhorroDorada,
-      faltaDorada: falta > 0 ? falta : 0,
-      minimoDorada,
+      totalDorada: totalGoldenSavings,
+      missingGolden: lack > 0 ? lack : 0,
+      minimalGolden,
     };
   }, [context.movements]);
 
   const summary = useMemo(() => {
-    const movementsDelMes = context.movements.filter((m) =>
+    const movementsOfMonth = context.movements.filter((m) =>
       m.date.startsWith(selectedMonth),
     );
 
-    const ingresos = movementsDelMes
-      .filter((m) => m.type === "ingresos")
+    const income = movementsOfMonth
+      .filter((m) => m.type === "income")
       .reduce((acc, m) => acc + m.value, 0);
 
-    const gastos = movementsDelMes
-      .filter((m) => m.type === "gastos")
+    const bills = movementsOfMonth
+      .filter((m) => m.type === "bills")
       .reduce((acc, m) => acc + m.value, 0);
 
-    const ahorrosTotal = context.movements
-      .filter((m) => m.type === "ahorros")
+    const saving = context.movements
+      .filter((m) => m.type === "saving")
       .reduce((acc, m) => acc + m.value, 0);
 
     return {
-      ingresos,
-      gastos,
-      ahorros: ahorrosTotal,
-      saldo: ingresos - gastos,
+      income,
+      bills,
+      saving: saving,
+      balance: income - bills,
     };
   }, [context.movements, selectedMonth]);
 
@@ -197,10 +200,10 @@ export const useMovements = () => {
   ) => {
     const rows = data.map((item) => {
       const [year, month, day] = item.date.split("-");
-      const fechaFormateada = `${day}/${month}/${year}`;
+      const formatedDate = `${day}/${month}/${year}`;
 
       return {
-        FECHA: fechaFormateada,
+        FECHA: formatedDate,
         TIPO: item.type.toUpperCase(),
         CATEGORÍA:
           item.category.charAt(0).toUpperCase() + item.category.slice(1),
@@ -235,7 +238,7 @@ export const useMovements = () => {
     description,
     value,
     editingItem,
-    filtrados,
+    filtered,
     total,
     selectedType,
     selectedMonth,
@@ -252,7 +255,7 @@ export const useMovements = () => {
     handleDeleteMovement,
     handleEditClick,
     resetModal,
-    ...checkInversionDorada,
+    ...checkGoldenInvestment,
     handleOpenPendingPayment,
     graphList: context.movements,
     exportToExcel,

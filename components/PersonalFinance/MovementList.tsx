@@ -25,7 +25,7 @@ export const MovementList: React.FC<MovementListProps> = ({
 }) => {
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
-  const statsPorCategoria = useMemo(
+  const statsBYCategory = useMemo(
     () => calculateCategoryStats(graphList),
     [graphList],
   );
@@ -34,11 +34,11 @@ export const MovementList: React.FC<MovementListProps> = ({
 
   return (
     <div className="flex flex-col gap-2">
-      {groupedArray.map((grupo) => {
-        const statsKey = `${grupo.type}-${grupo.category}`;
-        const stats = statsPorCategoria[statsKey];
-        const variacion = stats?.variacion || 0;
-        const tieneComparativa = stats?.tieneComparativa || false;
+      {groupedArray.map((group) => {
+        const statsKey = `${group.type}-${group.category}`;
+        const stats = statsBYCategory[statsKey];
+        const variation = stats?.variation || 0;
+        const hasComparison = stats?.hasComparison || false;
         const isExpanded = expandedCategory === statsKey;
 
         return (
@@ -58,7 +58,7 @@ export const MovementList: React.FC<MovementListProps> = ({
                   <span
                     className={`font-bold text-[12px] uppercase tracking-wider text-blue-600 truncate ${isPrivate ? "privacy-blur" : ""}`}
                   >
-                    {getCategoryLabel(grupo.type, grupo.category)}
+                    {getCategoryLabel(group.type, group.category)}
                   </span>
                   {isExpanded ? (
                     <ChevronUp size={14} className="text-blue-400" />
@@ -72,36 +72,36 @@ export const MovementList: React.FC<MovementListProps> = ({
 
                 {/* Variación */}
                 <div className="flex items-center gap-1 min-h-3.5">
-                  {grupo.type === "gastos" &&
-                    tieneComparativa &&
-                    variacion !== 0 && (
+                  {group.type === "bills" &&
+                    hasComparison &&
+                    variation !== 0 && (
                       <span
-                        className={`flex items-center text-[10px] font-bold ${variacion > 0 ? "text-red-500" : "text-emerald-500"}`}
+                        className={`flex items-center text-[10px] font-bold ${variation > 0 ? "text-red-500" : "text-emerald-500"}`}
                       >
-                        {variacion > 0 ? (
+                        {variation > 0 ? (
                           <TrendingUp size={10} className="mr-0.5" />
                         ) : (
                           <TrendingDown size={10} className="mr-0.5" />
                         )}
-                        {Math.abs(variacion).toFixed(1)}%
+                        {Math.abs(variation).toFixed(1)}%
                       </span>
                     )}
                 </div>
 
                 {/* Mini Gráfico */}
                 <div className="h-7 w-16 sm:w-20">
-                  {grupo.type === "gastos" &&
-                  stats?.puntosParaGraficar?.length > 0 ? (
+                  {group.type === "bills" &&
+                  stats?.pointsToGraph?.length > 0 ? (
                     <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={stats.puntosParaGraficar}>
+                      <LineChart data={stats.pointsToGraph}>
                         <YAxis hide domain={["dataMin - 10", "dataMax + 10"]} />
                         <Line
                           type="monotone"
-                          dataKey="valor"
+                          dataKey="value"
                           stroke={
-                            !tieneComparativa
+                            !hasComparison
                               ? "#cbd5e1"
-                              : variacion > 0
+                              : variation > 0
                                 ? "#ef4444"
                                 : "#10b981"
                           }
@@ -122,7 +122,7 @@ export const MovementList: React.FC<MovementListProps> = ({
                   <span
                     className={`font-bold text-sm text-gray-900 ${isPrivate ? "privacy-blur" : ""}`}
                   >
-                    {formatCLP(grupo.total)}
+                    {formatCLP(group.total)}
                   </span>
                 </div>
               </button>
@@ -135,7 +135,7 @@ export const MovementList: React.FC<MovementListProps> = ({
               <div className="overflow-hidden">
                 <div className="p-4 bg-gray-50/50 border-t border-gray-100">
                   <div className="divide-y divide-gray-200/50">
-                    {grupo.items.map((item) => (
+                    {group.items.map((item) => (
                       <div
                         key={item.id}
                         className="flex items-center justify-between p-3"
@@ -147,7 +147,7 @@ export const MovementList: React.FC<MovementListProps> = ({
                         {item.description && (
                           <span
                             title={item.description}
-                            className="text-[10px] text-slate-500 italic truncate max-w-[100px] sm:max-w-[200px]"
+                            className="text-[12px] text-slate-500 italic truncate max-w-[100px] px-2 sm:max-w-[200px]"
                           >
                             {item.description}
                           </span>
@@ -160,18 +160,17 @@ export const MovementList: React.FC<MovementListProps> = ({
                             {formatCLP(item.value)}
                           </span>
                           <div className="flex gap-1">
-                            {/* Eliminamos el casting 'as PersonalFinance' si es posible */}
                             <button
                               onClick={() => onEdit(item)}
-                              className="p-1 text-blue-400 cursor-pointer hover:bg-blue-50 rounded"
+                              className="p-1 text-blue-400 cursor-pointer hover:bg-blue-100 rounded"
                             >
-                              <SquarePen size={18} />
+                              <SquarePen size={22} />
                             </button>
                             <button
                               onClick={() => onDelete(item.id)}
-                              className="p-1 text-red-400 cursor-pointer hover:bg-red-50 rounded"
+                              className="p-1 text-red-400 cursor-pointer hover:bg-red-100 rounded"
                             >
-                              <Trash size={18} />
+                              <Trash size={22} />
                             </button>
                           </div>
                         </div>

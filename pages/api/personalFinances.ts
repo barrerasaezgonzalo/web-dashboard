@@ -1,17 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { supabase } from "@/lib/supabaseClient";
-import { PersonalFinanceMovement } from "@/types/";
 import { createClient } from "@supabase/supabase-js";
 import * as Sentry from "@sentry/nextjs";
 
-type ApiResponse =
-  | PersonalFinanceMovement[]
-  | { success: boolean }
-  | { error: string };
-
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<ApiResponse>,
+  res: NextApiResponse,
 ) {
   try {
     const { id } = req.query;
@@ -79,7 +73,7 @@ export default async function handler(
           return res.status(400).json({ error: "ID requerido" });
 
         const { id: movementId, ...updates } = updatedMovement;
-        delete (updates as any).auth_data;
+        delete updates.auth_data;
 
         const { data, error } = await supabase
           .from("movements")
@@ -108,7 +102,7 @@ export default async function handler(
       default:
         return res.status(405).json({ error: "Método no permitido" });
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     Sentry.captureException(error, {
       tags: {
         endpoint: "/api/personalFinances",
@@ -117,10 +111,6 @@ export default async function handler(
       extra: { query: req.query },
     });
 
-    console.error(`[API Error] ${req.method}:`, error);
-
-    return res.status(500).json({
-      error: error.message || "Internal Server Error",
-    });
+    return res.status(500).json({ error: error });
   }
 }

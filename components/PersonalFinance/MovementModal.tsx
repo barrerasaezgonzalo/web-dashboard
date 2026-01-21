@@ -122,20 +122,17 @@ export const MovementModal: React.FC<MovementModalProps> = ({
               Valor (sin puntos ni comas)
             </label>
 
-            {/* BOTÓN DE REFERENCIA SUGERIDA */}
-            <div className="flex flex-col mb-2 h-6">
-              {" "}
-              {/* h-6 mantiene el espacio si no hay ref */}
-              {refValue !== "" && (
+            {refValue !== "" && (
+              <div className="flex flex-col mb-2 h-6">
                 <button
                   type="button"
                   onClick={() => onChangeValue(refValue)}
                   className="text-left w-fit text-sm font-bold text-green-400 hover:text-green-300 transition-colors cursor-pointer"
                 >
-                  Referencia Sugerida: {refValue} (Usar este valor)
+                  Referencia Sugerida: {refValue} (Usar este value)
                 </button>
-              )}
-            </div>
+              </div>
+            )}
 
             <div className="relative">
               <input

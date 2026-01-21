@@ -18,17 +18,17 @@ export const useEventModal = (
 
   const formattedEvents = useMemo(() => {
     return (eventsToday || []).map((ev: CalendarEvent) => {
-      let fechaIso = ev.fecha || date;
-      if (fechaIso.includes("/")) {
-        fechaIso = fechaIso.split("/").reverse().join("-");
+      let isoDate = ev.date || date;
+      if (isoDate.includes("/")) {
+        isoDate = isoDate.split("/").reverse().join("-");
       }
 
       return {
         ...ev,
-        fecha: fechaIso,
-        notas: ev.notas || "",
-        hora: ev.hora?.split(":")[0] || "09",
-        minutos: ev.hora?.split(":")[1] || "00",
+        date: isoDate,
+        notes: ev.notes || "",
+        hour: ev.hour?.split(":")[0] || "09",
+        minutes: ev.hour?.split(":")[1] || "00",
       };
     });
   }, [eventsToday, date]);
@@ -56,25 +56,25 @@ export const useEventModal = (
   const addNewEvent = () => {
     if (
       localEvents.length > 0 &&
-      !localEvents[localEvents.length - 1].titulo.trim()
+      !localEvents[localEvents.length - 1].title.trim()
     )
       return;
     setLocalEvents([
       ...localEvents,
-      { titulo: "", notas: "", hora: "09", minutos: "00", fecha: date },
+      { title: "", notes: "", hour: "09", minutes: "00", date: date },
     ]);
   };
 
-  const hayCamposVacios =
-    localEvents.length > 0 && localEvents.some((ev) => !ev.titulo?.trim());
+  const areEmptyFields =
+    localEvents.length > 0 && localEvents.some((ev) => !ev.title?.trim());
 
-  const hanCambiado = useMemo(() => {
+  const hasChanged = useMemo(() => {
     return JSON.stringify(localEvents) !== snapshotInicial;
   }, [localEvents, snapshotInicial]);
-  const botonBloqueado = hayCamposVacios || isSaving || !hanCambiado;
+  const blockedButton = areEmptyFields || isSaving || !hasChanged;
 
   const handleConfirm = async () => {
-    if (botonBloqueado) return;
+    if (blockedButton) return;
     setIsSaving(true);
     try {
       await onConfirm(localEvents);
@@ -88,7 +88,7 @@ export const useEventModal = (
   return {
     localEvents,
     isSaving,
-    botonBloqueado,
+    blockedButton,
     handleUpdate,
     removeEvent,
     addNewEvent,

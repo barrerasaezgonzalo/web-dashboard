@@ -35,7 +35,6 @@ export default async function handler(
 
   try {
     if (method === "GET") {
-      // traer todas las notas del usuario
       const { data, error } = await supabase
         .from("notes")
         .select("*")

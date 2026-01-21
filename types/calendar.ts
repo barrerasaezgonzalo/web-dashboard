@@ -1,25 +1,25 @@
 export interface CalendarEvent {
-  titulo: string;
-  hora: string;
-  minutos: string;
-  notas?: string;
-  fecha?: string; // solo cuando viene del backend
+  title: string;
+  hour: string;
+  minutes: string;
+  notes?: string;
+  date?: string; // solo cuando viene del backend
   id?: string;
 }
 
 export interface EventItemProps {
   ev: CalendarEvent;
   idx: number;
-  horas: string[];
-  minutos: string[];
+  hours: string[];
+  minutes: string[];
   onUpdate: (index: number, field: keyof CalendarEvent, value: string) => void;
   onRemove: (index: number) => void;
 }
 
 export interface CalendarDayProps {
   dia: Date;
-  esMesActual: boolean;
-  tieneEvento: boolean;
+  isCurrentMonth: boolean;
+  hasEvent: boolean;
   onClick: () => void;
 }
 
@@ -38,8 +38,8 @@ export interface EventModalComponentProps {
 
 export interface CalendarContextType {
   events: CalendarEvent[];
-  getEvents: (mes: Date) => Promise<void>;
-  saveEvents: (fecha: string, eventos: CalendarEvent[]) => Promise<void>;
+  getEvents: (month: Date) => Promise<void>;
+  saveEvents: (date: string, eventos: CalendarEvent[]) => Promise<void>;
   modalConfig: CalendarModalConfig | null;
   handleShowModal: (dia: Date) => void;
 }

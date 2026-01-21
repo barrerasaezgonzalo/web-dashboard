@@ -13,34 +13,32 @@ import {
 import { es } from "date-fns/locale";
 import {
   CalendarDays,
-  ChevronDown,
   ChevronLeft,
   ChevronRight,
-  ChevronUp,
   TimerReset,
 } from "lucide-react";
 import { EventModal } from "./EventModal";
 import { useCalendar } from "@/hooks/useCalendar";
-import { diasSemana } from "@/constants";
+import { weekDays } from "@/constants";
 import { CalendarDay } from "./CalendarDay";
 import { usePrivacyMode } from "@/hooks/usePrivacyMode";
 
 const Calendar = () => {
-  const [mesActual, setMesActual] = useState(new Date());
-  const { events, modalConfig, handleShowModal } = useCalendar(mesActual);
+  const [currentMonth, setCurrentMonth] = useState(new Date());
+  const { events, modalConfig, handleShowModal } = useCalendar(currentMonth);
   const { isPrivate } = usePrivacyMode();
 
-  const { dias, inicioMes } = useMemo(() => {
-    const inicio = startOfMonth(mesActual);
-    const inicioCal = startOfWeek(inicio, { weekStartsOn: 1 });
+  const { days, monthStart } = useMemo(() => {
+    const start = startOfMonth(currentMonth);
+    const startCalendar = startOfWeek(start, { weekStartsOn: 1 });
     return {
-      inicioMes: inicio,
-      dias: eachDayOfInterval({
-        start: inicioCal,
-        end: addDays(inicioCal, 41),
+      monthStart: start,
+      days: eachDayOfInterval({
+        start: startCalendar,
+        end: addDays(startCalendar, 41),
       }),
     };
-  }, [mesActual]);
+  }, [currentMonth]);
 
   return (
     <div
@@ -64,36 +62,34 @@ const Calendar = () => {
       </div>
 
       <>
-        {/* Navegación de Meses */}
         <div className="flex items-center justify-between px-6 py-4 bg-gray-50 border-b">
           <button
-            onClick={() => setMesActual(subMonths(mesActual, 1))}
+            onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}
             className="p-2 hover:bg-gray-200 rounded-full cursor-pointer"
           >
             <ChevronLeft size={25} />
           </button>
           <h3 className="text-lg font-bold capitalize">
-            {format(mesActual, "MMMM yyyy", { locale: es })}
+            {format(currentMonth, "MMMM yyyy", { locale: es })}
           </h3>
-          {!isSameMonth(new Date(), mesActual) && (
+          {!isSameMonth(new Date(), currentMonth) && (
             <div
               className="text-blue-500 cursor-pointer"
-              onClick={() => setMesActual(new Date())}
+              onClick={() => setCurrentMonth(new Date())}
             >
               <TimerReset size={25} />
             </div>
           )}
           <button
-            onClick={() => setMesActual(addMonths(mesActual, 1))}
+            onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}
             className="p-2 hover:bg-gray-200 rounded-full cursor-pointer"
           >
             <ChevronRight size={25} />
           </button>
         </div>
 
-        {/* Días de la semana */}
         <div className="grid grid-cols-7 border-b bg-gray-50">
-          {diasSemana.map((dia) => (
+          {weekDays.map((dia) => (
             <div
               key={dia}
               className="text-center text-xs font-semibold py-2 text-gray-500 uppercase"
@@ -103,21 +99,20 @@ const Calendar = () => {
           ))}
         </div>
 
-        {/* Grid de días */}
         <div
           className={`grid grid-cols-7 text-sm ${isPrivate ? "privacy-blur" : ""}`}
         >
-          {dias.map((dia, idx) => {
-            const fechaKey = format(dia, "yyyy-MM-dd");
-            const tieneEvento = events.some((ev) => ev.fecha === fechaKey);
-            const esMesActual = isSameDay(startOfMonth(dia), inicioMes);
+          {days.map((dia, idx) => {
+            const dateKey = format(dia, "yyyy-MM-dd");
+            const hasEvent = events.some((ev) => ev.date === dateKey);
+            const isCurrentMonth = isSameDay(startOfMonth(dia), monthStart);
 
             return (
               <CalendarDay
                 key={idx}
                 dia={dia}
-                esMesActual={esMesActual}
-                tieneEvento={tieneEvento}
+                isCurrentMonth={isCurrentMonth}
+                hasEvent={hasEvent}
                 onClick={() => handleShowModal(dia)}
               />
             );
@@ -131,7 +126,7 @@ const Calendar = () => {
           onConfirm={modalConfig.onConfirm || (async () => {})}
           onCancel={modalConfig.onCancel}
           eventsToday={events.filter(
-            (ev) => ev.fecha === format(modalConfig.date, "yyyy-MM-dd"),
+            (ev) => ev.date === format(modalConfig.date, "yyyy-MM-dd"),
           )}
         />
       )}

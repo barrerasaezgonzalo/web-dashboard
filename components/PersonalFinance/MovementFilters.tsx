@@ -9,7 +9,7 @@ export const MovementFilters: React.FC<MovementFiltersProps> = ({
   setSelectedType,
 }) => {
   return (
-    <div className="flex gap-3 w-full justify-between">
+    <div className="flex gap-3 w-full justify-between mb-4">
       <div className="relative">
         <select
           className="w-30 bg-slate-900 border rounded-xl p-3 text-white focus:outline-none focus:ring-2 transition-all appearance-none cursor-pointer border-slate-700 focus:ring-blue-500/50"

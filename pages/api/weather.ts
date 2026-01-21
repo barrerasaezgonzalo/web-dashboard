@@ -28,16 +28,16 @@ export async function getWeather(): Promise<WheaterData> {
 
     const data = await res.json();
 
-    const tempActual = data.current_weather.temperature;
+    const actualTemp = data.current_weather.temperature;
     return {
-      temperatura: `${tempActual}°C`,
+      temperature: `${actualTemp}°C`,
     };
   } catch (error) {
     Sentry.captureException(error, {
       tags: { endpoint: "/api/weather", method: "GET" },
     });
     return {
-      temperatura: "0°C",
+      temperature: "0°C",
       _fallback: true,
     };
   }

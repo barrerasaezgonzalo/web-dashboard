@@ -1,14 +1,6 @@
 import { useImages } from "@/hooks/useImages";
-import {
-  Plus,
-  ChevronDown,
-  ChevronUp,
-  ChevronLeft,
-  ChevronRight,
-  Trash,
-  Camera,
-} from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Plus, ChevronLeft, ChevronRight, Trash, Camera } from "lucide-react";
+import { useEffect, useRef } from "react";
 import { ImageModal } from "./ImageModal";
 import { usePrivacyMode } from "@/hooks/usePrivacyMode";
 import Image from "next/image";

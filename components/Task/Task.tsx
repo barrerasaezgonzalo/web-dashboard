@@ -1,9 +1,8 @@
 "use client";
 
 import { TaskItem } from "./TaskItem";
-import { ChevronDown, ChevronUp, ListChecks, Plus } from "lucide-react";
+import { ListChecks, Plus } from "lucide-react";
 import { useTasks } from "@/hooks/useTasks";
-import { useState } from "react";
 import { Task } from "@/types";
 import { TaskModal } from "./TaskModal";
 
@@ -54,7 +53,6 @@ const Tasks: React.FC = () => {
       </div>
 
       <>
-        {/* Lista de tareas */}
         <ul role="list" className="mt-4">
           {tasks.map((task: Task) => (
             <TaskItem

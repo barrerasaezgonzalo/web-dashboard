@@ -3,7 +3,7 @@ import { CalendarDays, Info, X } from "lucide-react";
 import { memo, useEffect } from "react";
 import { useEventModal } from "@/hooks/useEventModal";
 import { EventItem } from "./EventItem";
-import { horas, minutos } from "@/constants";
+import { hours, minutes } from "@/constants";
 import { EventModalComponentProps } from "@/types";
 
 export const EventModalComponent: React.FC<EventModalComponentProps> = ({
@@ -15,7 +15,7 @@ export const EventModalComponent: React.FC<EventModalComponentProps> = ({
   const {
     localEvents,
     isSaving,
-    botonBloqueado,
+    blockedButton,
     handleUpdate,
     removeEvent,
     addNewEvent,
@@ -38,7 +38,7 @@ export const EventModalComponent: React.FC<EventModalComponentProps> = ({
   return (
     <>
       <div
-        key={events.length > 0 ? events[0].fecha : "vacio"}
+        key={events.length > 0 ? events[0].date : "vacio"}
         className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-40"
         onClick={onCancel}
       />
@@ -76,8 +76,8 @@ export const EventModalComponent: React.FC<EventModalComponentProps> = ({
               key={idx}
               ev={ev}
               idx={idx}
-              horas={horas}
-              minutos={minutos}
+              hours={hours}
+              minutes={minutes}
               onUpdate={handleUpdate}
               onRemove={removeEvent}
             />
@@ -100,12 +100,12 @@ export const EventModalComponent: React.FC<EventModalComponentProps> = ({
           </button>
           <button
             className={`flex-1 px-4 py-3 rounded-xl font-bold transition-all active:scale-95 ${
-              botonBloqueado
+              blockedButton
                 ? "bg-slate-700 text-slate-400 cursor-not-allowed opacity-70"
                 : "bg-blue-600 cursor-pointer text-white hover:bg-blue-500 shadow-lg shadow-blue-900/20"
             }`}
             onClick={handleConfirm}
-            disabled={botonBloqueado}
+            disabled={blockedButton}
           >
             {isSaving ? "Guardando..." : "Guardar cambios"}
           </button>

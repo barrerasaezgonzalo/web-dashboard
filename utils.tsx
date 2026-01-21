@@ -10,29 +10,16 @@ import {
   MovementType,
   PersonalFinance,
   PersonalFinanceMovement,
-  PuntoGrafico,
+  PointGraphic,
 } from "./types/";
 
-export const formatCLP = (valor: number | string) => {
+export const formatCLP = (value: number | string) => {
   return new Intl.NumberFormat("es-CL", {
     style: "currency",
     currency: "CLP",
     maximumFractionDigits: 0,
-  }).format(valor.toString() as unknown as number);
+  }).format(value.toString() as unknown as number);
 };
-
-export function abrirGpt(
-  pregunta: string,
-  setPregunta: (preguna: string) => void,
-) {
-  if (!pregunta.trim()) {
-    return;
-  }
-  const url = ` https://chatgpt.com/?prompt=${encodeURIComponent(pregunta)}`;
-
-  window.open(url, "_blank");
-  setPregunta("");
-}
 
 export const getGreeting = () => {
   const hour = new Date().getHours();
@@ -41,20 +28,20 @@ export const getGreeting = () => {
   return "Buenas noches";
 };
 
-export function formatFechaHora(date: Date) {
-  const fecha = date.toLocaleDateString("es-CL", {
+export function formatFechaHora(now: Date) {
+  const date = now.toLocaleDateString("es-CL", {
     day: "numeric",
     month: "long",
     year: "numeric",
   });
 
-  const hora = date.toLocaleTimeString("es-CL", {
+  const hour = now.toLocaleTimeString("es-CL", {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
     hour12: false,
   });
-  return { fecha, hora };
+  return { date, hour };
 }
 
 export function formatDateToDMY(date: string): string {
@@ -130,11 +117,11 @@ export const generateMonthOptions = () => {
 
 export const getCategoryLabels = (type: MovementType): CategoryOption[] => {
   switch (type) {
-    case "ingresos":
+    case "income":
       return IngresosCategoryLabels;
-    case "gastos":
+    case "bills":
       return GastosCategoryLabels;
-    case "ahorros":
+    case "saving":
       return AhorrosCategoryLabels;
     default:
       return [];
@@ -156,21 +143,21 @@ export const calculateMonthlyResume = (
 ) => {
   const safeMovements = movements ?? [];
 
-  const ingresos = safeMovements
-    .filter((m) => m.type === "ingresos" && isSameMonth(m.date, targetMonth))
+  const income = safeMovements
+    .filter((m) => m.type === "income" && isSameMonth(m.date, targetMonth))
     .reduce((acc, m) => acc + m.value, 0);
 
-  const gastos = safeMovements
-    .filter((m) => m.type === "gastos" && isSameMonth(m.date, targetMonth))
+  const bills = safeMovements
+    .filter((m) => m.type === "bills" && isSameMonth(m.date, targetMonth))
     .reduce((acc, m) => acc + m.value, 0);
 
-  const ahorros = safeMovements
-    .filter((m) => m.type === "ahorros" && isSameMonth(m.date, targetMonth))
+  const saving = safeMovements
+    .filter((m) => m.type === "saving" && isSameMonth(m.date, targetMonth))
     .reduce((acc, m) => acc + m.value, 0);
 
-  const saldo = ingresos - gastos;
+  const balance = income - bills;
 
-  return { ingresos, gastos, ahorros, saldo };
+  return { income, bills, saving, balance };
 };
 
 const isSameMonth = (dateStr: string, targetMonth: string) => {
@@ -187,7 +174,7 @@ export const getPendingAndVariableExpenses = (movements: PersonalFinance[]) => {
     const categoryMovements = movements.filter((m) => {
       const [year, month] = m.date.split("-");
       return (
-        m.type === "gastos" &&
+        m.type === "bills" &&
         m.category === category.id &&
         month === currentMonth &&
         year === currentYear
@@ -206,7 +193,7 @@ export const getPendingAndVariableExpenses = (movements: PersonalFinance[]) => {
       isPaid,
     };
   }).filter((item) => {
-    return item.fijo === true && item.isPaid === false;
+    return item.fixed === true && item.isPaid === false;
   });
 };
 
@@ -232,11 +219,11 @@ export const stripHtml = (html: string) => {
   return clean.replace(/\s+/g, " ").trim();
 };
 
-export const getUltimos6MesesKeys = () => {
+export const getLast6MonthsKeys = () => {
   const keys = [];
-  const hoy = new Date();
+  const today = new Date();
   for (let i = 5; i >= 0; i--) {
-    const d = new Date(hoy.getFullYear(), hoy.getMonth() - i, 1);
+    const d = new Date(today.getFullYear(), today.getMonth() - i, 1);
     keys.push(`${d.getFullYear()}-${d.getMonth()}`);
   }
   return keys;
@@ -247,56 +234,56 @@ export const calculateCategoryStats = (
 ): Record<string, CategoryStat> => {
   const data: Record<string, CategoryStat> = {};
 
-  const ultimos6MesesKeys = getUltimos6MesesKeys();
+  const last6MonthsKeys = getLast6MonthsKeys();
   graphList.forEach((m) => {
-    if (m.type !== "gastos") return;
+    if (m.type !== "bills") return;
     const statsKey = `${m.type}-${m.category}`;
 
     const d = new Date(m.date);
     const key = `${d.getUTCFullYear()}-${d.getUTCMonth()}`;
 
-    if (!ultimos6MesesKeys.includes(key)) return;
+    if (!last6MonthsKeys.includes(key)) return;
 
     if (!data[statsKey]) {
       data[statsKey] = {
-        puntos: ultimos6MesesKeys.map((k) => ({ mes: k, valor: 0 })),
-        variacion: 0,
-        tieneComparativa: false,
-        puntosParaGraficar: [],
+        points: last6MonthsKeys.map((k) => ({ month: k, value: 0 })),
+        variation: 0,
+        hasComparison: false,
+        pointsToGraph: [],
       };
     }
 
-    const punto = data[statsKey].puntos.find((p) => p.mes === key);
-    if (punto) punto.valor += m.value;
+    const point = data[statsKey].points.find((p) => p.month === key);
+    if (point) point.value += m.value;
   });
 
   Object.keys(data).forEach((sKey) => {
-    const p = data[sKey].puntos;
-    const actual = p[5].valor;
-    const anterior = p[4].valor;
+    const p = data[sKey].points;
+    const current = p[5].value;
+    const last = p[4].value;
 
-    let variacion = 0;
-    let tieneComparativa = false;
+    let variation = 0;
+    let hasComparison = false;
 
-    if (anterior > 0) {
-      variacion = ((actual - anterior) / anterior) * 100;
-      tieneComparativa = true;
+    if (last > 0) {
+      variation = ((current - last) / last) * 100;
+      hasComparison = true;
     }
 
-    data[sKey].variacion = variacion;
-    data[sKey].tieneComparativa = tieneComparativa;
+    data[sKey].variation = variation;
+    data[sKey].hasComparison = hasComparison;
 
-    const puntosConDatos = p.filter((punto) => punto.valor > 0);
-    if (puntosConDatos.length === 1) {
-      data[sKey].puntosParaGraficar = [
-        { ...puntosConDatos[0], mes: "prev" },
-        puntosConDatos[0],
+    const pointsWithData = p.filter((point) => point.value > 0);
+    if (pointsWithData.length === 1) {
+      data[sKey].pointsToGraph = [
+        { ...pointsWithData[0], month: "prev" },
+        pointsWithData[0],
       ];
     } else {
-      data[sKey].puntosParaGraficar = p.filter(
-        (punto: PuntoGrafico, index: number) => {
+      data[sKey].pointsToGraph = p.filter(
+        (point: PointGraphic, index: number) => {
           if (index >= 4) return true;
-          return punto.valor > 0;
+          return point.value > 0;
         },
       );
     }

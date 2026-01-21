@@ -1,4 +1,4 @@
-export type MovementType = "ingresos" | "gastos" | "ahorros";
+export type MovementType = "income" | "bills" | "saving";
 
 export type IngresosCategory = "sueldo" | "otros";
 
@@ -39,14 +39,14 @@ export interface BaseMovement {
 }
 
 export type PersonalFinance =
-  | (BaseMovement & { type: "ingresos"; category: IngresosCategory })
-  | (BaseMovement & { type: "gastos"; category: GastosCategory })
-  | (BaseMovement & { type: "ahorros"; category: AhorrosCategory });
+  | (BaseMovement & { type: "income"; category: IngresosCategory })
+  | (BaseMovement & { type: "bills"; category: GastosCategory })
+  | (BaseMovement & { type: "saving"; category: AhorrosCategory });
 
 export interface CategoryOption {
   id: string;
   label: string;
-  fijo: boolean;
+  fixed: boolean;
 }
 
 export interface MovementFiltersProps {
@@ -108,10 +108,10 @@ export interface MovementFooterProps {
 }
 
 export type Summary = {
-  ingresos: number;
-  gastos: number;
-  ahorros: number;
-  saldo: number;
+  income: number;
+  bills: number;
+  saving: number;
+  balance: number;
 };
 
 export interface monthlyDataSummary extends Omit<Summary, "saldo"> {
@@ -127,7 +127,7 @@ export interface Financial {
 export interface Movement {
   id: string;
   user_id: string;
-  type: "ahorros" | "gastos" | "ingresos";
+  type: "saving" | "bills" | "income";
   category: string;
   value: number;
   date: string; // ISO format
@@ -137,18 +137,18 @@ export interface Movement {
 export type MovementGroup = {
   items: PersonalFinanceMovement[];
   total: number;
-  type: "ahorros" | "gastos" | "ingresos";
+  type: "saving" | "bills" | "income";
   category: string;
 };
 
-export type PuntoGrafico = {
-  mes: string;
-  valor: number;
+export type PointGraphic = {
+  month: string;
+  value: number;
 };
 
 export type CategoryStat = {
-  puntos: PuntoGrafico[];
-  variacion: number;
-  tieneComparativa: boolean;
-  puntosParaGraficar: PuntoGrafico[];
+  points: PointGraphic[];
+  variation: number;
+  hasComparison: boolean;
+  pointsToGraph: PointGraphic[];
 };

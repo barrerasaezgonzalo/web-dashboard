@@ -1,7 +1,7 @@
 import { PersonalFinanceContext } from "@/context/PersonalFinanceContext";
 import { getPendingAndVariableExpenses } from "@/utils";
-import { PiggyBank, CheckCircle2, ChevronDown, ChevronUp } from "lucide-react";
-import { useContext, useState } from "react";
+import { PiggyBank, CheckCircle2 } from "lucide-react";
+import { useContext } from "react";
 import { usePrivacyMode } from "@/hooks/usePrivacyMode";
 
 export const Pending = () => {

@@ -1,6 +1,5 @@
 "use client";
-import { useState } from "react";
-import { ChevronUp, ChevronDown, Logs, Plus, Download } from "lucide-react";
+import { Logs, Plus, Download } from "lucide-react";
 import { MovementFooter } from "./MovementFooter";
 import { specialCategoryRules } from "@/constants";
 import { useMovements } from "@/hooks/useMovements";
@@ -15,7 +14,7 @@ export default function Movements() {
     category,
     value,
     editingItem,
-    filtrados,
+    filtered,
     total,
     selectedType,
     selectedMonth,
@@ -60,7 +59,7 @@ export default function Movements() {
                 <Plus size={20} />
               </button>
               <button
-                onClick={() => exportToExcel(filtrados, selectedMonth)}
+                onClick={() => exportToExcel(filtered, selectedMonth)}
                 className="p-2 rounded hover:bg-blue-500 cursor-pointer transition-colors text-white"
                 title="Exportar vista actual"
               >
