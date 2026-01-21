@@ -34,8 +34,7 @@ export const useTasks = (): UseTasksReturn => {
       resetForm();
       openToast({ message: `Tarea "${title}" agregada correctamente` });
       setShowModal(false);
-    } catch (error) {
-      console.log(error);
+    } catch {
       openToast({ message: "Error agregando task" });
     }
   };
@@ -45,8 +44,7 @@ export const useTasks = (): UseTasksReturn => {
       await context.editTask(editingTaskId, title, date, description);
       resetForm();
       openToast({ message: `Tarea "${title}" actualizada correctamente` });
-    } catch (error) {
-      console.log(error);
+    } catch {
       openToast({ message: "Error guardando task" });
     }
   };

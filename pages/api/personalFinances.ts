@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { supabase } from "@/lib/supabaseClient";
 import { PersonalFinanceMovement } from "@/types/";
 import { createClient } from "@supabase/supabase-js";
+import * as Sentry from "@sentry/nextjs";
 
 type ApiResponse =
   | PersonalFinanceMovement[]
@@ -12,31 +13,35 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponse>,
 ) {
-  const { id } = req.query;
-  const authHeader = req.headers["authorization"] || req.headers.authorization;
-  const supabaseAdmin = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  );
+  try {
+    const { id } = req.query;
+    const authHeader =
+      req.headers["authorization"] || req.headers.authorization;
+    const supabaseAdmin = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    );
 
-  if (!authHeader) {
-    return res.status(401).json({ error: "No autorizado. Falta token." });
-  }
-  const token = authHeader.replace("Bearer ", "");
-  const {
-    data: { user },
-    error,
-  } = await supabaseAdmin.auth.getUser(token);
-  if (error || !user) {
-    console.log("Error Auth:", error?.message);
-    return res.status(401).json({ error: "Token inválido o sesión expirada" });
-  }
+    if (!authHeader) {
+      return res.status(401).json({ error: "No autorizado. Falta token." });
+    }
 
-  const userId = user.id;
+    const token = authHeader.replace("Bearer ", "");
+    const {
+      data: { user },
+      error: authError,
+    } = await supabaseAdmin.auth.getUser(token);
 
-  switch (req.method) {
-    case "GET": {
-      try {
+    if (authError || !user) {
+      return res
+        .status(401)
+        .json({ error: "Token inválido o sesión expirada" });
+    }
+
+    const userId = user.id;
+
+    switch (req.method) {
+      case "GET": {
         const { data, error } = await supabase
           .from("movements")
           .select("*")
@@ -45,31 +50,18 @@ export default async function handler(
 
         if (error) throw error;
         return res.status(200).json(data || []);
-      } catch (error: unknown) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Internal Server Error";
-
-        console.error("Error al obtener personal finances:", error);
-
-        return res.status(500).json({
-          error: errorMessage,
-        });
-      }
-    }
-
-    case "POST": {
-      const { newMovement } = req.body;
-      if (!newMovement) {
-        return res.status(400).json({ error: "newMovement es requerido" });
-      }
-      const { type, date, value, category, description } = newMovement;
-      if (!type || !date || !value || !category) {
-        return res
-          .status(400)
-          .json({ error: "Todos los campos son requeridos" });
       }
 
-      try {
+      case "POST": {
+        const { newMovement } = req.body;
+        if (!newMovement)
+          return res.status(400).json({ error: "newMovement es requerido" });
+
+        const { type, date, value, category, description } = newMovement;
+        if (!type || !date || !value || !category) {
+          return res.status(400).json({ error: "Campos incompletos" });
+        }
+
         const { data, error } = await supabase
           .from("movements")
           .insert([
@@ -79,42 +71,16 @@ export default async function handler(
 
         if (error) throw error;
         return res.status(201).json(data || []);
-      } catch (error: unknown) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Internal Server Error";
-
-        console.error("Error al obtener personal finances:", error);
-
-        return res.status(500).json({
-          error: errorMessage,
-        });
-      }
-    }
-
-    case "PATCH": {
-      const { updatedMovement } = req.body;
-      if (!updatedMovement || !updatedMovement.id) {
-        return res
-          .status(400)
-          .json({ error: "updatedMovement.id es requerido" });
       }
 
-      const {
-        id: movementId,
-        type,
-        value,
-        category,
-        date,
-        description,
-      } = updatedMovement;
-      const updates: Partial<PersonalFinanceMovement> = {};
-      if (type !== undefined) updates.type = type;
-      if (value !== undefined) updates.value = value;
-      if (category !== undefined) updates.category = category;
-      if (date !== undefined) updates.date = date;
-      if (description !== undefined) updates.description = description;
+      case "PATCH": {
+        const { updatedMovement } = req.body;
+        if (!updatedMovement?.id)
+          return res.status(400).json({ error: "ID requerido" });
 
-      try {
+        const { id: movementId, ...updates } = updatedMovement;
+        delete (updates as any).auth_data;
+
         const { data, error } = await supabase
           .from("movements")
           .update(updates)
@@ -124,24 +90,11 @@ export default async function handler(
 
         if (error) throw error;
         return res.status(200).json(data || []);
-      } catch (error: unknown) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Internal Server Error";
-
-        console.error("Error al obtener personal finances:", error);
-
-        return res.status(500).json({
-          error: errorMessage,
-        });
-      }
-    }
-
-    case "DELETE": {
-      if (!id || typeof id !== "string") {
-        return res.status(400).json({ error: "id es requerido para eliminar" });
       }
 
-      try {
+      case "DELETE": {
+        if (!id) return res.status(400).json({ error: "ID requerido" });
+
         const { error: deleteError } = await supabase
           .from("movements")
           .delete()
@@ -150,19 +103,24 @@ export default async function handler(
 
         if (deleteError) throw deleteError;
         return res.status(200).json({ success: true });
-      } catch (error: unknown) {
-        const errorMessage =
-          error instanceof Error ? error.message : "Internal Server Error";
-
-        console.error("Error al obtener personal finances:", error);
-
-        return res.status(500).json({
-          error: errorMessage,
-        });
       }
-    }
 
-    default:
-      return res.status(405).json({ error: "Método no permitido" });
+      default:
+        return res.status(405).json({ error: "Método no permitido" });
+    }
+  } catch (error: any) {
+    Sentry.captureException(error, {
+      tags: {
+        endpoint: "/api/personalFinances",
+        method: req.method,
+      },
+      extra: { query: req.query },
+    });
+
+    console.error(`[API Error] ${req.method}:`, error);
+
+    return res.status(500).json({
+      error: error.message || "Internal Server Error",
+    });
   }
 }

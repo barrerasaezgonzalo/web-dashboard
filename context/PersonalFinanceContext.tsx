@@ -48,7 +48,7 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
   const getFinancial = useCallback(async () => {
     try {
       const response = await authFetch("/api/getUtm");
-      if (!response.ok) throw new Error("GetFinancial api Error");
+      if (!response.ok) throw new Error("GetFinancial: api Error");
 
       const data: Financial = await response.json();
       setFinancial((prevFinancial) => {
@@ -71,6 +71,7 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
     setLoading(true);
     try {
       const response = await authFetch(`/api/personalFinances`);
+      if (!response.ok) throw new Error("getMovements: api Error");
       const dataFromApi = await response.json();
       const financials: PersonalFinance[] = dataFromApi.map(
         (item: PersonalFinance) => {
@@ -88,7 +89,7 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
       );
       setMovements(financials);
     } catch (error) {
-      console.error("Error al obtener las finanzas personales:", error);
+      trackError(error, "getMovements");
       setMovements([]);
     } finally {
       setLoading(false);
@@ -104,16 +105,12 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ newMovement }),
       });
-      if (!response.ok) {
-        const errData = await response.json();
-        throw new Error(errData.message || "Error al agregar personal finance");
-      }
+      if (!response.ok) throw new Error("addMovement: api Error");
       const data = await response.json();
       const financial: PersonalFinance = data[0];
       setMovements((prev) => [financial, ...prev]);
     } catch (error) {
-      console.error("Error al agregar personal financial:", error);
-      throw error;
+      trackError(error, "addMovement");
     } finally {
       setLoading(false);
     }
@@ -129,14 +126,14 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ updatedMovement }),
       });
+      if (!response.ok) throw new Error("updateMovement: api Error");
       const updatedArray = await response.json();
       const updated = updatedArray[0];
       setMovements((prev) =>
         prev.map((t) => (t.id === updated.id ? updated : t)),
       );
     } catch (error) {
-      console.error("Error al editar personal financial:", error);
-      throw error;
+      trackError(error, "updateMovement");
     } finally {
       setLoading(false);
     }
@@ -145,11 +142,12 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
   const deleteMovement = async (id: string) => {
     setMovements((prev) => prev.filter((t) => t.id !== id));
     try {
-      await authFetch(`/api/personalFinances?id=${id}`, {
+      const response = await authFetch(`/api/personalFinances?id=${id}`, {
         method: "DELETE",
       });
+      if (!response.ok) throw new Error("deleteMovement: api Error");
     } catch (error) {
-      console.error("Error al eliminar personal financial:", error);
+      trackError(error, "deleteMovement");
     }
   };
 

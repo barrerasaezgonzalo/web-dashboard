@@ -1,5 +1,6 @@
 import { WheaterData } from "@/types/";
 import type { NextApiRequest, NextApiResponse } from "next";
+import * as Sentry from "@sentry/nextjs";
 
 export default async function handler(
   req: NextApiRequest,
@@ -32,7 +33,9 @@ export async function getWeather(): Promise<WheaterData> {
       temperatura: `${tempActual}°C`,
     };
   } catch (error) {
-    console.error("Error fetching clima:", error);
+    Sentry.captureException(error, {
+      tags: { endpoint: "/api/weather", method: "GET" },
+    });
     return {
       temperatura: "0°C",
       _fallback: true,

@@ -110,8 +110,7 @@ export const useMovements = () => {
       await context.addMovement(newMovement);
       resetModal();
       openToast({ message: "Movimiento agregado correctamente" });
-    } catch (error) {
-      console.log(error);
+    } catch {
       openToast({ message: "Error al agregar el movimiento" });
     }
   };
@@ -131,8 +130,7 @@ export const useMovements = () => {
       await context.updateMovement(updated);
       resetModal();
       openToast({ message: "Movimiento actualizado" });
-    } catch (error) {
-      console.log(error);
+    } catch {
       openToast({ message: "Error al actualizar" });
     }
   };

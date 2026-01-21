@@ -79,8 +79,7 @@ export const useEventModal = (
     try {
       await onConfirm(localEvents);
       openToast({ message: "¡Eventos guardados correctamente!" });
-    } catch (error) {
-      console.log(error);
+    } catch {
       setIsSaving(false);
       openToast({ message: "Error al guardar los eventos" });
     }

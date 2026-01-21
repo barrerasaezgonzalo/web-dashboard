@@ -1,17 +1,21 @@
 import { useState, useCallback, useEffect } from "react";
 import { WheaterResponse } from "@/types/";
+import { trackError } from "@/utils/logger";
+import { authFetch } from "./authFetch";
 
 export const useWheater = () => {
   const [weather, setWeather] = useState<WheaterResponse | null>(null);
 
   const fetchWeather = useCallback(async () => {
     try {
-      const res = await fetch("/api/weather");
-      if (!res.ok) throw new Error("Fetch failed");
+      const res = await authFetch("/api/weather", {
+        method: "GET",
+      });
+      if (!res.ok) throw new Error("fetchWeather: api Error");
       const data: WheaterResponse = await res.json();
       setWeather(data);
     } catch (error) {
-      console.error("Error al obtener Clima:", error);
+      trackError(error, "fetchWeather");
     }
   }, []);
 

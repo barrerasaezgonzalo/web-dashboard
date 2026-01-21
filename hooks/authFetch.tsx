@@ -13,7 +13,6 @@ export const authFetch = async (url: string, options: RequestInit = {}) => {
     const { data: refreshData, error: refreshError } =
       await supabase.auth.refreshSession();
     if (refreshError) {
-      console.error("Sesión expirada, re-logueo necesario");
       await supabase.auth.signOut();
       if (typeof window !== "undefined") {
         window.location.reload();
@@ -36,7 +35,6 @@ export const authFetch = async (url: string, options: RequestInit = {}) => {
   });
 
   if (response.status === 401) {
-    console.warn("Token rechazado por el servidor");
     await supabase.auth.signOut();
     if (typeof window !== "undefined") {
       window.location.reload();

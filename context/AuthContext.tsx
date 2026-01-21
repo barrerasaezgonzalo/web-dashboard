@@ -8,6 +8,7 @@ import {
   ReactNode,
 } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import { trackError } from "@/utils/logger";
 
 interface AuthContextProps {
   userId: string | null;
@@ -33,11 +34,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      if (error) {
+        throw new Error("signOut: Error al cerrar sesión con Google");
+      }
       setUserId(null);
       setUserName(null);
     } catch (error) {
-      console.error("Error al cerrar sesión:", error);
+      trackError(error, "signOut");
     }
   };
 
@@ -85,13 +88,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           },
         },
       });
-      if (error) throw error;
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.log("Login error:", error.message);
-      } else {
-        console.log("An unknown error occurred");
+      if (error) {
+        throw new Error("signInWithGoogle: Error al iniciar sesión con Google");
       }
+    } catch (error) {
+      trackError(error, "signInWithGoogle");
     }
   };
 

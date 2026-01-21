@@ -2,6 +2,8 @@ import { useAuth } from "@/context/AuthContext";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useToast } from "./useToast";
 import { VercelBlob } from "@/types";
+import { trackError } from "@/utils/logger";
+import { authFetch } from "./authFetch";
 
 export const useImages = () => {
   const { userId } = useAuth();
@@ -46,11 +48,12 @@ export const useImages = () => {
     if (!userId) return;
 
     try {
-      const response = await fetch("/api/images");
+      const response = await authFetch("/api/images");
+      if (!response.ok) throw new Error("fetchImages: api Error");
       const data = await response.json();
       setImages(data);
     } catch (error) {
-      console.log("Error al obtener las imágenes", error);
+      trackError(error, "fetchImages");
       openToast({
         message: "Error obteniendo las imágenes, intenta nuevamente",
       });
@@ -71,10 +74,11 @@ export const useImages = () => {
 
     try {
       const uniqueName = `${Date.now()}-${image.name}`;
-      const response = await fetch(`/api/images?filename=${uniqueName}`, {
+      const response = await authFetch(`/api/images?filename=${uniqueName}`, {
         method: "POST",
         body: image,
       });
+      if (!response.ok) throw new Error("handleSubmitImages: api Error");
       const newBlob = await response.json();
 
       if (newBlob.url) {
@@ -87,7 +91,7 @@ export const useImages = () => {
         scroll("start");
       }
     } catch (error) {
-      console.error("Error al subir:", error);
+      trackError(error, "handleSubmitImages");
       openToast({ message: "Error subiendo imagen" });
     } finally {
       setUploading(false);
@@ -98,18 +102,23 @@ export const useImages = () => {
     openToast({
       message: "¿Estas seguro que deseas eliminar esta imagen?",
       onConfirm: async () => {
-        await fetch(`/api/images?url=${img}`, {
-          method: "DELETE",
-        });
-        closeToast();
-        setTimeout(() => {
-          openToast({
-            message: "imagen eliminada correctamente",
+        try {
+          const response = await authFetch(`/api/images?url=${img}`, {
+            method: "DELETE",
           });
-        }, 100);
-        fetchImages();
-        if (selectedImage?.url === img) {
-          setSelectedImage(null);
+          if (!response.ok) throw new Error("handleDeleteImagen: api Error");
+          if (selectedImage?.url === img) {
+            setSelectedImage(null);
+          }
+          closeToast();
+          setTimeout(() => {
+            openToast({
+              message: "imagen eliminada correctamente",
+            });
+          }, 100);
+          fetchImages();
+        } catch (error) {
+          trackError(error, "handleDeleteImagen");
         }
       },
       onCancel: closeToast,

@@ -10,6 +10,7 @@ import React, {
 } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { authFetch } from "@/hooks/authFetch";
+import { trackError } from "@/utils/logger";
 
 export const TasksContext = createContext<TaskContextType | undefined>(
   undefined,
@@ -29,11 +30,11 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
     setTasksLoading(true);
     try {
       const response = await authFetch(`/api/task`);
+      if (!response.ok) throw new Error("getTasks: api Error");
       const data = await response.json();
-
       setTasks(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error("Fetch error:", error);
+      trackError(error, "getTasks");
       setTasks([]);
     } finally {
       setTasksLoading(false);
@@ -55,10 +56,13 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
           description: description || null,
         }),
       });
+      if (!response.ok) throw new Error("addTask: api Error");
       const data = await response.json();
       const newEntry = data[0];
       setTasks((prev) => [...prev, newEntry]);
       return newEntry;
+    } catch (error) {
+      trackError(error, "addTask");
     } finally {
       setTasksLoading(false);
     }
@@ -81,9 +85,13 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
           description: newDescription || null,
         }),
       });
+      if (!response.ok) throw new Error("editTask: api Error");
+
       const updated = await response.json();
       setTasks((prev) => prev.map((t) => (t.id === id ? updated : t)));
       getTasks();
+    } catch (error) {
+      trackError(error, "editTask");
     } finally {
       setTasksLoading(false);
     }
@@ -92,8 +100,14 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
   const removeTask = async (id: string) => {
     setTasksLoading(true);
     try {
-      await authFetch(`/api/task?id=${id}`, { method: "DELETE" });
+      const response = await authFetch(`/api/task?id=${id}`, {
+        method: "DELETE",
+      });
+      if (!response.ok) throw new Error("removeTask: api Error");
+
       setTasks((prev) => prev.filter((t) => t.id !== id));
+    } catch (error) {
+      trackError(error, "removeTask");
     } finally {
       setTasksLoading(false);
     }
@@ -110,12 +124,13 @@ export const TasksProvider: React.FC<TaskProviderProps> = ({ children }) => {
     );
 
     try {
-      await authFetch("/api/task", {
+      const response = await authFetch("/api/task", {
         method: "PATCH",
         body: JSON.stringify({ id, in_dev: nextStatus, userId }),
       });
+      if (!response.ok) throw new Error("toggleTaskInDev: api Error");
     } catch (error) {
-      console.log(error);
+      trackError(error, "toggleTaskInDev");
       setTasks((prev) =>
         prev.map((t) => (t.id === id ? { ...t, in_dev: task.in_dev } : t)),
       );

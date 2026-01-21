@@ -34,7 +34,7 @@ const Tasks: React.FC = () => {
   return (
     <div
       id="tasks"
-      className={`bg-[#1E293C] text-white p-4 rounded shadow transition-all duration-300 ${
+      className={`bg-[#1E293C] text-white p-4 rounded shadow transition-all duration-300 overflow-x-hidden ${
         isMinimized ? "min-h-0" : "min-h-[200px]"
       } overflow-x-auto`}
       role="region"

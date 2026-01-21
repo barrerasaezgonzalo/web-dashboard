@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { supabase } from "@/lib/supabaseClient";
 import { createClient } from "@supabase/supabase-js";
 import { Note } from "@/types";
+import * as Sentry from "@sentry/nextjs";
 
 export default async function handler(
   req: NextApiRequest,
@@ -115,8 +116,13 @@ export default async function handler(
     }
 
     return res.status(405).json({ error: "Method not allowed" });
-  } catch (err: unknown) {
-    console.error(err);
-    return res.status(500).json({ error: err });
+  } catch (error) {
+    Sentry.captureException(error, {
+      tags: {
+        endpoint: "/api/note",
+        method: req.method,
+      },
+    });
+    return res.status(500).json({ error: error });
   }
 }

@@ -9,6 +9,7 @@ import React, { createContext, useState, ReactNode, useCallback } from "react";
 import { authFetch } from "@/hooks/authFetch";
 import { useAuth } from "./AuthContext";
 import { format } from "date-fns";
+import { trackError } from "@/utils/logger";
 
 export const CalendarContext = createContext<CalendarContextType | undefined>(
   undefined,
@@ -31,10 +32,11 @@ export const CalendarProvider: React.FC<CalendarProviderProps> = ({
     try {
       const dateStr = format(mesActual, "yyyy-MM-dd");
       const response = await authFetch(`/api/calendar?date=${dateStr}`);
+      if (!response.ok) throw new Error("getEvents: api Error");
       const data = await response.json();
       setEvents(data);
     } catch (error) {
-      console.log("Error al obtener getEvents:", error);
+      trackError(error, "getEvents");
       setEvents([]);
     }
   }, []);
@@ -42,7 +44,7 @@ export const CalendarProvider: React.FC<CalendarProviderProps> = ({
   const saveEvents = useCallback(
     async (fechaOriginal: string, eventos: CalendarEvent[]) => {
       try {
-        await authFetch("/api/calendar", {
+        const response = await authFetch("/api/calendar", {
           method: "POST",
           body: JSON.stringify({
             userId,
@@ -55,10 +57,10 @@ export const CalendarProvider: React.FC<CalendarProviderProps> = ({
             })),
           }),
         });
+        if (!response.ok) throw new Error("saveEvents: api Error");
         await getEvents(new Date(fechaOriginal));
       } catch (error) {
-        console.error("Error al guardar en Provider:", error);
-        throw error;
+        trackError(error, "saveEvents");
       }
     },
     [userId, getEvents],

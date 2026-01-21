@@ -41,11 +41,24 @@ export const Images: React.FC = () => {
       new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime(),
   );
 
+  const isFirstRun = useRef(true);
   useEffect(() => {
-    if (sorted.length > 0 && !selectedImage) {
-      setSelectedImage(sorted[0]);
+    if (sorted.length === 0) {
+      setSelectedImage(null);
+      return;
     }
-  }, [images, selectedImage, setSelectedImage, sorted]);
+    if (isFirstRun.current) {
+      setSelectedImage(sorted[0]);
+      isFirstRun.current = false;
+      return;
+    }
+    const imageStillExists = sorted.some(
+      (img) => img.url === selectedImage?.url,
+    );
+    if (selectedImage && !imageStillExists) {
+      setSelectedImage(sorted[0] || null);
+    }
+  }, [sorted, selectedImage, setSelectedImage]);
 
   return (
     <div
@@ -79,6 +92,7 @@ export const Images: React.FC = () => {
           <div className="w-full flex justify-center">
             {selectedImage ? (
               <div
+                key={selectedImage.url}
                 className={`relative w-full max-w-3xl h-[300px] mt-[-30px]  flex items-center justify-center ${isPrivate ? "privacy-blur" : ""}`}
               >
                 <div className="relative w-full max-w-3xl aspect-video overflow-hidden flex items-center justify-center rounded-xl">

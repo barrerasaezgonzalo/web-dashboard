@@ -2,6 +2,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Note } from "@/types/";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { authFetch } from "./authFetch";
+import { trackError } from "@/utils/logger";
 
 export const useNotes = () => {
   const { userId } = useAuth();
@@ -15,25 +16,31 @@ export const useNotes = () => {
     if (!userId) return;
     try {
       const res = await authFetch(`/api/note`);
+      if (!res.ok) throw new Error("fetchNotes: api Error");
       const data: Note[] = await res.json();
 
       const validNotes = data.filter((n) => n.content?.trim() !== "");
       setNotes(validNotes);
 
       setNote(validNotes.length > 0 ? validNotes[0] : null);
-    } catch (err) {
-      console.error("Error fetching notes:", err);
+    } catch (error) {
+      trackError(error, "fetchNotes");
     }
   }, [userId]);
 
   const createInitialNote = useCallback(async (initialContent: string) => {
-    const res = await authFetch(`/api/note`, {
-      method: "POST",
-      body: JSON.stringify({ content: initialContent }),
-    });
-    const newNote = await res.json();
-    setNote(newNote);
-    setNotes((prev) => [newNote, ...prev]);
+    try {
+      const res = await authFetch(`/api/note`, {
+        method: "POST",
+        body: JSON.stringify({ content: initialContent }),
+      });
+      if (!res.ok) throw new Error("createInitialNote: api Error");
+      const newNote = await res.json();
+      setNote(newNote);
+      setNotes((prev) => [newNote, ...prev]);
+    } catch (error) {
+      trackError(error, "createInitialNote");
+    }
   }, []);
 
   const handleChange = useCallback(
@@ -56,19 +63,23 @@ export const useNotes = () => {
             currentNote.id &&
             !currentNote.id.toString().startsWith("temp-")
           ) {
-            await authFetch(`/api/note`, {
-              method: "PUT",
-              body: JSON.stringify({
-                content: htmlContent,
-                noteId: currentNote.id,
-              }),
-            });
-
-            setNotes((prev) =>
-              prev.map((n) =>
-                n.id === currentNote.id ? { ...n, content: htmlContent } : n,
-              ),
-            );
+            try {
+              const res = await authFetch(`/api/note`, {
+                method: "PUT",
+                body: JSON.stringify({
+                  content: htmlContent,
+                  noteId: currentNote.id,
+                }),
+              });
+              if (!res.ok) throw new Error("handleChangeNote: api Error");
+              setNotes((prev) =>
+                prev.map((n) =>
+                  n.id === currentNote.id ? { ...n, content: htmlContent } : n,
+                ),
+              );
+            } catch (error) {
+              trackError(error, "handleChangeNote");
+            }
           }
         }, 500);
       }
@@ -78,24 +89,26 @@ export const useNotes = () => {
 
   const createNote = useCallback(async () => {
     if (!userId) return;
+    try {
+      const res = await authFetch(`/api/note`, {
+        method: "POST",
+        body: JSON.stringify({ content: "" }),
+      });
 
-    const res = await authFetch(`/api/note`, {
-      method: "POST",
-      body: JSON.stringify({ content: "" }),
-    });
+      if (!res.ok) throw new Error("createNote: api Error");
+      const newNote = await res.json();
 
-    if (!res.ok) return null;
+      setNotes((prev) => [
+        newNote,
+        ...prev.filter((n) => n.content.trim() !== ""),
+      ]);
 
-    const newNote = await res.json();
+      setNote(newNote);
 
-    setNotes((prev) => [
-      newNote,
-      ...prev.filter((n) => n.content.trim() !== ""),
-    ]);
-
-    setNote(newNote);
-
-    return newNote;
+      return newNote;
+    } catch (error) {
+      trackError(error, "createNote");
+    }
   }, [userId]);
 
   const deleteNote = useCallback(
@@ -107,9 +120,14 @@ export const useNotes = () => {
         setNote(updatedNotes.length > 0 ? updatedNotes[0] : null);
       }
 
-      authFetch(`/api/note?noteId=${id}`, { method: "DELETE" }).catch((err) => {
-        console.error("Error al borrar:", err);
-      });
+      try {
+        const res = await authFetch(`/api/note?noteId=${id}`, {
+          method: "DELETE",
+        });
+        if (!res.ok) throw new Error("deleteNote: api Error");
+      } catch (error) {
+        trackError(error, "deleteNote");
+      }
 
       if (updatedNotes.length === 0) {
         createNote();
@@ -127,7 +145,14 @@ export const useNotes = () => {
       if (note && note.content.trim() === "" && isActuallyEmpty) {
         const currentId = note.id;
         if (!currentId.toString().startsWith("temp-")) {
-          authFetch(`/api/note?noteId=${currentId}`, { method: "DELETE" });
+          try {
+            const res = await authFetch(`/api/note?noteId=${currentId}`, {
+              method: "DELETE",
+            });
+            if (!res.ok) throw new Error("deleteNote: api Error");
+          } catch (error) {
+            trackError(error, "deleteNote");
+          }
         }
         setNotes((prev) => prev.filter((n) => n.id !== currentId));
       }
@@ -146,12 +171,13 @@ export const useNotes = () => {
       prev.map((n) => (n.id === id ? { ...n, favorite: nextFavorite } : n)),
     );
     try {
-      await authFetch("/api/note", {
+      const res = await authFetch("/api/note", {
         method: "PATCH",
         body: JSON.stringify({ noteId: id, favorite: nextFavorite, userId }),
       });
+      if (!res.ok) throw new Error("favoriteNote: api Error");
     } catch (error) {
-      console.log(error);
+      trackError(error, "favoriteNote");
       setNotes((prev) =>
         prev.map((n) => (n.id === id ? { ...n, favorite: note.favorite } : n)),
       );
