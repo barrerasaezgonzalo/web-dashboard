@@ -18,6 +18,8 @@ import type {
 } from "@/types/";
 import { useAuth } from "./AuthContext";
 import { usePrivacyMode } from "@/hooks/usePrivacyMode";
+import { trackError } from "@/utils/logger";
+
 export const PersonalFinanceContext =
   createContext<PersonalFinanceContextType | null>(null);
 
@@ -46,14 +48,19 @@ export const PersonalFinanceProvider: React.FC<PersonalFinanceProps> = ({
   const getFinancial = useCallback(async () => {
     try {
       const response = await authFetch("/api/getUtm");
+      if (!response.ok) throw new Error("GetFinancial api Error");
+
       const data: Financial = await response.json();
-      const newCurrent = { utm: data.current.utm || financial.current.utm };
-      const newFinancial: Financial = { current: newCurrent };
-      setFinancial(newFinancial);
+      setFinancial((prevFinancial) => {
+        const newCurrent = {
+          utm: data.current.utm || prevFinancial.current.utm,
+        };
+        return { current: newCurrent };
+      });
     } catch (error) {
-      console.log(error);
+      trackError(error, "GetFinancial");
     }
-  }, [financial]);
+  }, []);
 
   useEffect(() => {
     getFinancial();
